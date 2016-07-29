@@ -93,6 +93,31 @@ var hashIt =
 	var HTML_ELEMENT_REGEXP = /\[object (HTML(.*)Element)\]/;
 	
 	/**
+	 * get the string value of the buffer passed
+	 * 
+	 * @param {ArrayBuffer} buffer
+	 * @returns {string}
+	 */
+	var arrayBufferToString = function arrayBufferToString(buffer) {
+	  if (typeof Uint16Array === 'undefined') {
+	    return '';
+	  }
+	
+	  return String.fromCharCode.apply(null, new Uint16Array(buffer));
+	};
+	
+	/**
+	 * strip away [object and ] from return of toString()
+	 * to get the object class
+	 * 
+	 * @param {string} type
+	 * @returns {string}
+	 */
+	var getObjectType = function getObjectType(type) {
+	  return type.replace(/^\[object (.+)\]$/, '$1');
+	};
+	
+	/**
 	 * get the string value for the object used for stringification
 	 *
 	 * @param {any} object
@@ -103,6 +128,24 @@ var hashIt =
 	
 	  var _ret = function () {
 	    switch (type) {
+	      case _toString.types.ARRAY_BUFFER:
+	        return {
+	          v: arrayBufferToString(object)
+	        };
+	
+	      case _toString.types.FLOAT_32_ARRAY:
+	      case _toString.types.FLOAT_64_ARRAY:
+	      case _toString.types.INT_8_ARRAY:
+	      case _toString.types.INT_16_ARRAY:
+	      case _toString.types.INT_32_ARRAY:
+	      case _toString.types.UINT_8_ARRAY:
+	      case _toString.types.UINT_8_CLAMPED_ARRAY:
+	      case _toString.types.UINT_16_ARRAY:
+	      case _toString.types.UINT_32_ARRAY:
+	        return {
+	          v: getObjectType(type) + ' [' + object.join(',') + ']'
+	        };
+	
 	      case _toString.types.DATE:
 	        return {
 	          v: '' + object.valueOf()
@@ -225,7 +268,7 @@ var hashIt =
 	
 	/**
 	 * based on string passed, get the integer hash value
-	 * through bitwise operation
+	 * through bitwise operation (based on spinoff of dbj2)
 	 *
 	 * @param {string} string
 	 * @returns {number}
@@ -374,8 +417,10 @@ var hashIt =
 	          return '' + value;
 	        }
 	
-	        if (depthDecr <= 0 || !!~seen.indexOf(value)) {
-	          return DEFAULT_PRUNED_VALUE;
+	        var index = seen.indexOf(value);
+	
+	        if (depthDecr <= 0 || !!~index) {
+	          return DEFAULT_PRUNED_VALUE + '-' + index;
 	        }
 	
 	        switch ((0, _toString.toString)(value)) {
@@ -384,10 +429,10 @@ var hashIt =
 	
 	            var length = Math.min(value.length, DEFAULT_ARRAY_MAX_LENGTH);
 	
-	            var index = -1;
+	            var _index = -1;
 	
-	            while (++index < length) {
-	              partial[index] = pruneString(index, value, depthDecr - 1);
+	            while (++_index < length) {
+	              partial[_index] = pruneString(_index, value, depthDecr - 1);
 	            }
 	
 	            v = '[' + partial.join(',') + ']';
@@ -435,10 +480,16 @@ var hashIt =
 	
 	exports.__esModule = true;
 	var ARRAY = '[object Array]';
+	var ARRAY_BUFFER = '[object ArrayBuffer]';
 	var BOOLEAN = '[object Boolean]';
 	var DATE = '[object Date]';
 	var ERROR = '[object Error]';
+	var FLOAT_32_ARRAY = '[object Float32Array]';
+	var FLOAT_64_ARRAY = '[object Float64Array]';
 	var FUNCTION = '[object Function]';
+	var INT_8_ARRAY = '[object Int8Array]';
+	var INT_16_ARRAY = '[object Int16Array]';
+	var INT_32_ARRAY = '[object Int32Array]';
 	var MAP = '[object Map]';
 	var MATH = '[object Math]';
 	var NULL = '[object Null]';
@@ -448,6 +499,10 @@ var hashIt =
 	var SET = '[object Set]';
 	var STRING = '[object String]';
 	var SYMBOL = '[object Symbol]';
+	var UINT_8_ARRAY = '[object Uint8Array]';
+	var UINT_8_CLAMPED_ARRAY = '[object Uint8ClampedArray]';
+	var UINT_16_ARRAY = '[object Uint16Array]';
+	var UINT_32_ARRAY = '[object Uint32Array]';
 	var UNDEFINED = '[object Undefined]';
 	var WEAKMAP = '[object WeakMap]';
 	var WEAKSET = '[object WeakSet]';
@@ -455,10 +510,16 @@ var hashIt =
 	
 	var TYPES = {
 	  ARRAY: ARRAY,
+	  ARRAY_BUFFER: ARRAY_BUFFER,
 	  BOOLEAN: BOOLEAN,
 	  DATE: DATE,
 	  ERROR: ERROR,
+	  FLOAT_32_ARRAY: FLOAT_32_ARRAY,
+	  FLOAT_64_ARRAY: FLOAT_64_ARRAY,
 	  FUNCTION: FUNCTION,
+	  INT_8_ARRAY: INT_8_ARRAY,
+	  INT_16_ARRAY: INT_16_ARRAY,
+	  INT_32_ARRAY: INT_32_ARRAY,
 	  MAP: MAP,
 	  MATH: MATH,
 	  NULL: NULL,
@@ -468,6 +529,10 @@ var hashIt =
 	  SET: SET,
 	  STRING: STRING,
 	  SYMBOL: SYMBOL,
+	  UINT_8_ARRAY: UINT_8_ARRAY,
+	  UINT_8_CLAMPED_ARRAY: UINT_8_CLAMPED_ARRAY,
+	  UINT_16_ARRAY: UINT_16_ARRAY,
+	  UINT_32_ARRAY: UINT_32_ARRAY,
 	  UNDEFINED: UNDEFINED,
 	  WEAKMAP: WEAKMAP,
 	  WEAKSET: WEAKSET,

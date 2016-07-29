@@ -12,7 +12,7 @@ test('if prune handles recursive objects correctly', (t) => {
 
   a.b = b;
 
-  const expectedString = '{"foo":"bar","b":{"a":*Recursive}}';
+  const expectedString = '{"foo":"bar","b":{"a":*Recursive-0}}';
 
   t.is(json.prune(a), expectedString);
 });

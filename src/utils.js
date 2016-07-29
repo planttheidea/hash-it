@@ -9,6 +9,31 @@ import {
 const HTML_ELEMENT_REGEXP = /\[object (HTML(.*)Element)\]/;
 
 /**
+ * get the string value of the buffer passed
+ * 
+ * @param {ArrayBuffer} buffer
+ * @returns {string}
+ */
+const arrayBufferToString = (buffer) => {
+  if (typeof Uint16Array === 'undefined') {
+    return '';
+  }
+
+  return String.fromCharCode.apply(null, new Uint16Array(buffer));
+};
+
+/**
+ * strip away [object and ] from return of toString()
+ * to get the object class
+ * 
+ * @param {string} type
+ * @returns {string}
+ */
+const getObjectType = (type) => {
+  return type.replace(/^\[object (.+)\]$/, '$1');
+};
+
+/**
  * get the string value for the object used for stringification
  *
  * @param {any} object
@@ -18,6 +43,20 @@ const getValueForStringification = (object) => {
   const type = toString(object);
 
   switch (type) {
+    case types.ARRAY_BUFFER:
+      return arrayBufferToString(object);
+
+    case types.FLOAT_32_ARRAY:
+    case types.FLOAT_64_ARRAY:
+    case types.INT_8_ARRAY:
+    case types.INT_16_ARRAY:
+    case types.INT_32_ARRAY:
+    case types.UINT_8_ARRAY:
+    case types.UINT_8_CLAMPED_ARRAY:
+    case types.UINT_16_ARRAY:
+    case types.UINT_32_ARRAY:
+      return `${getObjectType(type)} [${object.join(',')}]`;
+
     case types.DATE:
       return `${object.valueOf()}`;
 
@@ -119,7 +158,7 @@ const REPLACER = ((stack, undefined, recursiveCounter, index) => {
 
 /**
  * based on string passed, get the integer hash value
- * through bitwise operation
+ * through bitwise operation (based on spinoff of dbj2)
  *
  * @param {string} string
  * @returns {number}

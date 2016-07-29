@@ -5,10 +5,14 @@ import hashIt from '../src/index';
 const CONSISTENCY_ITERATIONS = 10000;
 
 const DATE = new Date();
+const INTEGER_ARRAY = [1, 2, 3];
 const TEST_VALUES = [
   {
     key: 'array',
     value: ['foo', 'bar']
+  }, {
+    key: 'arrayBuffer',
+    value: new Uint16Array(INTEGER_ARRAY).buffer
   }, {
     key: 'boolean',
     value: true
@@ -19,8 +23,23 @@ const TEST_VALUES = [
     key: 'error',
     value: new Error('test')
   }, {
+    key: 'float32Array',
+    value: new Float32Array(INTEGER_ARRAY)
+  }, {
+    key: 'float64Array',
+    value: new Float64Array(INTEGER_ARRAY)
+  }, {
     key: 'function',
     value: function() {}
+  }, {
+    key: 'int8Array',
+    value: new Int8Array(INTEGER_ARRAY)
+  }, {
+    key: 'int16Array',
+    value: new Int16Array(INTEGER_ARRAY)
+  }, {
+    key: 'int32Array',
+    value: new Int32Array(INTEGER_ARRAY)
   }, {
     key: 'map',
     value: new Map().set('foo', 'bar')
@@ -49,6 +68,18 @@ const TEST_VALUES = [
     key: 'symbol',
     value: Symbol('foo')
   }, {
+    key: 'uint8Array',
+    value: new Uint8Array(INTEGER_ARRAY)
+  }, {
+    key: 'uint8ClampedArray',
+    value: new Uint8ClampedArray(INTEGER_ARRAY)
+  }, {
+    key: 'uint16Array',
+    value: new Uint16Array(INTEGER_ARRAY)
+  }, {
+    key: 'uint32Array',
+    value: new Uint32Array(INTEGER_ARRAY)
+  }, {
     key: 'undefined',
     value: undefined
   }, {
@@ -70,6 +101,16 @@ let hashMap = {};
 
 TEST_VALUES.forEach(({key, value}) => {
   hashMap[key] = hashIt(value);
+});
+
+test('if hash is unique', (t) => {
+  TEST_VALUES.forEach(({value}, index) => {
+    TEST_VALUES.forEach(({value: otherValue}, otherIndex) => {
+      if (index !== otherIndex) {
+        t.not(value, otherValue);
+      }
+    });
+  });
 });
 
 test('if hash is consistent', (t) => {

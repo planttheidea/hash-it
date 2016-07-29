@@ -90,8 +90,10 @@ const prune = (value) => {
           return `${value}`;
         }
 
-        if (depthDecr <= 0 || !!~seen.indexOf(value)) {
-          return DEFAULT_PRUNED_VALUE;
+        const index = seen.indexOf(value);
+
+        if (depthDecr <= 0 || !!~index) {
+          return `${DEFAULT_PRUNED_VALUE}-${index}`;
         }
 
         switch (toString(value)) {

@@ -10,6 +10,7 @@ import {
 import json from '../src/prune';
 
 const DATE = new Date();
+const INTEGER_ARRAY = [1, 2, 3];
 const TEST_VALUES = [
   {
     comparator: 'deepEqual',
@@ -23,6 +24,12 @@ const TEST_VALUES = [
     expectedString: '["foo","bar"]',
     key: 'array',
     value: ['foo', 'bar']
+  }, {
+    comparator: 'deepEqual',
+    expectedResult: new Uint16Array(INTEGER_ARRAY).buffer,
+    expectedString: `"\\u0001\\u0002\\u0003"`,
+    key: 'arrayBuffer',
+    value: new Uint16Array(INTEGER_ARRAY).buffer
   }, {
     comparator: 'is',
     expectedResult: true,
@@ -42,11 +49,41 @@ const TEST_VALUES = [
     key: 'error',
     value: new Error('test')
   }, {
+    comparator: 'deepEqual',
+    expectedResult: new Float32Array(INTEGER_ARRAY),
+    expectedString: '"Float32Array [1,2,3]"',
+    key: 'float32Array',
+    value: new Float32Array(INTEGER_ARRAY)
+  }, {
+    comparator: 'deepEqual',
+    expectedResult: new Float64Array(INTEGER_ARRAY),
+    expectedString: '"Float64Array [1,2,3]"',
+    key: 'float64Array',
+    value: new Float64Array(INTEGER_ARRAY)
+  }, {
     comparator: 'is',
     expectedResult: 'function value(){}',
     expectedString: '"function value(){}"',
     key: 'function',
     value: function() {}
+  }, {
+    comparator: 'deepEqual',
+    expectedResult: new Int8Array(INTEGER_ARRAY),
+    expectedString: '"Int8Array [1,2,3]"',
+    key: 'int8Array',
+    value: new Int8Array(INTEGER_ARRAY)
+  }, {
+    comparator: 'deepEqual',
+    expectedResult: new Int16Array(INTEGER_ARRAY),
+    expectedString: '"Int16Array [1,2,3]"',
+    key: 'int16Array',
+    value: new Int16Array(INTEGER_ARRAY)
+  }, {
+    comparator: 'deepEqual',
+    expectedResult: new Int32Array(INTEGER_ARRAY),
+    expectedString: '"Int32Array [1,2,3]"',
+    key: 'int32Array',
+    value: new Int32Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
     expectedResult: [['foo', 'bar']],
@@ -101,6 +138,30 @@ const TEST_VALUES = [
     expectedString: '"Symbol(foo)"',
     key: 'symbol',
     value: Symbol('foo')
+  }, {
+    comparator: 'deepEqual',
+    expectedResult: new Uint8Array(INTEGER_ARRAY),
+    expectedString: '"Uint8Array [1,2,3]"',
+    key: 'uint8Array',
+    value: new Uint8Array(INTEGER_ARRAY)
+  }, {
+    comparator: 'deepEqual',
+    expectedResult: new Uint8ClampedArray(INTEGER_ARRAY),
+    expectedString: '"Uint8ClampedArray [1,2,3]"',
+    key: 'uint8ClampedArray',
+    value: new Uint8ClampedArray(INTEGER_ARRAY)
+  }, {
+    comparator: 'deepEqual',
+    expectedResult: new Uint16Array(INTEGER_ARRAY),
+    expectedString: '"Uint16Array [1,2,3]"',
+    key: 'uint16Array',
+    value: new Uint16Array(INTEGER_ARRAY)
+  }, {
+    comparator: 'deepEqual',
+    expectedResult: new Uint32Array(INTEGER_ARRAY),
+    expectedString: '"Uint32Array [1,2,3]"',
+    key: 'uint32Array',
+    value: new Uint32Array(INTEGER_ARRAY)
   }, {
     comparator: 'is',
     expectedResult: 'undefined',
