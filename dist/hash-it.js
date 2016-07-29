@@ -105,7 +105,7 @@ var hashIt =
 	    switch (type) {
 	      case _toString.types.DATE:
 	        return {
-	          v: object.toISOString()
+	          v: '' + object.valueOf()
 	        };
 	
 	      case _toString.types.FUNCTION:
@@ -395,7 +395,7 @@ var hashIt =
 	            return v;
 	
 	          case _toString.types.DATE:
-	            return Date.prototype.toJSON.call(value);
+	            return '' + value.valueOf();
 	
 	          default:
 	            seen.push(value);

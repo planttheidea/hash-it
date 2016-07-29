@@ -31,8 +31,8 @@ const TEST_VALUES = [
     value: true
   }, {
     comparator: 'is',
-    expectedResult: DATE.toISOString(),
-    expectedString: `"${DATE.toISOString()}"`,
+    expectedResult: `${DATE.valueOf()}`,
+    expectedString: `"${DATE.valueOf()}"`,
     key: 'date',
     value: DATE
   }, {

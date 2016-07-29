@@ -111,7 +111,7 @@ const prune = (value) => {
             return v;
 
           case types.DATE:
-            return Date.prototype.toJSON.call(value);
+            return `${value.valueOf()}`;
 
           default:
             seen.push(value);

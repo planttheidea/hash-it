@@ -147,6 +147,10 @@ const hashOnlyValidation = (iterations = 100) => {
   console.log(hashIt(window));
 };
 
-profile(1000);
+// profile(1000);
 // visualValidation();
 // hashOnlyValidation();
+
+console.log(hashIt({
+  foo: 'bar'
+}));

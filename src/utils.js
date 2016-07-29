@@ -19,7 +19,7 @@ const getValueForStringification = (object) => {
 
   switch (type) {
     case types.DATE:
-      return object.toISOString();
+      return `${object.valueOf()}`;
 
     case types.FUNCTION:
       return toFunctionString(object);
