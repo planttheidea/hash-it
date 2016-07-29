@@ -46,7 +46,8 @@
   "homepage": "https://github.com/planttheidea/hash-it#readme",
   "keywords": [
     "hash",
-    "unique",
+    "hashcode",
+    "java",
     "object-hash"
   ],
   "license": "MIT",
