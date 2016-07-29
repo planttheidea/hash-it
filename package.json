@@ -1,0 +1,73 @@
+{
+  "author": "planttheidea",
+  "ava": {
+    "babel": "inherit",
+    "failFast": true,
+    "files": [
+      "./test/toString.js",
+      "./test/prune.js",
+      "./test/utils.js",
+      "./test/index.js"
+    ],
+    "require": [
+      "babel-register",
+      "babel-polyfill",
+      "./test/helpers/setup-browser-env.js"
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/planttheidea/hash-it/issues"
+  },
+  "description": "Hash any object based on its value",
+  "devDependencies": {
+    "ava": "0.15.2",
+    "babel": "6.5.2",
+    "babel-cli": "6.11.4",
+    "babel-eslint": "6.1.2",
+    "babel-loader": "6.2.4",
+    "babel-plugin-add-module-exports": "0.2.1",
+    "babel-polyfill": "6.9.1",
+    "babel-preset-es2015-loose": "^7.0.0",
+    "babel-preset-react": "6.11.1",
+    "babel-preset-stage-0": "6.5.0",
+    "babel-register": "6.11.6",
+    "eslint": "3.1.1",
+    "eslint-friendly-formatter": "2.0.6",
+    "eslint-loader": "1.5.0",
+    "html-webpack-plugin": "2.22.0",
+    "in-publish": "^2.0.0",
+    "jsdom": "^9.4.1",
+    "react": "15.2.1",
+    "react-dom": "15.2.1",
+    "sinon": "^1.17.5",
+    "webpack": "1.13.1",
+    "webpack-dev-server": "1.14.1"
+  },
+  "homepage": "https://github.com/planttheidea/hash-it#readme",
+  "keywords": [
+    "hash",
+    "unique",
+    "object-hash"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "name": "hash-it",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/planttheidea/hash-it.git"
+  },
+  "scripts": {
+    "build": "NODE_ENV=development ./node_modules/webpack/bin/webpack.js --progress --colors",
+    "build-minified": "NODE_ENV=production ./node_modules/webpack/bin/webpack.js --progress --colors --config=webpack.config.minified.js",
+    "compile-for-publish": "npm run lint && npm run test && npm run transpile && npm run dist",
+    "dev": "NODE_ENV=development ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --progress --colors --config=webpack.config.dev.js",
+    "dev-production": "NODE_ENV=production ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --progress --colors --config=webpack.config.dev.js",
+    "dist": "npm run build && npm run build-minified",
+    "lint": "NODE_ENV=test ./node_modules/eslint/bin/eslint.js src",
+    "prepublish": "in-publish && npm run compile-for-publish || in-install",
+    "test": "NODE_ENV=test ava --no-cache --verbose",
+    "test:watch": "NODE_ENV=test ava --no-cache --verbose --watch",
+    "transpile": "./node_modules/babel-cli/lib/babel/index.js -d lib/ src/"
+  },
+  "version": "1.0.0"
+}
