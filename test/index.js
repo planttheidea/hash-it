@@ -17,6 +17,9 @@ const TEST_VALUES = [
     key: 'boolean',
     value: true
   }, {
+    key: 'dataView',
+    value: new DataView(new ArrayBuffer(2))
+  }, {
     key: 'date',
     value: DATE
   }, {
@@ -31,6 +34,9 @@ const TEST_VALUES = [
   }, {
     key: 'function',
     value: function() {}
+  }, {
+    key: 'generator',
+    value: function* () {}
   }, {
     key: 'int8Array',
     value: new Int8Array(INTEGER_ARRAY)

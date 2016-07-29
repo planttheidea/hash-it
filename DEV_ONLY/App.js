@@ -36,6 +36,11 @@ const object = {
   func() {
     alert('y');
   },
+  generator: function* () {
+    let value = yield 1;
+
+    yield value + 2;
+  },
   undef: undefined,
   nil: null,
   obj: {
@@ -56,11 +61,13 @@ const object = {
   set: new Set().add('foo').add(2),
   weakMap: new WeakMap().set({}, 7).set({foo: 3}, ['abc']),
   arrayBuffer: new Uint16Array([1, 2, 3]).buffer,
+  dataView: new DataView(new ArrayBuffer(2)),
   float32Array: new Float32Array([1, 2, 3]),
   float64Array: new Float64Array([1, 2, 3]),
   int8Array: new Int8Array([1, 2, 3]),
   int16Array: new Int16Array([1, 2, 3]),
   int32Array: new Int32Array([1, 2, 3]),
+  promise: Promise.resolve(1),
   uint8Array: new Uint8Array([1, 2, 3]),
   uint8ClampedArray: new Uint8ClampedArray([1, 2, 3]),
   uint16Array: new Uint16Array([1, 2, 3]),
@@ -117,12 +124,15 @@ const visualValidation = (iterations = 100) => {
   console.log(object.set, hashIt(object.set));
   console.log(object.weakMap, hashIt(object.weakMap));
   console.log(object.weakSet, hashIt(object.weakSet));
+  console.log(object.dataView, hashIt(object.dataView));
   console.log(object.arrayBuffer, hashIt(object.arrayBuffer));
   console.log(object.float32Array, hashIt(object.float32Array));
   console.log(object.float64Array, hashIt(object.float64Array));
+  console.log(object.generator, hashIt(object.generator));
   console.log(object.int8Array, hashIt(object.int8Array));
   console.log(object.int16Array, hashIt(object.int16Array));
   console.log(object.int32Array, hashIt(object.int32Array));
+  console.log(object.promise, hashIt(object.promise));
   console.log(object.uint8Array, hashIt(object.uint8Array));
   console.log(object.uint8ClampedArray, hashIt(object.uint8ClampedArray));
   console.log(object.uint16Array, hashIt(object.uint16Array));
@@ -159,11 +169,14 @@ const hashOnlyValidation = (iterations = 100) => {
   console.log(hashIt(object.weakMap));
   console.log(hashIt(object.weakSet));
   console.log(hashIt(object.arrayBuffer));
+  console.log(hashIt(object.dataView));
   console.log(hashIt(object.float32Array));
   console.log(hashIt(object.float64Array));
+  console.log(hashIt(object.generator));
   console.log(hashIt(object.int8Array));
   console.log(hashIt(object.int16Array));
   console.log(hashIt(object.int32Array));
+  console.log(hashIt(object.promise));
   console.log(hashIt(object.uint8Array));
   console.log(hashIt(object.uint8ClampedArray));
   console.log(hashIt(object.uint16Array));

@@ -46,6 +46,9 @@ const getValueForStringification = (object) => {
     case types.ARRAY_BUFFER:
       return arrayBufferToString(object);
 
+    case types.DATA_VIEW:
+      return arrayBufferToString(object.buffer);
+
     case types.FLOAT_32_ARRAY:
     case types.FLOAT_64_ARRAY:
     case types.INT_8_ARRAY:
@@ -62,6 +65,9 @@ const getValueForStringification = (object) => {
 
     case types.FUNCTION:
       return toFunctionString(object);
+
+    case types.GENERATOR:
+      return toFunctionString(object, true);
 
     case types.ERROR:
     case types.NULL:
@@ -91,6 +97,9 @@ const getValueForStringification = (object) => {
     case types.MATH:
       return 'Math--NOT_ENUMERABLE';
 
+    case types.PROMISE:
+      return 'Promise--NOT_ENUMERABLE';
+
     case types.WEAKMAP:
       return 'WeakMap--NOT_ENUMERABLE';
 
@@ -116,18 +125,31 @@ const REPLACER = ((stack, undefined, recursiveCounter, index) => {
     }
 
     switch (toString(value)) {
+      case types.ARRAY_BUFFER:
+      case types.DATA_VIEW:
       case types.DATE:
+      case types.FLOAT_32_ARRAY:
+      case types.FLOAT_64_ARRAY:
       case types.FUNCTION:
+      case types.GENERATOR:
+      case types.INT_8_ARRAY:
+      case types.INT_16_ARRAY:
+      case types.INT_32_ARRAY:
       case types.ERROR:
       case types.MAP:
       case types.MATH:
       case types.NULL:
+      case types.PROMISE:
       case types.REGEXP:
       case types.SET:
       case types.SYMBOL:
+      case types.UINT_8_ARRAY:
+      case types.UINT_8_CLAMPED_ARRAY:
+      case types.UINT_16_ARRAY:
+      case types.UINT_32_ARRAY:
+      case types.UNDEFINED:
       case types.WEAKMAP:
       case types.WEAKSET:
-      case types.UNDEFINED:
         return getValueForStringification(value);
 
       case types.ARRAY:

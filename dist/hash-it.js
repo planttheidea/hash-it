@@ -133,6 +133,11 @@ var hashIt =
 	          v: arrayBufferToString(object)
 	        };
 	
+	      case _toString.types.DATA_VIEW:
+	        return {
+	          v: arrayBufferToString(object.buffer)
+	        };
+	
 	      case _toString.types.FLOAT_32_ARRAY:
 	      case _toString.types.FLOAT_64_ARRAY:
 	      case _toString.types.INT_8_ARRAY:
@@ -154,6 +159,11 @@ var hashIt =
 	      case _toString.types.FUNCTION:
 	        return {
 	          v: (0, _toString.toFunctionString)(object)
+	        };
+	
+	      case _toString.types.GENERATOR:
+	        return {
+	          v: (0, _toString.toFunctionString)(object, true)
 	        };
 	
 	      case _toString.types.ERROR:
@@ -192,6 +202,11 @@ var hashIt =
 	          v: 'Math--NOT_ENUMERABLE'
 	        };
 	
+	      case _toString.types.PROMISE:
+	        return {
+	          v: 'Promise--NOT_ENUMERABLE'
+	        };
+	
 	      case _toString.types.WEAKMAP:
 	        return {
 	          v: 'WeakMap--NOT_ENUMERABLE'
@@ -226,18 +241,31 @@ var hashIt =
 	    }
 	
 	    switch ((0, _toString.toString)(value)) {
+	      case _toString.types.ARRAY_BUFFER:
+	      case _toString.types.DATA_VIEW:
 	      case _toString.types.DATE:
+	      case _toString.types.FLOAT_32_ARRAY:
+	      case _toString.types.FLOAT_64_ARRAY:
 	      case _toString.types.FUNCTION:
+	      case _toString.types.GENERATOR:
+	      case _toString.types.INT_8_ARRAY:
+	      case _toString.types.INT_16_ARRAY:
+	      case _toString.types.INT_32_ARRAY:
 	      case _toString.types.ERROR:
 	      case _toString.types.MAP:
 	      case _toString.types.MATH:
 	      case _toString.types.NULL:
+	      case _toString.types.PROMISE:
 	      case _toString.types.REGEXP:
 	      case _toString.types.SET:
 	      case _toString.types.SYMBOL:
+	      case _toString.types.UINT_8_ARRAY:
+	      case _toString.types.UINT_8_CLAMPED_ARRAY:
+	      case _toString.types.UINT_16_ARRAY:
+	      case _toString.types.UINT_32_ARRAY:
+	      case _toString.types.UNDEFINED:
 	      case _toString.types.WEAKMAP:
 	      case _toString.types.WEAKSET:
-	      case _toString.types.UNDEFINED:
 	        return getValueForStringification(value);
 	
 	      case _toString.types.ARRAY:
@@ -482,11 +510,13 @@ var hashIt =
 	var ARRAY = '[object Array]';
 	var ARRAY_BUFFER = '[object ArrayBuffer]';
 	var BOOLEAN = '[object Boolean]';
+	var DATA_VIEW = '[object DataView]';
 	var DATE = '[object Date]';
 	var ERROR = '[object Error]';
 	var FLOAT_32_ARRAY = '[object Float32Array]';
 	var FLOAT_64_ARRAY = '[object Float64Array]';
 	var FUNCTION = '[object Function]';
+	var GENERATOR = '[object GeneratorFunction]';
 	var INT_8_ARRAY = '[object Int8Array]';
 	var INT_16_ARRAY = '[object Int16Array]';
 	var INT_32_ARRAY = '[object Int32Array]';
@@ -495,6 +525,7 @@ var hashIt =
 	var NULL = '[object Null]';
 	var NUMBER = '[object Number]';
 	var OBJECT = '[object Object]';
+	var PROMISE = '[object Promise]';
 	var REGEXP = '[object RegExp]';
 	var SET = '[object Set]';
 	var STRING = '[object String]';
@@ -512,11 +543,13 @@ var hashIt =
 	  ARRAY: ARRAY,
 	  ARRAY_BUFFER: ARRAY_BUFFER,
 	  BOOLEAN: BOOLEAN,
+	  DATA_VIEW: DATA_VIEW,
 	  DATE: DATE,
 	  ERROR: ERROR,
 	  FLOAT_32_ARRAY: FLOAT_32_ARRAY,
 	  FLOAT_64_ARRAY: FLOAT_64_ARRAY,
 	  FUNCTION: FUNCTION,
+	  GENERATOR: GENERATOR,
 	  INT_8_ARRAY: INT_8_ARRAY,
 	  INT_16_ARRAY: INT_16_ARRAY,
 	  INT_32_ARRAY: INT_32_ARRAY,
@@ -525,6 +558,7 @@ var hashIt =
 	  NULL: NULL,
 	  NUMBER: NUMBER,
 	  OBJECT: OBJECT,
+	  PROMISE: PROMISE,
 	  REGEXP: REGEXP,
 	  SET: SET,
 	  STRING: STRING,
@@ -543,10 +577,13 @@ var hashIt =
 	 * get the generic string value of the function passed
 	 *
 	 * @param {function} fn
+	 * @param {boolean} isGenerator=false
 	 * @returns {string}
 	 */
 	var toFunctionString = function toFunctionString(fn) {
-	  return 'function ' + (fn.name || 'anonymous') + '(' + new Array(fn.length + 1).join(',arg').slice(1) + '){}';
+	  var isGenerator = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	
+	  return 'function' + (isGenerator ? '*' : '') + ' ' + (fn.name || 'anonymous') + '(' + new Array(fn.length + 1).join(',arg').slice(1) + '){}';
 	};
 	
 	/**

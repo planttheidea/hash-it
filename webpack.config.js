@@ -47,6 +47,15 @@ module.exports = {
                     path.resolve(__dirname, 'DEV_ONLY')
                 ],
                 loader: 'babel',
+                query: {
+                    plugins: [
+                        'add-module-exports'
+                    ],
+                    presets: [
+                        'es2015-loose',
+                        'stage-0'
+                    ]
+                },
                 test: /\.js$/
             }
         ]

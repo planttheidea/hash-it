@@ -1,11 +1,13 @@
 const ARRAY = '[object Array]';
 const ARRAY_BUFFER = '[object ArrayBuffer]';
 const BOOLEAN = '[object Boolean]';
+const DATA_VIEW = '[object DataView]';
 const DATE = '[object Date]';
 const ERROR = '[object Error]';
 const FLOAT_32_ARRAY = '[object Float32Array]';
 const FLOAT_64_ARRAY = '[object Float64Array]';
 const FUNCTION = '[object Function]';
+const GENERATOR = '[object GeneratorFunction]';
 const INT_8_ARRAY = '[object Int8Array]';
 const INT_16_ARRAY = '[object Int16Array]';
 const INT_32_ARRAY = '[object Int32Array]';
@@ -14,6 +16,7 @@ const MATH = '[object Math]';
 const NULL = '[object Null]';
 const NUMBER = '[object Number]';
 const OBJECT = '[object Object]';
+const PROMISE = '[object Promise]';
 const REGEXP = '[object RegExp]';
 const SET = '[object Set]';
 const STRING = '[object String]';
@@ -31,11 +34,13 @@ const TYPES = {
   ARRAY,
   ARRAY_BUFFER,
   BOOLEAN,
+  DATA_VIEW,
   DATE,
   ERROR,
   FLOAT_32_ARRAY,
   FLOAT_64_ARRAY,
   FUNCTION,
+  GENERATOR,
   INT_8_ARRAY,
   INT_16_ARRAY,
   INT_32_ARRAY,
@@ -44,6 +49,7 @@ const TYPES = {
   NULL,
   NUMBER,
   OBJECT,
+  PROMISE,
   REGEXP,
   SET,
   STRING,
@@ -62,10 +68,11 @@ const TYPES = {
  * get the generic string value of the function passed
  *
  * @param {function} fn
+ * @param {boolean} isGenerator=false
  * @returns {string}
  */
-const toFunctionString = (fn) => {
-  return `function ${fn.name || 'anonymous'}(${(new Array(fn.length + 1)).join(',arg').slice(1)}){}`;
+const toFunctionString = (fn, isGenerator = false) => {
+  return `function${isGenerator ? '*' : ''} ${fn.name || 'anonymous'}(${(new Array(fn.length + 1)).join(',arg').slice(1)}){}`;
 };
 
 /**
