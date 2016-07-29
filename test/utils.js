@@ -26,7 +26,7 @@ const TEST_VALUES = [
     value: ['foo', 'bar']
   }, {
     comparator: 'deepEqual',
-    expectedResult: new Uint16Array(INTEGER_ARRAY).buffer,
+    expectedResult: `\u0001\u0002\u0003`,
     expectedString: `"\\u0001\\u0002\\u0003"`,
     key: 'arrayBuffer',
     value: new Uint16Array(INTEGER_ARRAY).buffer
@@ -36,6 +36,12 @@ const TEST_VALUES = [
     expectedString: 'true',
     key: 'boolean',
     value: true
+  }, {
+    comparator: 'deepEqual',
+    expectedResult: `\u0000`,
+    expectedString: `"\\u0000"`,
+    key: 'dataView',
+    value: new DataView(new ArrayBuffer(2))
   }, {
     comparator: 'is',
     expectedResult: `${DATE.valueOf()}`,
@@ -50,13 +56,13 @@ const TEST_VALUES = [
     value: new Error('test')
   }, {
     comparator: 'deepEqual',
-    expectedResult: new Float32Array(INTEGER_ARRAY),
+    expectedResult: 'Float32Array [1,2,3]',
     expectedString: '"Float32Array [1,2,3]"',
     key: 'float32Array',
     value: new Float32Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
-    expectedResult: new Float64Array(INTEGER_ARRAY),
+    expectedResult: 'Float64Array [1,2,3]',
     expectedString: '"Float64Array [1,2,3]"',
     key: 'float64Array',
     value: new Float64Array(INTEGER_ARRAY)
@@ -67,20 +73,26 @@ const TEST_VALUES = [
     key: 'function',
     value: function() {}
   }, {
+    comparator: 'is',
+    expectedResult: 'function* value(){}',
+    expectedString: '"function* value(){}"',
+    key: 'generator',
+    value: function* () {}
+  }, {
     comparator: 'deepEqual',
-    expectedResult: new Int8Array(INTEGER_ARRAY),
+    expectedResult: 'Int8Array [1,2,3]',
     expectedString: '"Int8Array [1,2,3]"',
     key: 'int8Array',
     value: new Int8Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
-    expectedResult: new Int16Array(INTEGER_ARRAY),
+    expectedResult: 'Int16Array [1,2,3]',
     expectedString: '"Int16Array [1,2,3]"',
     key: 'int16Array',
     value: new Int16Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
-    expectedResult: new Int32Array(INTEGER_ARRAY),
+    expectedResult: 'Int32Array [1,2,3]',
     expectedString: '"Int32Array [1,2,3]"',
     key: 'int32Array',
     value: new Int32Array(INTEGER_ARRAY)
@@ -140,25 +152,25 @@ const TEST_VALUES = [
     value: Symbol('foo')
   }, {
     comparator: 'deepEqual',
-    expectedResult: new Uint8Array(INTEGER_ARRAY),
+    expectedResult: 'Uint8Array [1,2,3]',
     expectedString: '"Uint8Array [1,2,3]"',
     key: 'uint8Array',
     value: new Uint8Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
-    expectedResult: new Uint8ClampedArray(INTEGER_ARRAY),
+    expectedResult: 'Uint8ClampedArray [1,2,3]',
     expectedString: '"Uint8ClampedArray [1,2,3]"',
     key: 'uint8ClampedArray',
     value: new Uint8ClampedArray(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
-    expectedResult: new Uint16Array(INTEGER_ARRAY),
+    expectedResult: 'Uint16Array [1,2,3]',
     expectedString: '"Uint16Array [1,2,3]"',
     key: 'uint16Array',
     value: new Uint16Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
-    expectedResult: new Uint32Array(INTEGER_ARRAY),
+    expectedResult: 'Uint32Array [1,2,3]',
     expectedString: '"Uint32Array [1,2,3]"',
     key: 'uint32Array',
     value: new Uint32Array(INTEGER_ARRAY)

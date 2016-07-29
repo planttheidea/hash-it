@@ -1,7 +1,15 @@
 {
   "author": "planttheidea",
   "ava": {
-    "babel": "inherit",
+    "babel": {
+      "babelrc": true,
+      "plugins":[
+        "transform-runtime"
+      ],
+      "presets":[
+        "react"
+      ]
+    },
     "failFast": true,
     "files": [
       "./test/toString.js",
@@ -26,11 +34,13 @@
     "babel-eslint": "6.1.2",
     "babel-loader": "6.2.4",
     "babel-plugin-add-module-exports": "0.2.1",
+    "babel-plugin-transform-runtime": "^6.12.0",
     "babel-polyfill": "6.9.1",
     "babel-preset-es2015-loose": "^7.0.0",
     "babel-preset-react": "6.11.1",
     "babel-preset-stage-0": "6.5.0",
     "babel-register": "6.11.6",
+    "babel-runtime": "^6.11.6",
     "eslint": "3.1.1",
     "eslint-friendly-formatter": "2.0.6",
     "eslint-loader": "1.5.0",
@@ -70,5 +80,5 @@
     "test:watch": "NODE_ENV=test ava --no-cache --verbose --watch",
     "transpile": "./node_modules/babel-cli/lib/babel/index.js -d lib/ src/"
   },
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

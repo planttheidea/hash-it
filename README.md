@@ -40,20 +40,27 @@ Yes, any object type. Primitives, ES2015 classes like `Symbol`, DOM elements (ye
 
 Well ... sadly, no, there are a few exceptions.
 * `Math`
+  * It's not a constructor (really just a parent for methods), so there are no values to hash
+* `Promise`
+  * There is no way to obtain the values contained within due to its asynchronous nature
 * `WeakMap`
+  * The spec explicitly forbids iteration over them, so the unique values cannot be discovered
 * `WeakSet`
-
-In the case of `Math`, it's not a constructor (really just a parent for methods), so there are no values to hash. In the case of both `WeakMap` and `WeakSet`, the spec explicitly forbids iteration over them, so the unique values cannot be discovered. In each of these three cases, no matter what the contents of the object, they will always yield the same hash result, which is unique to each object type.
+  * Same as `WeakMap`
+  
+In each of these cases, no matter what the values of the object, they will always yield the same hash result, which is unique to each object type. If you have any ideas about how these can be uniquely hashed, I welcome them!
 
 Here is the list of object classes that have been tested and shown to produce unique hashCodes:
 * `Array`
 * `ArrayBuffer`
 * `Boolean`
+* `DataView`
 * `Date` (based on `valueOf`)
 * `Error` (based on `message`)
 * `Float32Array`
 * `Float64Array`
 * `Function` (based on `name` and `arguments`)
+* `GeneratorFunction` (based on `name` and `arguments`)
 * `Int8Array`
 * `Int16Array`
 * `Int32Array`
@@ -62,6 +69,7 @@ Here is the list of object classes that have been tested and shown to produce un
 * `Null`
 * `Number`
 * `Object` (can handle recursive objects)
+* `Proxy`
 * `RegExp`
 * `Set`
 * `String`

@@ -10,11 +10,13 @@ const ARRAY = [1, 2, 3];
 const OBJECTS = {
   array: ['foo', 'bar'],
   boolean: true,
+  dataView: new DataView(new ArrayBuffer(2)),
   date: new Date(),
   error: new Error('Test'),
   float32Array: new Float32Array(ARRAY),
   float64Array: new Float64Array(ARRAY),
   'function': () => {},
+  generator: function* () {},
   int8Array: new Int8Array(ARRAY),
   int16Array: new Int16Array(ARRAY),
   int32Array: new Int32Array(ARRAY),
@@ -23,6 +25,7 @@ const OBJECTS = {
   'null': null,
   number: 2,
   object: {foo: 'bar'},
+  promise: Promise.resolve(1),
   regexp: /foo/,
   'set': new Set().add('foo'),
   string: 'string',
@@ -40,11 +43,13 @@ test('if types are correct string values', (t) => {
   t.is(types.ARRAY, '[object Array]');
   t.is(types.ARRAY_BUFFER, '[object ArrayBuffer]');
   t.is(types.BOOLEAN, '[object Boolean]');
+  t.is(types.DATA_VIEW, '[object DataView]');
   t.is(types.DATE, '[object Date]');
   t.is(types.ERROR, '[object Error]');
   t.is(types.FLOAT_32_ARRAY, '[object Float32Array]');
   t.is(types.FLOAT_64_ARRAY, '[object Float64Array]');
   t.is(types.FUNCTION, '[object Function]');
+  t.is(types.GENERATOR, '[object GeneratorFunction]');
   t.is(types.INT_8_ARRAY, '[object Int8Array]');
   t.is(types.INT_16_ARRAY, '[object Int16Array]');
   t.is(types.INT_32_ARRAY, '[object Int32Array]');
@@ -53,6 +58,7 @@ test('if types are correct string values', (t) => {
   t.is(types.NULL, '[object Null]');
   t.is(types.NUMBER, '[object Number]');
   t.is(types.OBJECT, '[object Object]');
+  t.is(types.PROMISE, '[object Promise]');
   t.is(types.REGEXP, '[object RegExp]');
   t.is(types.SET, '[object Set]');
   t.is(types.STRING, '[object String]');
@@ -69,11 +75,13 @@ test('if types are correct string values', (t) => {
 test('if toString correctly identifies to object class values', (t) => {
   t.is(toString(OBJECTS.array), types.ARRAY);
   t.is(toString(OBJECTS.boolean), types.BOOLEAN);
+  t.is(toString(OBJECTS.dataView), types.DATA_VIEW);
   t.is(toString(OBJECTS.date), types.DATE);
   t.is(toString(OBJECTS.error), types.ERROR);
   t.is(toString(OBJECTS.float32Array), types.FLOAT_32_ARRAY);
   t.is(toString(OBJECTS.float64Array), types.FLOAT_64_ARRAY);
   t.is(toString(OBJECTS.function), types.FUNCTION);
+  t.is(toString(OBJECTS.generator), types.GENERATOR);
   t.is(toString(OBJECTS.int8Array), types.INT_8_ARRAY);
   t.is(toString(OBJECTS.int16Array), types.INT_16_ARRAY);
   t.is(toString(OBJECTS.int32Array), types.INT_32_ARRAY);
@@ -82,6 +90,7 @@ test('if toString correctly identifies to object class values', (t) => {
   t.is(toString(OBJECTS.null), types.NULL);
   t.is(toString(OBJECTS.number), types.NUMBER);
   t.is(toString(OBJECTS.object), types.OBJECT);
+  t.is(toString(OBJECTS.promise), types.PROMISE);
   t.is(toString(OBJECTS.regexp), types.REGEXP);
   t.is(toString(OBJECTS.set), types.SET);
   t.is(toString(OBJECTS.string), types.STRING);
@@ -99,6 +108,7 @@ test('if toFunctionString correct creates the abbreviated string expected', (t) 
   const expectedSimpleString = 'function anonymous(){}';
   const expectedComplexString = 'function complexFunc(arg,arg,arg,arg,arg){}';
   const expectedComplexArrowString = 'function complexFuncArrow(arg,arg,arg,arg,arg){}';
+  const expectedGeneratorString = 'function* generatorFunc(){}';
 
   function complexFunc(arg1, arg2, arg3, arg4, arg5) {
     console.log(arg1, arg2, arg3, arg4, arg5);
@@ -108,8 +118,15 @@ test('if toFunctionString correct creates the abbreviated string expected', (t) 
     console.log(arg1, arg2, arg3, arg4, arg5);
   };
 
+  function* generatorFunc() {
+    let counter = 0;
+
+    yield ++counter;
+  }
+
   t.is(toFunctionString(() => {}), expectedSimpleString);
   t.is(toFunctionString(function() {}), expectedSimpleString);
   t.is(toFunctionString(complexFunc), expectedComplexString);
   t.is(toFunctionString(complexFuncArrow), expectedComplexArrowString);
+  t.is(toFunctionString(generatorFunc, true), expectedGeneratorString);
 });
