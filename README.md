@@ -87,6 +87,18 @@ This is basically all I could think of, but if I have missed an object class let
 
 * isEqual(object1, object2[, object3, ..., objectN]) *returns `Boolean`*
   * Compares all objects passed to it to determine if they are equal to one another based on hashCode
+  
+```javascript
+const foo = {
+    foo: 'bar'
+};
+const alsoFoo = {
+    foo: 'bar'
+};
+
+console.log(foo === alsoFoo); // false
+console.log(hashIt.isEqual(foo, alsoFoo)); // true
+```
 
 #### Gotchas
 
