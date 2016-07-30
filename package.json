@@ -80,5 +80,5 @@
     "test:watch": "NODE_ENV=test ava --no-cache --verbose --watch",
     "transpile": "./node_modules/babel-cli/lib/babel/index.js -d lib/ src/"
   },
-  "version": "1.2.1"
+  "version": "1.3.0"
 }

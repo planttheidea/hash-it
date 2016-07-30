@@ -1,3 +1,4 @@
+const ARGUMENTS = '[object Arguments]';
 const ARRAY = '[object Array]';
 const ARRAY_BUFFER = '[object ArrayBuffer]';
 const BOOLEAN = '[object Boolean]';
@@ -31,6 +32,7 @@ const WEAKSET = '[object WeakSet]';
 const WINDOW = '[object Window]';
 
 const TYPES = {
+  ARGUMENTS,
   ARRAY,
   ARRAY_BUFFER,
   BOOLEAN,

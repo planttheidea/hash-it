@@ -2,13 +2,13 @@
 
 Fast and consistent hashCode for any object type
 
-#### Installation
+### Installation
 
 ```
 $ npm i hash-it --save
 ```
 
-#### Usage
+### Usage
 
 ```javascript
 // ES2015
@@ -28,7 +28,7 @@ console.log(hashedObject);
 // 2196683918
 ```
 
-#### Overview
+### Overview
 
 `hashIt` has a simple goal: provide a fast and consistent hashCode for any object type that is uniquely based on its values. This has a number of uses such as duplication prevention or fast equality comparisons.
 
@@ -47,6 +47,7 @@ Well ... sadly, no, there are a few exceptions.
 In each of these cases, no matter what the values of the object, they will always yield the same hash result, which is unique to each object type. If you have any ideas about how these can be uniquely hashed, I welcome them!
 
 Here is the list of object classes that have been tested and shown to produce unique hashCodes:
+* `Arguments`
 * `Array`
 * `ArrayBuffer`
 * `Boolean`
@@ -80,10 +81,25 @@ Here is the list of object classes that have been tested and shown to produce un
 
 This is basically all I could think of, but if I have missed an object class let me know and I will add it!
 
-#### Additional functions
+### Utility functions
 
-* isEqual(object1, object2[, object3, ..., objectN]) *returns `Boolean`*
-  * Compares all objects passed to it to determine if they are equal to one another based on hashCode
+**isEmpty(object)** *returns `Boolean`*
+
+Determines if object is empty based on hashCode, with empty defined as:
+* Empty array (`[]`)
+* Empty map (`new Map()`)
+* Empty number, or zero (`0`)
+* Empty object (`{}`)
+* Empty set (`new Set()`)
+* Empty string (`''`)
+* Undefined (`undefined`)
+* Null (`null`)
+
+This differs from the implementation by `lodash`, where a value is considered empty if they it is not an `Array`, `Object`, `Map`, or `Set`. Think of this definition of empty as "having no value(s)".
+
+**isEqual(object1, object2[, object3, ..., objectN])** *returns `Boolean`*
+
+Compares all objects passed to it to determine if they are equal to one another based on hashCode
   
 ```javascript
 const foo = {
@@ -97,11 +113,19 @@ console.log(foo === alsoFoo); // false
 console.log(hashIt.isEqual(foo, alsoFoo)); // true
 ```
 
-#### Gotchas
+**isNull(object)** *returns `Boolean`*
+
+Determines if object is null based on hashCode
+
+**isUndefined(object)** *returns `Boolean`*
+
+Determines if object is undefined based on hashCode
+
+### Gotchas
 
 While the hashes will be consistent when calculated within the same browser environment, there is no guarantee that the hashCode will be the same across different browsers due to browser-specific implementations of features. A vast majority of the time things line up, but there are some edge cases that cause differences, so just something to be mindful of.
 
-#### Support
+### Support
 
 `hashIt` has been tested on the following browsers:
 * Chrome
@@ -112,7 +136,7 @@ While the hashes will be consistent when calculated within the same browser envi
 
 There are no DOM dependencies, so `hashIt` should work in Node as well.
 
-#### Development
+### Development
 
 Standard stuff, clone the repo and `npm i` to get the dependencies. npm scripts available:
 * `build` => builds the distributed JS with `NODE_ENV=development` and with sourcemaps

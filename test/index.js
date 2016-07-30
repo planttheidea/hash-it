@@ -8,6 +8,11 @@ const DATE = new Date();
 const INTEGER_ARRAY = [1, 2, 3];
 const TEST_VALUES = [
   {
+    key: 'arguments',
+    value: (function() {
+      return arguments;
+    })('foo', 'bar')
+  }, {
     key: 'array',
     value: ['foo', 'bar']
   }, {
@@ -61,6 +66,9 @@ const TEST_VALUES = [
   }, {
     key: 'object',
     value: {foo: 'bar'}
+  }, {
+    key: 'promise',
+    value: Promise.resolve(1)
   }, {
     key: 'regexp',
     value: /foo/
@@ -158,4 +166,33 @@ test('if isEqual checks all objects for value equality based on hash', (t) => {
   t.true(hashIt.isEqual(equalTest1, equalTest2, equalTest3));
   t.false(hashIt.isEqual(equalTest1, equalTest2, equalTest4));
   t.false(hashIt.isEqual(equalTest2, equalTest3, equalTest4));
+});
+
+test('if isUndefined checks if the object is undefined', (t) => {
+  t.true(hashIt.isUndefined(undefined));
+  t.false(hashIt.isUndefined('undefined'));
+});
+
+test('if isNull checks if the object is null', (t) => {
+  t.true(hashIt.isNull(null));
+  t.false(hashIt.isNull('null'));
+});
+
+test('if isEmpty checks if the object has value', (t) => {
+  t.true(hashIt.isEmpty(null));
+  t.true(hashIt.isEmpty(undefined));
+  t.true(hashIt.isEmpty({}));
+  t.true(hashIt.isEmpty(''));
+  t.true(hashIt.isEmpty(0));
+  t.true(hashIt.isEmpty([]));
+  t.true(hashIt.isEmpty(new Map()));
+  t.true(hashIt.isEmpty(new Set()));
+
+  t.false(hashIt.isEmpty({foo: 'bar'}));
+  t.false(hashIt.isEmpty(['foo']));
+  t.false(hashIt.isEmpty(new Map().set({}, 'foo')));
+  t.false(hashIt.isEmpty(new Set([1, 2])));
+  t.false(hashIt.isEmpty(1));
+  t.false(hashIt.isEmpty('foo'));
+  t.false(hashIt.isEmpty(true));
 });

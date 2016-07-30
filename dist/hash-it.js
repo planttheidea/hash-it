@@ -68,6 +68,17 @@ var hashIt =
 	  return (0, _utils.getIntegerHashValue)((0, _utils.stringify)(object));
 	};
 	
+	var UNDEFINED_HASH = hash(undefined);
+	
+	var NULL_HASH = hash(null);
+	
+	var EMPTY_ARRAY_HASH = hash([]);
+	var EMPTY_MAP_HASH = hash(new Map());
+	var EMPTY_NUMBER_HASH = hash(0);
+	var EMPTY_OBJECT_HASH = hash({});
+	var EMPTY_SET_HASH = hash(new Set());
+	var EMPTY_STRING_HASH = hash('');
+	
 	/**
 	 * determine if all objects passed are equal in value to one another
 	 *
@@ -90,6 +101,39 @@ var hashIt =
 	  }
 	
 	  return true;
+	};
+	
+	/**
+	 * determine if object is empty, meaning it is an array / object / map / set with values populated,
+	 * or is a string with no length, or is undefined or null
+	 *
+	 * @param {any} object
+	 * @returns {boolean}
+	 */
+	hash.isEmpty = function (object) {
+	  var objectHash = hash(object);
+	
+	  return objectHash === UNDEFINED_HASH || objectHash === NULL_HASH || objectHash === EMPTY_ARRAY_HASH || objectHash === EMPTY_MAP_HASH || objectHash === EMPTY_NUMBER_HASH || objectHash === EMPTY_OBJECT_HASH || objectHash === EMPTY_SET_HASH || objectHash === EMPTY_STRING_HASH;
+	};
+	
+	/**
+	 * determine if object is null
+	 *
+	 * @param {any} object
+	 * @returns {boolean}
+	 */
+	hash.isNull = function (object) {
+	  return hash(object) === NULL_HASH;
+	};
+	
+	/**
+	 * determine if object is undefined
+	 *
+	 * @param {any} object
+	 * @returns {boolean}
+	 */
+	hash.isUndefined = function (object) {
+	  return hash(object) === UNDEFINED_HASH;
 	};
 	
 	exports.default = hash;
@@ -165,6 +209,66 @@ var hashIt =
 	
 	  var _ret = function () {
 	    switch (toStringType) {
+	      case _toString.types.NUMBER:
+	      case _toString.types.STRING:
+	        return {
+	          v: object
+	        };
+	
+	      case _toString.types.ARGUMENTS:
+	      case _toString.types.ARRAY:
+	      case _toString.types.OBJECT:
+	        return {
+	          v: !!object ? object : prependTypeToString(object, type)
+	        };
+	
+	      case _toString.types.ERROR:
+	      case _toString.types.NULL:
+	      case _toString.types.REGEXP:
+	      case _toString.types.UNDEFINED:
+	        return {
+	          v: prependTypeToString(object, type)
+	        };
+	
+	      case _toString.types.DATE:
+	        return {
+	          v: prependTypeToString(object.valueOf(), type)
+	        };
+	
+	      case _toString.types.FUNCTION:
+	        return {
+	          v: (0, _toString.toFunctionString)(object)
+	        };
+	
+	      case _toString.types.GENERATOR:
+	        return {
+	          v: (0, _toString.toFunctionString)(object, true)
+	        };
+	
+	      case _toString.types.SYMBOL:
+	        return {
+	          v: object.toString()
+	        };
+	
+	      case _toString.types.PROMISE:
+	      case _toString.types.WEAKMAP:
+	      case _toString.types.WEAKSET:
+	        return {
+	          v: prependTypeToString('NOT_ENUMERABLE', type)
+	        };
+	
+	      case _toString.types.MAP:
+	      case _toString.types.SET:
+	        var pairs = [type];
+	
+	        object.forEach(function (item, key) {
+	          pairs.push([key, item]);
+	        });
+	
+	        return {
+	          v: pairs
+	        };
+	
 	      case _toString.types.ARRAY_BUFFER:
 	        return {
 	          v: prependTypeToString(arrayBufferToString(object), type)
@@ -185,53 +289,7 @@ var hashIt =
 	      case _toString.types.UINT_16_ARRAY:
 	      case _toString.types.UINT_32_ARRAY:
 	        return {
-	          v: type + ' [' + object.join(',') + ']'
-	        };
-	
-	      case _toString.types.DATE:
-	        return {
-	          v: prependTypeToString(object.valueOf(), type)
-	        };
-	
-	      case _toString.types.FUNCTION:
-	        return {
-	          v: (0, _toString.toFunctionString)(object)
-	        };
-	
-	      case _toString.types.GENERATOR:
-	        return {
-	          v: (0, _toString.toFunctionString)(object, true)
-	        };
-	
-	      case _toString.types.ERROR:
-	      case _toString.types.NULL:
-	      case _toString.types.NUMBER:
-	      case _toString.types.REGEXP:
-	      case _toString.types.UNDEFINED:
-	        return {
-	          v: prependTypeToString(object, type)
-	        };
-	
-	      case _toString.types.MAP:
-	      case _toString.types.SET:
-	        var pairs = [type];
-	
-	        object.forEach(function (item, key) {
-	          pairs.push([key, item]);
-	        });
-	
-	        return {
-	          v: pairs
-	        };
-	
-	      case _toString.types.OBJECT:
-	        return {
-	          v: !!object ? object : prependTypeToString(object, type)
-	        };
-	
-	      case _toString.types.SYMBOL:
-	        return {
-	          v: object.toString()
+	          v: prependTypeToString(object.join(','), type)
 	        };
 	
 	      case _toString.types.MATH:
@@ -243,13 +301,6 @@ var hashIt =
 	
 	        return {
 	          v: mathObject
-	        };
-	
-	      case _toString.types.PROMISE:
-	      case _toString.types.WEAKMAP:
-	      case _toString.types.WEAKSET:
-	        return {
-	          v: type + '--NOT_ENUMERABLE'
 	        };
 	
 	      default:
@@ -278,6 +329,31 @@ var hashIt =
 	    var type = (0, _toString.toString)(value);
 	
 	    switch (type) {
+	      case _toString.types.NUMBER:
+	      case _toString.types.STRING:
+	        return value;
+	
+	      case _toString.types.ARGUMENTS:
+	      case _toString.types.ARRAY:
+	      case _toString.types.OBJECT:
+	        if (!value) {
+	          return prependTypeToString(value, type);
+	        }
+	
+	        if (++recursiveCounter > 255) {
+	          return 'Undefined undefined';
+	        }
+	
+	        index = stack.indexOf(value);
+	
+	        if (!~index) {
+	          stack.push(value);
+	
+	          return value;
+	        }
+	
+	        return '*Recursive-' + index;
+	
 	      case _toString.types.ARRAY_BUFFER:
 	      case _toString.types.DATA_VIEW:
 	      case _toString.types.DATE:
@@ -304,26 +380,6 @@ var hashIt =
 	      case _toString.types.WEAKMAP:
 	      case _toString.types.WEAKSET:
 	        return getValueForStringification(value);
-	
-	      case _toString.types.ARRAY:
-	      case _toString.types.OBJECT:
-	        if (!value) {
-	          return prependTypeToString(value, type);
-	        }
-	
-	        if (++recursiveCounter > 255) {
-	          return 'Undefined undefined';
-	        }
-	
-	        index = stack.indexOf(value);
-	
-	        if (!~index) {
-	          stack.push(value);
-	
-	          return value;
-	        }
-	
-	        return '*Recursive-' + index;
 	
 	      default:
 	        return value;
@@ -375,9 +431,7 @@ var hashIt =
 	 * @returns {string}
 	 */
 	var stringify = function stringify(object) {
-	  var value = getValueForStringification(object);
-	
-	  return tryCatch(value);
+	  return tryCatch(getValueForStringification(object));
 	};
 	
 	exports.getIntegerHashValue = getIntegerHashValue;
@@ -544,6 +598,7 @@ var hashIt =
 	'use strict';
 	
 	exports.__esModule = true;
+	var ARGUMENTS = '[object Arguments]';
 	var ARRAY = '[object Array]';
 	var ARRAY_BUFFER = '[object ArrayBuffer]';
 	var BOOLEAN = '[object Boolean]';
@@ -577,6 +632,7 @@ var hashIt =
 	var WINDOW = '[object Window]';
 	
 	var TYPES = {
+	  ARGUMENTS: ARGUMENTS,
 	  ARRAY: ARRAY,
 	  ARRAY_BUFFER: ARRAY_BUFFER,
 	  BOOLEAN: BOOLEAN,

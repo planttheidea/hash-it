@@ -65,6 +65,50 @@ const getValueForStringification = (object) => {
   const type = getObjectType(toStringType);
 
   switch (toStringType) {
+    case types.NUMBER:
+    case types.STRING:
+      return object;
+
+    case types.ARGUMENTS:
+    case types.ARRAY:
+    case types.OBJECT:
+      return !!object ? object : prependTypeToString(object, type);
+
+    case types.ERROR:
+    case types.NULL:
+    case types.REGEXP:
+    case types.UNDEFINED:
+      return prependTypeToString(object, type);
+
+    case types.DATE:
+      return prependTypeToString(object.valueOf(), type);
+
+    case types.FUNCTION:
+      return toFunctionString(object);
+
+    case types.GENERATOR:
+      return toFunctionString(object, true);
+
+    case types.SYMBOL:
+      return object.toString();
+
+    case types.PROMISE:
+    case types.WEAKMAP:
+    case types.WEAKSET:
+      return prependTypeToString('NOT_ENUMERABLE', type);
+
+    case types.MAP:
+    case types.SET:
+      let pairs = [type];
+
+      object.forEach((item, key) => {
+        pairs.push([
+          key, item
+        ]);
+      });
+
+      return pairs;
+
     case types.ARRAY_BUFFER:
       return prependTypeToString(arrayBufferToString(object), type);
 
@@ -80,41 +124,7 @@ const getValueForStringification = (object) => {
     case types.UINT_8_CLAMPED_ARRAY:
     case types.UINT_16_ARRAY:
     case types.UINT_32_ARRAY:
-      return `${type} [${object.join(',')}]`;
-
-    case types.DATE:
-      return prependTypeToString(object.valueOf(), type);
-
-    case types.FUNCTION:
-      return toFunctionString(object);
-
-    case types.GENERATOR:
-      return toFunctionString(object, true);
-
-    case types.ERROR:
-    case types.NULL:
-    case types.NUMBER:
-    case types.REGEXP:
-    case types.UNDEFINED:
-      return prependTypeToString(object, type);
-
-    case types.MAP:
-    case types.SET:
-      let pairs = [type];
-
-      object.forEach((item, key) => {
-        pairs.push([
-          key, item
-        ]);
-      });
-
-      return pairs;
-
-    case types.OBJECT:
-      return !!object ? object : prependTypeToString(object, type);
-
-    case types.SYMBOL:
-      return object.toString();
+      return prependTypeToString(object.join(','), type);
 
     case types.MATH:
       let mathObject = {};
@@ -124,11 +134,6 @@ const getValueForStringification = (object) => {
       });
 
       return mathObject;
-
-    case types.PROMISE:
-    case types.WEAKMAP:
-    case types.WEAKSET:
-      return `${type}--NOT_ENUMERABLE`;
 
     default:
       return HTML_ELEMENT_REGEXP.test(toStringType) ? `HTMLElement ${object.textContent}` : object;
@@ -151,6 +156,31 @@ const REPLACER = ((stack, undefined, recursiveCounter, index) => {
     const type = toString(value);
 
     switch (type) {
+      case types.NUMBER:
+      case types.STRING:
+        return value;
+
+      case types.ARGUMENTS:
+      case types.ARRAY:
+      case types.OBJECT:
+        if (!value) {
+          return prependTypeToString(value, type);
+        }
+
+        if (++recursiveCounter > 255) {
+          return 'Undefined undefined';
+        }
+
+        index = stack.indexOf(value);
+
+        if (!~index) {
+          stack.push(value);
+
+          return value;
+        }
+
+        return `*Recursive-${index}`;
+
       case types.ARRAY_BUFFER:
       case types.DATA_VIEW:
       case types.DATE:
@@ -177,26 +207,6 @@ const REPLACER = ((stack, undefined, recursiveCounter, index) => {
       case types.WEAKMAP:
       case types.WEAKSET:
         return getValueForStringification(value);
-
-      case types.ARRAY:
-      case types.OBJECT:
-        if (!value) {
-          return prependTypeToString(value, type);
-        }
-
-        if (++recursiveCounter > 255) {
-          return 'Undefined undefined';
-        }
-
-        index = stack.indexOf(value);
-
-        if (!~index) {
-          stack.push(value);
-
-          return value;
-        }
-
-        return `*Recursive-${index}`;
 
       default:
         return value;
@@ -248,9 +258,7 @@ const tryCatch = (value) => {
  * @returns {string}
  */
 const stringify = (object) => {
-  const value = getValueForStringification(object);
-
-  return tryCatch(value);
+  return tryCatch(getValueForStringification(object));
 };
 
 export {getIntegerHashValue};

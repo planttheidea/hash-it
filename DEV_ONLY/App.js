@@ -191,8 +191,6 @@ const hashOnlyValidation = (iterations = 100) => {
   // console.log(hashIt(window));
 };
 
-// profile(10000);
+// profile(1000);
 // visualValidation();
 // hashOnlyValidation();
-
-hashIt(Math);
