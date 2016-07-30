@@ -55,23 +55,24 @@ const object = {
   regexp: /test/,
   
   // comment out for older browser testing
-  err: new Error('Stuff'),
   symbol: Symbol('test'),
-  map: new Map().set(true, 7).set({foo: 3}, ['abc']),
-  set: new Set().add('foo').add(2),
-  weakMap: new WeakMap().set({}, 7).set({foo: 3}, ['abc']),
   arrayBuffer: new Uint16Array([1, 2, 3]).buffer,
   dataView: new DataView(new ArrayBuffer(2)),
+  err: new Error('Stuff'),
   float32Array: new Float32Array([1, 2, 3]),
   float64Array: new Float64Array([1, 2, 3]),
   int8Array: new Int8Array([1, 2, 3]),
   int16Array: new Int16Array([1, 2, 3]),
   int32Array: new Int32Array([1, 2, 3]),
+  map: new Map().set(true, 7).set({foo: 3}, ['abc']),
   promise: Promise.resolve(1),
+  set: new Set().add('foo').add(2),
   uint8Array: new Uint8Array([1, 2, 3]),
   uint8ClampedArray: new Uint8ClampedArray([1, 2, 3]),
   uint16Array: new Uint16Array([1, 2, 3]),
   uint32Array: new Uint32Array([1, 2, 3]),
+  weakMap: new WeakMap().set({}, 7).set({foo: 3}, ['abc']),
+  weakSet: new WeakSet().add({}).add({foo: 'bar'}),
 
   ReactStatefulClass: StatefulComponent,
   ReactStatefulElement: <StatefulComponent/>,
@@ -190,6 +191,6 @@ const hashOnlyValidation = (iterations = 100) => {
   // console.log(hashIt(window));
 };
 
-profile(10000);
+// profile(10000);
 // visualValidation();
 // hashOnlyValidation();
