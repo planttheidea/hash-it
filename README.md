@@ -1,4 +1,4 @@
-# hash-it
+# hashIt
 
 Fast and consistent hashCode for any object type
 
@@ -82,6 +82,11 @@ Here is the list of object classes that have been tested and shown to produce un
 * `Window`
 
 This is basically all I could think of, but if I have missed an object class let me know and I will add it!
+
+#### Additional functions
+
+* isEqual(object1, object2[, object3, ..., objectN]) *returns `Boolean`*
+  * Compares all objects passed to it to determine if they are equal to one another based on hashCode
 
 #### Gotchas
 

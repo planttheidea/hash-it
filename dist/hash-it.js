@@ -68,6 +68,30 @@ var hashIt =
 	  return (0, _utils.getIntegerHashValue)((0, _utils.stringify)(object));
 	};
 	
+	/**
+	 * determine if all objects passed are equal in value to one another
+	 *
+	 * @param {array<any>} objects
+	 * @returns {boolean}
+	 */
+	hash.isEqual = function () {
+	  var length = arguments.length;
+	
+	  if (length === 1) {
+	    throw new Error('isEqual requires at least two objects to be passed for comparison.');
+	  }
+	
+	  var index = 0;
+	
+	  while (++index < length) {
+	    if (hash(arguments.length <= index - 1 + 0 ? undefined : arguments[index - 1 + 0]) !== hash(arguments.length <= index + 0 ? undefined : arguments[index + 0])) {
+	      return false;
+	    }
+	  }
+	
+	  return true;
+	};
+	
 	exports.default = hash;
 	module.exports = exports['default'];
 
@@ -118,24 +142,36 @@ var hashIt =
 	};
 	
 	/**
+	 * prepend type to string value
+	 * 
+	 * @param {string} string
+	 * @param {string} type
+	 * @returns {string}
+	 */
+	var prependTypeToString = function prependTypeToString(string, type) {
+	  return type + ' ' + string;
+	};
+	
+	/**
 	 * get the string value for the object used for stringification
 	 *
 	 * @param {any} object
 	 * @returns {any}
 	 */
 	var getValueForStringification = function getValueForStringification(object) {
-	  var type = (0, _toString.toString)(object);
+	  var toStringType = (0, _toString.toString)(object);
+	  var type = getObjectType(toStringType);
 	
 	  var _ret = function () {
-	    switch (type) {
+	    switch (toStringType) {
 	      case _toString.types.ARRAY_BUFFER:
 	        return {
-	          v: arrayBufferToString(object)
+	          v: prependTypeToString(arrayBufferToString(object), type)
 	        };
 	
 	      case _toString.types.DATA_VIEW:
 	        return {
-	          v: arrayBufferToString(object.buffer)
+	          v: prependTypeToString(arrayBufferToString(object.buffer), type)
 	        };
 	
 	      case _toString.types.FLOAT_32_ARRAY:
@@ -148,12 +184,12 @@ var hashIt =
 	      case _toString.types.UINT_16_ARRAY:
 	      case _toString.types.UINT_32_ARRAY:
 	        return {
-	          v: getObjectType(type) + ' [' + object.join(',') + ']'
+	          v: type + ' [' + object.join(',') + ']'
 	        };
 	
 	      case _toString.types.DATE:
 	        return {
-	          v: '' + object.valueOf()
+	          v: prependTypeToString(object.valueOf(), type)
 	        };
 	
 	      case _toString.types.FUNCTION:
@@ -172,12 +208,12 @@ var hashIt =
 	      case _toString.types.REGEXP:
 	      case _toString.types.UNDEFINED:
 	        return {
-	          v: '' + object
+	          v: prependTypeToString(object, type)
 	        };
 	
 	      case _toString.types.MAP:
 	      case _toString.types.SET:
-	        var pairs = [];
+	        var pairs = [type];
 	
 	        object.forEach(function (item, key) {
 	          pairs.push([key, item]);
@@ -189,7 +225,7 @@ var hashIt =
 	
 	      case _toString.types.OBJECT:
 	        return {
-	          v: !!object ? object : '' + object
+	          v: !!object ? object : prependTypeToString(object, type)
 	        };
 	
 	      case _toString.types.SYMBOL:
@@ -198,28 +234,16 @@ var hashIt =
 	        };
 	
 	      case _toString.types.MATH:
-	        return {
-	          v: 'Math--NOT_ENUMERABLE'
-	        };
-	
 	      case _toString.types.PROMISE:
-	        return {
-	          v: 'Promise--NOT_ENUMERABLE'
-	        };
-	
 	      case _toString.types.WEAKMAP:
-	        return {
-	          v: 'WeakMap--NOT_ENUMERABLE'
-	        };
-	
 	      case _toString.types.WEAKSET:
 	        return {
-	          v: 'WeakSet--NOT_ENUMERABLE'
+	          v: type + '--NOT_ENUMERABLE'
 	        };
 	
 	      default:
 	        return {
-	          v: HTML_ELEMENT_REGEXP.test(type) ? object.textContent : object
+	          v: HTML_ELEMENT_REGEXP.test(toStringType) ? 'HTMLElement ' + object.textContent : object
 	        };
 	    }
 	  }();
@@ -240,7 +264,9 @@ var hashIt =
 	      return value;
 	    }
 	
-	    switch ((0, _toString.toString)(value)) {
+	    var type = (0, _toString.toString)(value);
+	
+	    switch (type) {
 	      case _toString.types.ARRAY_BUFFER:
 	      case _toString.types.DATA_VIEW:
 	      case _toString.types.DATE:
@@ -271,11 +297,11 @@ var hashIt =
 	      case _toString.types.ARRAY:
 	      case _toString.types.OBJECT:
 	        if (!value) {
-	          return '' + value;
+	          return prependTypeToString(value, type);
 	        }
 	
 	        if (++recursiveCounter > 255) {
-	          return 'undefined';
+	          return 'Undefined undefined';
 	        }
 	
 	        index = stack.indexOf(value);

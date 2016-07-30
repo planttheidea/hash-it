@@ -26,8 +26,8 @@ const TEST_VALUES = [
     value: ['foo', 'bar']
   }, {
     comparator: 'deepEqual',
-    expectedResult: `\u0001\u0002\u0003`,
-    expectedString: `"\\u0001\\u0002\\u0003"`,
+    expectedResult: `ArrayBuffer \u0001\u0002\u0003`,
+    expectedString: `"ArrayBuffer \\u0001\\u0002\\u0003"`,
     key: 'arrayBuffer',
     value: new Uint16Array(INTEGER_ARRAY).buffer
   }, {
@@ -38,20 +38,20 @@ const TEST_VALUES = [
     value: true
   }, {
     comparator: 'deepEqual',
-    expectedResult: `\u0000`,
-    expectedString: `"\\u0000"`,
+    expectedResult: `DataView \u0000`,
+    expectedString: `"DataView \\u0000"`,
     key: 'dataView',
     value: new DataView(new ArrayBuffer(2))
   }, {
     comparator: 'is',
-    expectedResult: `${DATE.valueOf()}`,
-    expectedString: `"${DATE.valueOf()}"`,
+    expectedResult: `Date ${DATE.valueOf()}`,
+    expectedString: `"Date ${DATE.valueOf()}"`,
     key: 'date',
     value: DATE
   }, {
     comparator: 'is',
-    expectedResult: 'Error: test',
-    expectedString: '"Error: test"',
+    expectedResult: 'Error Error: test',
+    expectedString: '"Error Error: test"',
     key: 'error',
     value: new Error('test')
   }, {
@@ -98,8 +98,8 @@ const TEST_VALUES = [
     value: new Int32Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
-    expectedResult: [['foo', 'bar']],
-    expectedString: '[["foo","bar"]]',
+    expectedResult: ['Map', ['foo', 'bar']],
+    expectedString: '["Map",["foo","bar"]]',
     key: 'map',
     value: new Map().set('foo', 'bar')
   }, {
@@ -110,14 +110,14 @@ const TEST_VALUES = [
     value: Math
   }, {
     comparator: 'is',
-    expectedResult: 'null',
-    expectedString: '"null"',
+    expectedResult: 'Null null',
+    expectedString: '"Null null"',
     key: 'null',
     value: null
   }, {
     comparator: 'is',
     expectedResult: 12,
-    expectedString: '"12"',
+    expectedString: '"Number 12"',
     key: 'number',
     value: 12
   }, {
@@ -128,14 +128,14 @@ const TEST_VALUES = [
     value: {foo: 'bar'}
   }, {
     comparator: 'is',
-    expectedResult: '/foo/',
-    expectedString: '"/foo/"',
+    expectedResult: 'RegExp /foo/',
+    expectedString: '"RegExp /foo/"',
     key: 'regexp',
     value: /foo/
   }, {
     comparator: 'deepEqual',
-    expectedResult: [['foo', 'foo']],
-    expectedString: '[["foo","foo"]]',
+    expectedResult: ['Set', ['foo', 'foo']],
+    expectedString: '["Set",["foo","foo"]]',
     key: 'set',
     value: new Set().add('foo')
   }, {
@@ -176,8 +176,8 @@ const TEST_VALUES = [
     value: new Uint32Array(INTEGER_ARRAY)
   }, {
     comparator: 'is',
-    expectedResult: 'undefined',
-    expectedString: '"undefined"',
+    expectedResult: 'Undefined undefined',
+    expectedString: '"Undefined undefined"',
     key: 'undefined',
     value: undefined
   }, {

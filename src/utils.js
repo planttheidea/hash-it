@@ -34,20 +34,32 @@ const getObjectType = (type) => {
 };
 
 /**
+ * prepend type to string value
+ * 
+ * @param {string} string
+ * @param {string} type
+ * @returns {string}
+ */
+const prependTypeToString = (string, type) => {
+  return `${type} ${string}`;
+};
+
+/**
  * get the string value for the object used for stringification
  *
  * @param {any} object
  * @returns {any}
  */
 const getValueForStringification = (object) => {
-  const type = toString(object);
+  const toStringType = toString(object);
+  const type = getObjectType(toStringType);
 
-  switch (type) {
+  switch (toStringType) {
     case types.ARRAY_BUFFER:
-      return arrayBufferToString(object);
+      return prependTypeToString(arrayBufferToString(object), type);
 
     case types.DATA_VIEW:
-      return arrayBufferToString(object.buffer);
+      return prependTypeToString(arrayBufferToString(object.buffer), type);
 
     case types.FLOAT_32_ARRAY:
     case types.FLOAT_64_ARRAY:
@@ -58,10 +70,10 @@ const getValueForStringification = (object) => {
     case types.UINT_8_CLAMPED_ARRAY:
     case types.UINT_16_ARRAY:
     case types.UINT_32_ARRAY:
-      return `${getObjectType(type)} [${object.join(',')}]`;
+      return `${type} [${object.join(',')}]`;
 
     case types.DATE:
-      return `${object.valueOf()}`;
+      return prependTypeToString(object.valueOf(), type);
 
     case types.FUNCTION:
       return toFunctionString(object);
@@ -74,11 +86,11 @@ const getValueForStringification = (object) => {
     case types.NUMBER:
     case types.REGEXP:
     case types.UNDEFINED:
-      return `${object}`;
+      return prependTypeToString(object, type);
 
     case types.MAP:
     case types.SET:
-      let pairs = [];
+      let pairs = [type];
 
       object.forEach((item, key) => {
         pairs.push([
@@ -89,25 +101,19 @@ const getValueForStringification = (object) => {
       return pairs;
 
     case types.OBJECT:
-      return !!object ? object : `${object}`;
+      return !!object ? object : prependTypeToString(object, type);
 
     case types.SYMBOL:
       return object.toString();
 
     case types.MATH:
-      return 'Math--NOT_ENUMERABLE';
-
     case types.PROMISE:
-      return 'Promise--NOT_ENUMERABLE';
-
     case types.WEAKMAP:
-      return 'WeakMap--NOT_ENUMERABLE';
-
     case types.WEAKSET:
-      return 'WeakSet--NOT_ENUMERABLE';
+      return `${type}--NOT_ENUMERABLE`;
 
     default:
-      return HTML_ELEMENT_REGEXP.test(type) ? object.textContent : object;
+      return HTML_ELEMENT_REGEXP.test(toStringType) ? `HTMLElement ${object.textContent}` : object;
   }
 };
 
@@ -124,7 +130,9 @@ const REPLACER = ((stack, undefined, recursiveCounter, index) => {
       return value;
     }
 
-    switch (toString(value)) {
+    const type = toString(value);
+
+    switch (type) {
       case types.ARRAY_BUFFER:
       case types.DATA_VIEW:
       case types.DATE:
@@ -155,11 +163,11 @@ const REPLACER = ((stack, undefined, recursiveCounter, index) => {
       case types.ARRAY:
       case types.OBJECT:
         if (!value) {
-          return `${value}`;
+          return prependTypeToString(value, type);
         }
 
         if (++recursiveCounter > 255) {
-          return 'undefined';
+          return 'Undefined undefined';
         }
 
         index = stack.indexOf(value);
