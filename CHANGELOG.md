@@ -1,5 +1,12 @@
 # hashIt CHANGELOG
 
+#### 1.2.2
+* Add hashIt.isUndefined, hashIt.isNull, and hashIt.isEmpty methods
+* Reorder switch statements in replacer and getValueForStringification to reflect most likely to least likely (improves performance a touch)
+* Remove "Number" from number stringification
+* Leverage prependTypeToString whereever possible
+* Include Arguments object class
+
 #### 1.2.1
 * Calculation of Math hashCode now uses properties
 * Fix README

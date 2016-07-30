@@ -21,6 +21,14 @@ const TEST_VALUES = [
   }, {
     comparator: 'deepEqual',
     expectedResult: ['foo', 'bar'],
+    expectedString: '{"0":"foo","1":"bar"}',
+    key: 'arguments',
+    value: (function() {
+      return arguments;
+    })('foo', 'bar')
+  }, {
+    comparator: 'deepEqual',
+    expectedResult: ['foo', 'bar'],
     expectedString: '["foo","bar"]',
     key: 'array',
     value: ['foo', 'bar']
@@ -56,14 +64,14 @@ const TEST_VALUES = [
     value: new Error('test')
   }, {
     comparator: 'deepEqual',
-    expectedResult: 'Float32Array [1,2,3]',
-    expectedString: '"Float32Array [1,2,3]"',
+    expectedResult: 'Float32Array 1,2,3',
+    expectedString: '"Float32Array 1,2,3"',
     key: 'float32Array',
     value: new Float32Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
-    expectedResult: 'Float64Array [1,2,3]',
-    expectedString: '"Float64Array [1,2,3]"',
+    expectedResult: 'Float64Array 1,2,3',
+    expectedString: '"Float64Array 1,2,3"',
     key: 'float64Array',
     value: new Float64Array(INTEGER_ARRAY)
   }, {
@@ -80,20 +88,20 @@ const TEST_VALUES = [
     value: function* () {}
   }, {
     comparator: 'deepEqual',
-    expectedResult: 'Int8Array [1,2,3]',
-    expectedString: '"Int8Array [1,2,3]"',
+    expectedResult: 'Int8Array 1,2,3',
+    expectedString: '"Int8Array 1,2,3"',
     key: 'int8Array',
     value: new Int8Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
-    expectedResult: 'Int16Array [1,2,3]',
-    expectedString: '"Int16Array [1,2,3]"',
+    expectedResult: 'Int16Array 1,2,3',
+    expectedString: '"Int16Array 1,2,3"',
     key: 'int16Array',
     value: new Int16Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
-    expectedResult: 'Int32Array [1,2,3]',
-    expectedString: '"Int32Array [1,2,3]"',
+    expectedResult: 'Int32Array 1,2,3',
+    expectedString: '"Int32Array 1,2,3"',
     key: 'int32Array',
     value: new Int32Array(INTEGER_ARRAY)
   }, {
@@ -117,7 +125,7 @@ const TEST_VALUES = [
   }, {
     comparator: 'is',
     expectedResult: 12,
-    expectedString: '"Number 12"',
+    expectedString: '12',
     key: 'number',
     value: 12
   }, {
@@ -126,6 +134,12 @@ const TEST_VALUES = [
     expectedString: '{"foo":"bar"}',
     key: 'object',
     value: {foo: 'bar'}
+  }, {
+    comparator: 'is',
+    expectedResult: 'Promise NOT_ENUMERABLE',
+    expectedString: '"Promise NOT_ENUMERABLE"',
+    key: 'promise',
+    value: Promise.resolve(1)
   }, {
     comparator: 'is',
     expectedResult: 'RegExp /foo/',
@@ -152,26 +166,26 @@ const TEST_VALUES = [
     value: Symbol('foo')
   }, {
     comparator: 'deepEqual',
-    expectedResult: 'Uint8Array [1,2,3]',
-    expectedString: '"Uint8Array [1,2,3]"',
+    expectedResult: 'Uint8Array 1,2,3',
+    expectedString: '"Uint8Array 1,2,3"',
     key: 'uint8Array',
     value: new Uint8Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
-    expectedResult: 'Uint8ClampedArray [1,2,3]',
-    expectedString: '"Uint8ClampedArray [1,2,3]"',
+    expectedResult: 'Uint8ClampedArray 1,2,3',
+    expectedString: '"Uint8ClampedArray 1,2,3"',
     key: 'uint8ClampedArray',
     value: new Uint8ClampedArray(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
-    expectedResult: 'Uint16Array [1,2,3]',
-    expectedString: '"Uint16Array [1,2,3]"',
+    expectedResult: 'Uint16Array 1,2,3',
+    expectedString: '"Uint16Array 1,2,3"',
     key: 'uint16Array',
     value: new Uint16Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
-    expectedResult: 'Uint32Array [1,2,3]',
-    expectedString: '"Uint32Array [1,2,3]"',
+    expectedResult: 'Uint32Array 1,2,3',
+    expectedString: '"Uint32Array 1,2,3"',
     key: 'uint32Array',
     value: new Uint32Array(INTEGER_ARRAY)
   }, {
@@ -182,14 +196,14 @@ const TEST_VALUES = [
     value: undefined
   }, {
     comparator: 'is',
-    expectedResult: 'WeakMap--NOT_ENUMERABLE',
-    expectedString: '"WeakMap--NOT_ENUMERABLE"',
+    expectedResult: 'WeakMap NOT_ENUMERABLE',
+    expectedString: '"WeakMap NOT_ENUMERABLE"',
     key: 'weakMap',
     value: new WeakMap().set({}, 'foo')
   }, {
     comparator: 'is',
-    expectedResult: 'WeakSet--NOT_ENUMERABLE',
-    expectedString: '"WeakSet--NOT_ENUMERABLE"',
+    expectedResult: 'WeakSet NOT_ENUMERABLE',
+    expectedString: '"WeakSet NOT_ENUMERABLE"',
     key: 'weakSet',
     value: new WeakSet().add({})
   }
