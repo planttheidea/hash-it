@@ -1,6 +1,6 @@
 # hashIt CHANGELOG
 
-#### 1.2.2
+#### 1.3.0
 * Add hashIt.isUndefined, hashIt.isNull, and hashIt.isEmpty methods
 * Reorder switch statements in replacer and getValueForStringification to reflect most likely to least likely (improves performance a touch)
 * Remove "Number" from number stringification
