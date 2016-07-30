@@ -39,14 +39,10 @@ Yes, any object type. Primitives, ES2015 classes like `Symbol`, DOM elements (ye
 *With no exceptions?*
 
 Well ... sadly, no, there are a few exceptions.
-* `Math`
-  * It's not a constructor (really just a parent for methods), so there are no values to hash
 * `Promise`
   * There is no way to obtain the values contained within due to its asynchronous nature
-* `WeakMap`
+* `WeakMap` / `WeakSet`
   * The spec explicitly forbids iteration over them, so the unique values cannot be discovered
-* `WeakSet`
-  * Same as `WeakMap`
   
 In each of these cases, no matter what the values of the object, they will always yield the same hash result, which is unique to each object type. If you have any ideas about how these can be uniquely hashed, I welcome them!
 
@@ -64,8 +60,9 @@ Here is the list of object classes that have been tested and shown to produce un
 * `Int8Array`
 * `Int16Array`
 * `Int32Array`
-* `HTMLElement` (based on `innerHTML`, includes all sub-types, e.g. `HTMLAnchorElement`, `HTMLDivElement`, etc)
+* `HTMLElement` (based on `textContent`, includes all sub-types, e.g. `HTMLAnchorElement`, `HTMLDivElement`, etc)
 * `Map`
+* `Math` (based on `E`, `LN2`, `LN10`, `LOG2E`, `LOG10E`, `PI`, `SQRT1_2`, and `SQRT2`)
 * `Null`
 * `Number`
 * `Object` (can handle recursive objects)
