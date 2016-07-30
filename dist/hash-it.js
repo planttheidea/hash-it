@@ -115,6 +115,7 @@ var hashIt =
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var HTML_ELEMENT_REGEXP = /\[object (HTML(.*)Element)\]/;
+	var MATH_PROPERTIES = ['E', 'LN2', 'LN10', 'LOG2E', 'LOG10E', 'PI', 'SQRT1_2', 'SQRT2'];
 	
 	/**
 	 * get the string value of the buffer passed
@@ -234,6 +235,16 @@ var hashIt =
 	        };
 	
 	      case _toString.types.MATH:
+	        var mathObject = {};
+	
+	        MATH_PROPERTIES.forEach(function (prop) {
+	          mathObject[prop] = object[prop];
+	        });
+	
+	        return {
+	          v: mathObject
+	        };
+	
 	      case _toString.types.PROMISE:
 	      case _toString.types.WEAKMAP:
 	      case _toString.types.WEAKSET:

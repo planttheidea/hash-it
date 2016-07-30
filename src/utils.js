@@ -7,6 +7,16 @@ import {
 } from './toString';
 
 const HTML_ELEMENT_REGEXP = /\[object (HTML(.*)Element)\]/;
+const MATH_PROPERTIES = [
+  'E',
+  'LN2',
+  'LN10',
+  'LOG2E',
+  'LOG10E',
+  'PI',
+  'SQRT1_2',
+  'SQRT2'
+];
 
 /**
  * get the string value of the buffer passed
@@ -107,6 +117,14 @@ const getValueForStringification = (object) => {
       return object.toString();
 
     case types.MATH:
+      let mathObject = {};
+
+      MATH_PROPERTIES.forEach((prop) => {
+        mathObject[prop] = object[prop];
+      });
+
+      return mathObject;
+
     case types.PROMISE:
     case types.WEAKMAP:
     case types.WEAKSET:

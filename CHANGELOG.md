@@ -1,5 +1,9 @@
 # hashIt CHANGELOG
 
+#### 1.2.1
+* Calculation of Math hashCode now uses properties
+* Fix README
+
 #### 1.2.0
 * Add hashIt.isEqual method to test for equality
 * Prepend all values not string or number with object class name to help avoid collision with equivalent string values

@@ -41,14 +41,14 @@
     "babel-preset-stage-0": "6.5.0",
     "babel-register": "6.11.6",
     "babel-runtime": "^6.11.6",
-    "eslint": "3.1.1",
+    "eslint": "3.2.0",
     "eslint-friendly-formatter": "2.0.6",
     "eslint-loader": "1.5.0",
     "html-webpack-plugin": "2.22.0",
     "in-publish": "^2.0.0",
     "jsdom": "^9.4.1",
-    "react": "15.2.1",
-    "react-dom": "15.2.1",
+    "react": "15.3.0",
+    "react-dom": "15.3.0",
     "sinon": "^1.17.5",
     "webpack": "1.13.1",
     "webpack-dev-server": "1.14.1"
@@ -80,5 +80,5 @@
     "test:watch": "NODE_ENV=test ava --no-cache --verbose --watch",
     "transpile": "./node_modules/babel-cli/lib/babel/index.js -d lib/ src/"
   },
-  "version": "1.2.0"
+  "version": "1.2.1"
 }
