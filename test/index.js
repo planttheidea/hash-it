@@ -128,3 +128,34 @@ test('if hash is consistent', (t) => {
     });
   }
 });
+
+test('if isEqual checks all objects for value equality based on hash', (t) => {
+
+  const equalTest1 = {
+    foo: 'bar'
+  };
+  const equalTest2 = {
+    ...equalTest1
+  };
+  const equalTest3 = {
+    ...equalTest2
+  };
+
+  const equalTest4 = {
+    foo: 'baz'
+  };
+
+  t.not(equalTest1, equalTest2);
+  t.true(hashIt.isEqual(equalTest1, equalTest2));
+
+  t.not(equalTest1, equalTest3);
+  t.true(hashIt.isEqual(equalTest1, equalTest3));
+  t.true(hashIt.isEqual(equalTest2, equalTest3));
+
+  t.not(equalTest1, equalTest3);
+  t.false(hashIt.isEqual(equalTest1, equalTest4));
+
+  t.true(hashIt.isEqual(equalTest1, equalTest2, equalTest3));
+  t.false(hashIt.isEqual(equalTest1, equalTest2, equalTest4));
+  t.false(hashIt.isEqual(equalTest2, equalTest3, equalTest4));
+});

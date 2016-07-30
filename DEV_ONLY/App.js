@@ -143,7 +143,7 @@ const visualValidation = (iterations = 100) => {
   console.log(object.ReactStatelessClass, hashIt(object.ReactStatelessClass));
   console.log(object.ReactStatelessElement, hashIt(object.ReactStatelessElement));
   console.log(document.body, hashIt(document.body));
-  console.log(window, hashIt(window));
+  // console.log(window, hashIt(window));
 };
 
 const hashOnlyValidation = (iterations = 100) => {
@@ -187,9 +187,9 @@ const hashOnlyValidation = (iterations = 100) => {
   console.log(hashIt(object.ReactStatelessClass));
   console.log(hashIt(object.ReactStatelessElement));
   console.log(hashIt(document.body));
-  console.log(hashIt(window));
+  // console.log(hashIt(window));
 };
 
-// profile(1000);
-visualValidation();
+profile(10000);
+// visualValidation();
 // hashOnlyValidation();
