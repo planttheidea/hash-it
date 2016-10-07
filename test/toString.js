@@ -1,10 +1,6 @@
 import test from 'ava';
 
-import {
-  toFunctionString,
-  toString,
-  types
-} from '../src/toString';
+import * as types from '../src/toString';
 
 const ARRAY = [1, 2, 3];
 const OBJECTS = {
@@ -72,39 +68,39 @@ test('if types are correct string values', (t) => {
   t.is(types.WEAKSET, '[object WeakSet]');
 });
 
-test('if toString correctly identifies to object class values', (t) => {
-  t.is(toString(OBJECTS.array), types.ARRAY);
-  t.is(toString(OBJECTS.boolean), types.BOOLEAN);
-  t.is(toString(OBJECTS.dataView), types.DATA_VIEW);
-  t.is(toString(OBJECTS.date), types.DATE);
-  t.is(toString(OBJECTS.error), types.ERROR);
-  t.is(toString(OBJECTS.float32Array), types.FLOAT_32_ARRAY);
-  t.is(toString(OBJECTS.float64Array), types.FLOAT_64_ARRAY);
-  t.is(toString(OBJECTS.function), types.FUNCTION);
-  t.is(toString(OBJECTS.generator), types.GENERATOR);
-  t.is(toString(OBJECTS.int8Array), types.INT_8_ARRAY);
-  t.is(toString(OBJECTS.int16Array), types.INT_16_ARRAY);
-  t.is(toString(OBJECTS.int32Array), types.INT_32_ARRAY);
-  t.is(toString(OBJECTS.map), types.MAP);
-  t.is(toString(OBJECTS.math), types.MATH);
-  t.is(toString(OBJECTS.null), types.NULL);
-  t.is(toString(OBJECTS.number), types.NUMBER);
-  t.is(toString(OBJECTS.object), types.OBJECT);
-  t.is(toString(OBJECTS.promise), types.PROMISE);
-  t.is(toString(OBJECTS.regexp), types.REGEXP);
-  t.is(toString(OBJECTS.set), types.SET);
-  t.is(toString(OBJECTS.string), types.STRING);
-  t.is(toString(OBJECTS.symbol), types.SYMBOL);
-  t.is(toString(OBJECTS.uint8Array), types.UINT_8_ARRAY);
-  t.is(toString(OBJECTS.uint8ClampedArray), types.UINT_8_CLAMPED_ARRAY);
-  t.is(toString(OBJECTS.uint16Array), types.UINT_16_ARRAY);
-  t.is(toString(OBJECTS.uint32Array), types.UINT_32_ARRAY);
-  t.is(toString(OBJECTS.undefined), types.UNDEFINED);
-  t.is(toString(OBJECTS.weakMap), types.WEAKMAP);
-  t.is(toString(OBJECTS.weakSet), types.WEAKSET);
+test('if types.toString correctly identifies to object class values', (t) => {
+  t.is(types.toString(OBJECTS.array), types.ARRAY);
+  t.is(types.toString(OBJECTS.boolean), types.BOOLEAN);
+  t.is(types.toString(OBJECTS.dataView), types.DATA_VIEW);
+  t.is(types.toString(OBJECTS.date), types.DATE);
+  t.is(types.toString(OBJECTS.error), types.ERROR);
+  t.is(types.toString(OBJECTS.float32Array), types.FLOAT_32_ARRAY);
+  t.is(types.toString(OBJECTS.float64Array), types.FLOAT_64_ARRAY);
+  t.is(types.toString(OBJECTS.function), types.FUNCTION);
+  t.is(types.toString(OBJECTS.generator), types.GENERATOR);
+  t.is(types.toString(OBJECTS.int8Array), types.INT_8_ARRAY);
+  t.is(types.toString(OBJECTS.int16Array), types.INT_16_ARRAY);
+  t.is(types.toString(OBJECTS.int32Array), types.INT_32_ARRAY);
+  t.is(types.toString(OBJECTS.map), types.MAP);
+  t.is(types.toString(OBJECTS.math), types.MATH);
+  t.is(types.toString(OBJECTS.null), types.NULL);
+  t.is(types.toString(OBJECTS.number), types.NUMBER);
+  t.is(types.toString(OBJECTS.object), types.OBJECT);
+  t.is(types.toString(OBJECTS.promise), types.PROMISE);
+  t.is(types.toString(OBJECTS.regexp), types.REGEXP);
+  t.is(types.toString(OBJECTS.set), types.SET);
+  t.is(types.toString(OBJECTS.string), types.STRING);
+  t.is(types.toString(OBJECTS.symbol), types.SYMBOL);
+  t.is(types.toString(OBJECTS.uint8Array), types.UINT_8_ARRAY);
+  t.is(types.toString(OBJECTS.uint8ClampedArray), types.UINT_8_CLAMPED_ARRAY);
+  t.is(types.toString(OBJECTS.uint16Array), types.UINT_16_ARRAY);
+  t.is(types.toString(OBJECTS.uint32Array), types.UINT_32_ARRAY);
+  t.is(types.toString(OBJECTS.undefined), types.UNDEFINED);
+  t.is(types.toString(OBJECTS.weakMap), types.WEAKMAP);
+  t.is(types.toString(OBJECTS.weakSet), types.WEAKSET);
 });
 
-test('if toFunctionString correct creates the abbreviated string expected', (t) => {
+test('if types.toFunctionString correct creates the abbreviated string expected', (t) => {
   const expectedSimpleString = 'function anonymous(){}';
   const expectedComplexString = 'function complexFunc(arg,arg,arg,arg,arg){}';
   const expectedComplexArrowString = 'function complexFuncArrow(arg,arg,arg,arg,arg){}';
@@ -124,9 +120,9 @@ test('if toFunctionString correct creates the abbreviated string expected', (t) 
     yield ++counter;
   }
 
-  t.is(toFunctionString(() => {}), expectedSimpleString);
-  t.is(toFunctionString(function() {}), expectedSimpleString);
-  t.is(toFunctionString(complexFunc), expectedComplexString);
-  t.is(toFunctionString(complexFuncArrow), expectedComplexArrowString);
-  t.is(toFunctionString(generatorFunc, true), expectedGeneratorString);
+  t.is(types.toFunctionString(() => {}), expectedSimpleString);
+  t.is(types.toFunctionString(function() {}), expectedSimpleString);
+  t.is(types.toFunctionString(complexFunc), expectedComplexString);
+  t.is(types.toFunctionString(complexFuncArrow), expectedComplexArrowString);
+  t.is(types.toFunctionString(generatorFunc, true), expectedGeneratorString);
 });

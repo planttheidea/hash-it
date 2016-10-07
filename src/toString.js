@@ -1,70 +1,34 @@
-const ARGUMENTS = '[object Arguments]';
-const ARRAY = '[object Array]';
-const ARRAY_BUFFER = '[object ArrayBuffer]';
-const BOOLEAN = '[object Boolean]';
-const DATA_VIEW = '[object DataView]';
-const DATE = '[object Date]';
-const ERROR = '[object Error]';
-const FLOAT_32_ARRAY = '[object Float32Array]';
-const FLOAT_64_ARRAY = '[object Float64Array]';
-const FUNCTION = '[object Function]';
-const GENERATOR = '[object GeneratorFunction]';
-const INT_8_ARRAY = '[object Int8Array]';
-const INT_16_ARRAY = '[object Int16Array]';
-const INT_32_ARRAY = '[object Int32Array]';
-const MAP = '[object Map]';
-const MATH = '[object Math]';
-const NULL = '[object Null]';
-const NUMBER = '[object Number]';
-const OBJECT = '[object Object]';
-const PROMISE = '[object Promise]';
-const REGEXP = '[object RegExp]';
-const SET = '[object Set]';
-const STRING = '[object String]';
-const SYMBOL = '[object Symbol]';
-const UINT_8_ARRAY = '[object Uint8Array]';
-const UINT_8_CLAMPED_ARRAY = '[object Uint8ClampedArray]';
-const UINT_16_ARRAY = '[object Uint16Array]';
-const UINT_32_ARRAY = '[object Uint32Array]';
-const UNDEFINED = '[object Undefined]';
-const WEAKMAP = '[object WeakMap]';
-const WEAKSET = '[object WeakSet]';
-const WINDOW = '[object Window]';
-
-const TYPES = {
-  ARGUMENTS,
-  ARRAY,
-  ARRAY_BUFFER,
-  BOOLEAN,
-  DATA_VIEW,
-  DATE,
-  ERROR,
-  FLOAT_32_ARRAY,
-  FLOAT_64_ARRAY,
-  FUNCTION,
-  GENERATOR,
-  INT_8_ARRAY,
-  INT_16_ARRAY,
-  INT_32_ARRAY,
-  MAP,
-  MATH,
-  NULL,
-  NUMBER,
-  OBJECT,
-  PROMISE,
-  REGEXP,
-  SET,
-  STRING,
-  SYMBOL,
-  UINT_8_ARRAY,
-  UINT_8_CLAMPED_ARRAY,
-  UINT_16_ARRAY,
-  UINT_32_ARRAY,
-  UNDEFINED,
-  WEAKMAP,
-  WEAKSET,
-  WINDOW
-};
+export const ARGUMENTS = '[object Arguments]';
+export const ARRAY = '[object Array]';
+export const ARRAY_BUFFER = '[object ArrayBuffer]';
+export const BOOLEAN = '[object Boolean]';
+export const DATA_VIEW = '[object DataView]';
+export const DATE = '[object Date]';
+export const ERROR = '[object Error]';
+export const FLOAT_32_ARRAY = '[object Float32Array]';
+export const FLOAT_64_ARRAY = '[object Float64Array]';
+export const FUNCTION = '[object Function]';
+export const GENERATOR = '[object GeneratorFunction]';
+export const INT_8_ARRAY = '[object Int8Array]';
+export const INT_16_ARRAY = '[object Int16Array]';
+export const INT_32_ARRAY = '[object Int32Array]';
+export const MAP = '[object Map]';
+export const MATH = '[object Math]';
+export const NULL = '[object Null]';
+export const NUMBER = '[object Number]';
+export const OBJECT = '[object Object]';
+export const PROMISE = '[object Promise]';
+export const REGEXP = '[object RegExp]';
+export const SET = '[object Set]';
+export const STRING = '[object String]';
+export const SYMBOL = '[object Symbol]';
+export const UINT_8_ARRAY = '[object Uint8Array]';
+export const UINT_8_CLAMPED_ARRAY = '[object Uint8ClampedArray]';
+export const UINT_16_ARRAY = '[object Uint16Array]';
+export const UINT_32_ARRAY = '[object Uint32Array]';
+export const UNDEFINED = '[object Undefined]';
+export const WEAKMAP = '[object WeakMap]';
+export const WEAKSET = '[object WeakSet]';
 
 /**
  * get the generic string value of the function passed
@@ -73,20 +37,16 @@ const TYPES = {
  * @param {boolean} isGenerator=false
  * @returns {string}
  */
-const toFunctionString = (fn, isGenerator = false) => {
+export const toFunctionString = (fn, isGenerator = false) => {
   return `function${isGenerator ? '*' : ''} ${fn.name || 'anonymous'}(${(new Array(fn.length + 1)).join(',arg').slice(1)}){}`;
 };
 
 /**
  * get the toString value of object
  *
- * @param {any} object
+ * @param {*} object
  * @returns {string}
  */
-const toString = (object) => {
+export const toString = (object) => {
   return Object.prototype.toString.call(object);
 };
-
-export {toFunctionString};
-export {toString};
-export {TYPES as types};

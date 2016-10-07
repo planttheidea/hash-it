@@ -1,9 +1,39 @@
 import json from './prune';
 
 import {
+  ARGUMENTS,
+  ARRAY,
+  ARRAY_BUFFER,
+  BOOLEAN,
+  DATA_VIEW,
+  DATE,
+  ERROR,
+  FLOAT_32_ARRAY,
+  FLOAT_64_ARRAY,
+  FUNCTION,
+  GENERATOR,
+  INT_8_ARRAY,
+  INT_16_ARRAY,
+  INT_32_ARRAY,
+  MAP,
+  MATH,
+  NULL,
+  NUMBER,
+  OBJECT,
+  PROMISE,
+  REGEXP,
+  SET,
+  STRING,
+  SYMBOL,
+  UINT_8_ARRAY,
+  UINT_8_CLAMPED_ARRAY,
+  UINT_16_ARRAY,
+  UINT_32_ARRAY,
+  UNDEFINED,
+  WEAKMAP,
+  WEAKSET,
   toFunctionString,
-  toString,
-  types
+  toString
 } from './toString';
 
 const HTML_ELEMENT_REGEXP = /\[object (HTML(.*)Element)\]/;
@@ -51,55 +81,57 @@ const getObjectType = (type) => {
  * @returns {string}
  */
 const prependTypeToString = (string, type) => {
-  return `${type} ${string}`;
+  return `${getObjectType(type)} ${string}`;
 };
 
 /**
  * get the string value for the object used for stringification
  *
- * @param {any} object
- * @returns {any}
+ * @param {*} object
+ * @param {ArrayBuffer} [object.buffer]
+ * @param {function} [object.forEach]
+ * @param {function} [object.join]
+ * @param {string} [object.textContent]
+ * @returns {*}
  */
 const getValueForStringification = (object) => {
-  const toStringType = toString(object);
-  const type = getObjectType(toStringType);
+  const type = toString(object);
 
-  switch (toStringType) {
-    case types.NUMBER:
-    case types.STRING:
+  switch (type) {
+    case ARGUMENTS:
+    case ARRAY:
+    case BOOLEAN:
+    case NUMBER:
+    case STRING:
       return object;
 
-    case types.ARGUMENTS:
-    case types.ARRAY:
-    case types.OBJECT:
+    case OBJECT:
       return !!object ? object : prependTypeToString(object, type);
 
-    case types.ERROR:
-    case types.NULL:
-    case types.REGEXP:
-    case types.UNDEFINED:
+    case ERROR:
+    case NULL:
+    case REGEXP:
+    case UNDEFINED:
       return prependTypeToString(object, type);
 
-    case types.DATE:
+    case DATE:
       return prependTypeToString(object.valueOf(), type);
 
-    case types.FUNCTION:
-      return toFunctionString(object);
+    case FUNCTION:
+    case GENERATOR:
+      return toFunctionString(object, type === GENERATOR);
 
-    case types.GENERATOR:
-      return toFunctionString(object, true);
-
-    case types.SYMBOL:
+    case SYMBOL:
       return object.toString();
 
-    case types.PROMISE:
-    case types.WEAKMAP:
-    case types.WEAKSET:
+    case PROMISE:
+    case WEAKMAP:
+    case WEAKSET:
       return prependTypeToString('NOT_ENUMERABLE', type);
 
-    case types.MAP:
-    case types.SET:
-      let pairs = [type];
+    case MAP:
+    case SET:
+      let pairs = [getObjectType(type)];
 
       object.forEach((item, key) => {
         pairs.push([
@@ -109,24 +141,24 @@ const getValueForStringification = (object) => {
 
       return pairs;
 
-    case types.ARRAY_BUFFER:
+    case ARRAY_BUFFER:
       return prependTypeToString(arrayBufferToString(object), type);
 
-    case types.DATA_VIEW:
+    case DATA_VIEW:
       return prependTypeToString(arrayBufferToString(object.buffer), type);
 
-    case types.FLOAT_32_ARRAY:
-    case types.FLOAT_64_ARRAY:
-    case types.INT_8_ARRAY:
-    case types.INT_16_ARRAY:
-    case types.INT_32_ARRAY:
-    case types.UINT_8_ARRAY:
-    case types.UINT_8_CLAMPED_ARRAY:
-    case types.UINT_16_ARRAY:
-    case types.UINT_32_ARRAY:
+    case FLOAT_32_ARRAY:
+    case FLOAT_64_ARRAY:
+    case INT_8_ARRAY:
+    case INT_16_ARRAY:
+    case INT_32_ARRAY:
+    case UINT_8_ARRAY:
+    case UINT_8_CLAMPED_ARRAY:
+    case UINT_16_ARRAY:
+    case UINT_32_ARRAY:
       return prependTypeToString(object.join(','), type);
 
-    case types.MATH:
+    case MATH:
       let mathObject = {};
 
       MATH_PROPERTIES.forEach((prop) => {
@@ -136,7 +168,7 @@ const getValueForStringification = (object) => {
       return mathObject;
 
     default:
-      return HTML_ELEMENT_REGEXP.test(toStringType) ? `HTMLElement ${object.textContent}` : object;
+      return HTML_ELEMENT_REGEXP.test(type) ? `HTMLElement ${object.textContent}` : object;
   }
 };
 
@@ -156,13 +188,14 @@ const REPLACER = ((stack, undefined, recursiveCounter, index) => {
     const type = toString(value);
 
     switch (type) {
-      case types.NUMBER:
-      case types.STRING:
+      case ARGUMENTS:
+      case BOOLEAN:
+      case NUMBER:
+      case STRING:
         return value;
 
-      case types.ARGUMENTS:
-      case types.ARRAY:
-      case types.OBJECT:
+      case ARRAY:
+      case OBJECT:
         if (!value) {
           return prependTypeToString(value, type);
         }
@@ -181,31 +214,31 @@ const REPLACER = ((stack, undefined, recursiveCounter, index) => {
 
         return `*Recursive-${index}`;
 
-      case types.ARRAY_BUFFER:
-      case types.DATA_VIEW:
-      case types.DATE:
-      case types.FLOAT_32_ARRAY:
-      case types.FLOAT_64_ARRAY:
-      case types.FUNCTION:
-      case types.GENERATOR:
-      case types.INT_8_ARRAY:
-      case types.INT_16_ARRAY:
-      case types.INT_32_ARRAY:
-      case types.ERROR:
-      case types.MAP:
-      case types.MATH:
-      case types.NULL:
-      case types.PROMISE:
-      case types.REGEXP:
-      case types.SET:
-      case types.SYMBOL:
-      case types.UINT_8_ARRAY:
-      case types.UINT_8_CLAMPED_ARRAY:
-      case types.UINT_16_ARRAY:
-      case types.UINT_32_ARRAY:
-      case types.UNDEFINED:
-      case types.WEAKMAP:
-      case types.WEAKSET:
+      case ARRAY_BUFFER:
+      case DATA_VIEW:
+      case DATE:
+      case FLOAT_32_ARRAY:
+      case FLOAT_64_ARRAY:
+      case FUNCTION:
+      case GENERATOR:
+      case INT_8_ARRAY:
+      case INT_16_ARRAY:
+      case INT_32_ARRAY:
+      case ERROR:
+      case MAP:
+      case MATH:
+      case NULL:
+      case PROMISE:
+      case REGEXP:
+      case SET:
+      case SYMBOL:
+      case UINT_8_ARRAY:
+      case UINT_8_CLAMPED_ARRAY:
+      case UINT_16_ARRAY:
+      case UINT_32_ARRAY:
+      case UNDEFINED:
+      case WEAKMAP:
+      case WEAKSET:
         return getValueForStringification(value);
 
       default:
@@ -240,7 +273,7 @@ const getIntegerHashValue = (string) => {
  * move try/catch to standalone function as any function that contains a try/catch
  * is not optimized (this allows optimization for as much as possible)
  * 
- * @param {any} value
+ * @param {*} value
  * @returns {string}
  */
 const tryCatch = (value) => {
@@ -254,7 +287,7 @@ const tryCatch = (value) => {
 /**
  * stringify the object passed leveraging the REPLACER
  *
- * @param {any} object
+ * @param {*} object
  * @returns {string}
  */
 const stringify = (object) => {

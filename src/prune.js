@@ -1,7 +1,9 @@
 import {
+  ARRAY,
+  DATE,
+  STRING,
   toFunctionString,
-  toString,
-  types
+  toString
 } from './toString';
 
 /*
@@ -54,14 +56,14 @@ const quote = (string) => {
   return !ESCAPABLE.test(string) ? `"${string}"` : `"${string.replace(ESCAPABLE, (a) => {
     c = META[a];
 
-    return toString(c) === types.STRING ? c : `\\u${(`0000${a.charCodeAt(0).toString(16)}`).slice(-4)}`;
+    return toString(c) === STRING ? c : `\\u${(`0000${a.charCodeAt(0).toString(16)}`).slice(-4)}`;
   })}"`;
 };
 
 /**
  * prune JSON for stringification
  *
- * @param {any} value
+ * @param {*} value
  * @returns {string}
  */
 const prune = (value) => {
@@ -97,7 +99,7 @@ const prune = (value) => {
         }
 
         switch (toString(value)) {
-          case types.ARRAY:
+          case ARRAY:
             seen.push(value);
 
             const length = Math.min(value.length, DEFAULT_ARRAY_MAX_LENGTH);
@@ -112,7 +114,7 @@ const prune = (value) => {
 
             return v;
 
-          case types.DATE:
+          case DATE:
             return `${value.valueOf()}`;
 
           default:
