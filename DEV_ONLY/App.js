@@ -103,6 +103,10 @@ const profile = (iterations = 100) => {
   console.log('Check the Profiles tab in DevTools to see the output.');
 };
 
+const benchmark = () => {
+  require('../benchmarks/index');
+};
+
 const visualValidation = (iterations = 100) => {
   console.log(object, hashIt(object));
   console.log(a, hashIt(a));
@@ -191,6 +195,7 @@ const hashOnlyValidation = (iterations = 100) => {
   // console.log(hashIt(window));
 };
 
+benchmark();
 // profile(1000);
 // visualValidation();
 // hashOnlyValidation();

@@ -6,31 +6,29 @@ import {
 /**
  * return the unique integer hash value for the object
  *
- * @param {any} object
+ * @param {*} object
  * @returns {number}
  */
-const hash = (object) => {
+const hashIt = (object) => {
   return getIntegerHashValue(stringify(object));
 };
 
-const UNDEFINED_HASH = hash(undefined);
-
-const NULL_HASH = hash(null);
-
-const EMPTY_ARRAY_HASH = hash([]);
-const EMPTY_MAP_HASH = hash(new Map());
-const EMPTY_NUMBER_HASH = hash(0);
-const EMPTY_OBJECT_HASH = hash({});
-const EMPTY_SET_HASH = hash(new Set());
-const EMPTY_STRING_HASH = hash('');
+const UNDEFINED_HASH = hashIt(undefined);
+const NULL_HASH = hashIt(null);
+const EMPTY_ARRAY_HASH = hashIt([]);
+const EMPTY_MAP_HASH = hashIt(new Map());
+const EMPTY_NUMBER_HASH = hashIt(0);
+const EMPTY_OBJECT_HASH = hashIt({});
+const EMPTY_SET_HASH = hashIt(new Set());
+const EMPTY_STRING_HASH = hashIt('');
 
 /**
  * determine if all objects passed are equal in value to one another
  *
- * @param {array<any>} objects
+ * @param {array<*>} objects
  * @returns {boolean}
  */
-hash.isEqual = (...objects) => {
+hashIt.isEqual = (...objects) => {
   const length = objects.length;
 
   if (length === 1) {
@@ -40,7 +38,7 @@ hash.isEqual = (...objects) => {
   let index = 0;
 
   while (++index < length) {
-    if (hash(objects[index - 1]) !== hash(objects[index])) {
+    if (hashIt(objects[index - 1]) !== hashIt(objects[index])) {
       return false;
     }
   }
@@ -52,11 +50,11 @@ hash.isEqual = (...objects) => {
  * determine if object is empty, meaning it is an array / object / map / set with values populated,
  * or is a string with no length, or is undefined or null
  *
- * @param {any} object
+ * @param {*} object
  * @returns {boolean}
  */
-hash.isEmpty = (object) => {
-  const objectHash = hash(object);
+hashIt.isEmpty = (object) => {
+  const objectHash = hashIt(object);
 
   return objectHash === UNDEFINED_HASH ||
       objectHash === NULL_HASH ||
@@ -71,21 +69,21 @@ hash.isEmpty = (object) => {
 /**
  * determine if object is null
  *
- * @param {any} object
+ * @param {*} object
  * @returns {boolean}
  */
-hash.isNull = (object) => {
-  return hash(object) === NULL_HASH;
+hashIt.isNull = (object) => {
+  return hashIt(object) === NULL_HASH;
 };
 
 /**
  * determine if object is undefined
  *
- * @param {any} object
+ * @param {*} object
  * @returns {boolean}
  */
-hash.isUndefined = (object) => {
-  return hash(object) === UNDEFINED_HASH;
+hashIt.isUndefined = (object) => {
+  return hashIt(object) === UNDEFINED_HASH;
 };
 
-export default hash;
+export default hashIt;

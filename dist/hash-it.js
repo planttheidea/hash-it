@@ -1,5 +1,14 @@
-var hashIt =
-/******/ (function(modules) { // webpackBootstrap
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define("hashIt", [], factory);
+	else if(typeof exports === 'object')
+		exports["hashIt"] = factory();
+	else
+		root["hashIt"] = factory();
+})(this, function() {
+return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -54,38 +63,38 @@ var hashIt =
 
 	'use strict';
 	
-	exports.__esModule = true;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	
 	var _utils = __webpack_require__(2);
 	
 	/**
 	 * return the unique integer hash value for the object
 	 *
-	 * @param {any} object
+	 * @param {*} object
 	 * @returns {number}
 	 */
-	var hash = function hash(object) {
+	var hashIt = function hashIt(object) {
 	  return (0, _utils.getIntegerHashValue)((0, _utils.stringify)(object));
 	};
 	
-	var UNDEFINED_HASH = hash(undefined);
-	
-	var NULL_HASH = hash(null);
-	
-	var EMPTY_ARRAY_HASH = hash([]);
-	var EMPTY_MAP_HASH = hash(new Map());
-	var EMPTY_NUMBER_HASH = hash(0);
-	var EMPTY_OBJECT_HASH = hash({});
-	var EMPTY_SET_HASH = hash(new Set());
-	var EMPTY_STRING_HASH = hash('');
+	var UNDEFINED_HASH = hashIt(undefined);
+	var NULL_HASH = hashIt(null);
+	var EMPTY_ARRAY_HASH = hashIt([]);
+	var EMPTY_MAP_HASH = hashIt(new Map());
+	var EMPTY_NUMBER_HASH = hashIt(0);
+	var EMPTY_OBJECT_HASH = hashIt({});
+	var EMPTY_SET_HASH = hashIt(new Set());
+	var EMPTY_STRING_HASH = hashIt('');
 	
 	/**
 	 * determine if all objects passed are equal in value to one another
 	 *
-	 * @param {array<any>} objects
+	 * @param {array<*>} objects
 	 * @returns {boolean}
 	 */
-	hash.isEqual = function () {
+	hashIt.isEqual = function () {
 	  var length = arguments.length;
 	
 	  if (length === 1) {
@@ -95,7 +104,7 @@ var hashIt =
 	  var index = 0;
 	
 	  while (++index < length) {
-	    if (hash(arguments.length <= index - 1 + 0 ? undefined : arguments[index - 1 + 0]) !== hash(arguments.length <= index + 0 ? undefined : arguments[index + 0])) {
+	    if (hashIt(arguments.length <= index - 1 + 0 ? undefined : arguments[index - 1 + 0]) !== hashIt(arguments.length <= index + 0 ? undefined : arguments[index + 0])) {
 	      return false;
 	    }
 	  }
@@ -107,11 +116,11 @@ var hashIt =
 	 * determine if object is empty, meaning it is an array / object / map / set with values populated,
 	 * or is a string with no length, or is undefined or null
 	 *
-	 * @param {any} object
+	 * @param {*} object
 	 * @returns {boolean}
 	 */
-	hash.isEmpty = function (object) {
-	  var objectHash = hash(object);
+	hashIt.isEmpty = function (object) {
+	  var objectHash = hashIt(object);
 	
 	  return objectHash === UNDEFINED_HASH || objectHash === NULL_HASH || objectHash === EMPTY_ARRAY_HASH || objectHash === EMPTY_MAP_HASH || objectHash === EMPTY_NUMBER_HASH || objectHash === EMPTY_OBJECT_HASH || objectHash === EMPTY_SET_HASH || objectHash === EMPTY_STRING_HASH;
 	};
@@ -119,24 +128,24 @@ var hashIt =
 	/**
 	 * determine if object is null
 	 *
-	 * @param {any} object
+	 * @param {*} object
 	 * @returns {boolean}
 	 */
-	hash.isNull = function (object) {
-	  return hash(object) === NULL_HASH;
+	hashIt.isNull = function (object) {
+	  return hashIt(object) === NULL_HASH;
 	};
 	
 	/**
 	 * determine if object is undefined
 	 *
-	 * @param {any} object
+	 * @param {*} object
 	 * @returns {boolean}
 	 */
-	hash.isUndefined = function (object) {
-	  return hash(object) === UNDEFINED_HASH;
+	hashIt.isUndefined = function (object) {
+	  return hashIt(object) === UNDEFINED_HASH;
 	};
 	
-	exports.default = hash;
+	exports.default = hashIt;
 	module.exports = exports['default'];
 
 /***/ },
@@ -145,10 +154,12 @@ var hashIt =
 
 	'use strict';
 	
-	exports.__esModule = true;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	exports.stringify = exports.replacer = exports.getIntegerHashValue = undefined;
 	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 	
 	var _prune = __webpack_require__(3);
 	
@@ -194,72 +205,72 @@ var hashIt =
 	 * @returns {string}
 	 */
 	var prependTypeToString = function prependTypeToString(string, type) {
-	  return type + ' ' + string;
+	  return getObjectType(type) + ' ' + string;
 	};
 	
 	/**
 	 * get the string value for the object used for stringification
 	 *
-	 * @param {any} object
-	 * @returns {any}
+	 * @param {*} object
+	 * @param {ArrayBuffer} [object.buffer]
+	 * @param {function} [object.forEach]
+	 * @param {function} [object.join]
+	 * @param {string} [object.textContent]
+	 * @returns {*}
 	 */
 	var getValueForStringification = function getValueForStringification(object) {
-	  var toStringType = (0, _toString.toString)(object);
-	  var type = getObjectType(toStringType);
+	  var type = (0, _toString.toString)(object);
 	
 	  var _ret = function () {
-	    switch (toStringType) {
-	      case _toString.types.NUMBER:
-	      case _toString.types.STRING:
+	    switch (type) {
+	      case _toString.ARGUMENTS:
+	      case _toString.ARRAY:
+	      case _toString.BOOLEAN:
+	      case _toString.NUMBER:
+	      case _toString.STRING:
 	        return {
 	          v: object
 	        };
 	
-	      case _toString.types.ARGUMENTS:
-	      case _toString.types.ARRAY:
-	      case _toString.types.OBJECT:
+	      case _toString.OBJECT:
 	        return {
 	          v: !!object ? object : prependTypeToString(object, type)
 	        };
 	
-	      case _toString.types.ERROR:
-	      case _toString.types.NULL:
-	      case _toString.types.REGEXP:
-	      case _toString.types.UNDEFINED:
+	      case _toString.ERROR:
+	      case _toString.NULL:
+	      case _toString.REGEXP:
+	      case _toString.UNDEFINED:
 	        return {
 	          v: prependTypeToString(object, type)
 	        };
 	
-	      case _toString.types.DATE:
+	      case _toString.DATE:
 	        return {
 	          v: prependTypeToString(object.valueOf(), type)
 	        };
 	
-	      case _toString.types.FUNCTION:
+	      case _toString.FUNCTION:
+	      case _toString.GENERATOR:
 	        return {
-	          v: (0, _toString.toFunctionString)(object)
+	          v: (0, _toString.toFunctionString)(object, type === _toString.GENERATOR)
 	        };
 	
-	      case _toString.types.GENERATOR:
-	        return {
-	          v: (0, _toString.toFunctionString)(object, true)
-	        };
-	
-	      case _toString.types.SYMBOL:
+	      case _toString.SYMBOL:
 	        return {
 	          v: object.toString()
 	        };
 	
-	      case _toString.types.PROMISE:
-	      case _toString.types.WEAKMAP:
-	      case _toString.types.WEAKSET:
+	      case _toString.PROMISE:
+	      case _toString.WEAKMAP:
+	      case _toString.WEAKSET:
 	        return {
 	          v: prependTypeToString('NOT_ENUMERABLE', type)
 	        };
 	
-	      case _toString.types.MAP:
-	      case _toString.types.SET:
-	        var pairs = [type];
+	      case _toString.MAP:
+	      case _toString.SET:
+	        var pairs = [getObjectType(type)];
 	
 	        object.forEach(function (item, key) {
 	          pairs.push([key, item]);
@@ -269,30 +280,30 @@ var hashIt =
 	          v: pairs
 	        };
 	
-	      case _toString.types.ARRAY_BUFFER:
+	      case _toString.ARRAY_BUFFER:
 	        return {
 	          v: prependTypeToString(arrayBufferToString(object), type)
 	        };
 	
-	      case _toString.types.DATA_VIEW:
+	      case _toString.DATA_VIEW:
 	        return {
 	          v: prependTypeToString(arrayBufferToString(object.buffer), type)
 	        };
 	
-	      case _toString.types.FLOAT_32_ARRAY:
-	      case _toString.types.FLOAT_64_ARRAY:
-	      case _toString.types.INT_8_ARRAY:
-	      case _toString.types.INT_16_ARRAY:
-	      case _toString.types.INT_32_ARRAY:
-	      case _toString.types.UINT_8_ARRAY:
-	      case _toString.types.UINT_8_CLAMPED_ARRAY:
-	      case _toString.types.UINT_16_ARRAY:
-	      case _toString.types.UINT_32_ARRAY:
+	      case _toString.FLOAT_32_ARRAY:
+	      case _toString.FLOAT_64_ARRAY:
+	      case _toString.INT_8_ARRAY:
+	      case _toString.INT_16_ARRAY:
+	      case _toString.INT_32_ARRAY:
+	      case _toString.UINT_8_ARRAY:
+	      case _toString.UINT_8_CLAMPED_ARRAY:
+	      case _toString.UINT_16_ARRAY:
+	      case _toString.UINT_32_ARRAY:
 	        return {
 	          v: prependTypeToString(object.join(','), type)
 	        };
 	
-	      case _toString.types.MATH:
+	      case _toString.MATH:
 	        var mathObject = {};
 	
 	        MATH_PROPERTIES.forEach(function (prop) {
@@ -305,7 +316,7 @@ var hashIt =
 	
 	      default:
 	        return {
-	          v: HTML_ELEMENT_REGEXP.test(toStringType) ? 'HTMLElement ' + object.textContent : object
+	          v: HTML_ELEMENT_REGEXP.test(type) ? 'HTMLElement ' + object.textContent : object
 	        };
 	    }
 	  }();
@@ -329,13 +340,14 @@ var hashIt =
 	    var type = (0, _toString.toString)(value);
 	
 	    switch (type) {
-	      case _toString.types.NUMBER:
-	      case _toString.types.STRING:
+	      case _toString.ARGUMENTS:
+	      case _toString.BOOLEAN:
+	      case _toString.NUMBER:
+	      case _toString.STRING:
 	        return value;
 	
-	      case _toString.types.ARGUMENTS:
-	      case _toString.types.ARRAY:
-	      case _toString.types.OBJECT:
+	      case _toString.ARRAY:
+	      case _toString.OBJECT:
 	        if (!value) {
 	          return prependTypeToString(value, type);
 	        }
@@ -354,31 +366,31 @@ var hashIt =
 	
 	        return '*Recursive-' + index;
 	
-	      case _toString.types.ARRAY_BUFFER:
-	      case _toString.types.DATA_VIEW:
-	      case _toString.types.DATE:
-	      case _toString.types.FLOAT_32_ARRAY:
-	      case _toString.types.FLOAT_64_ARRAY:
-	      case _toString.types.FUNCTION:
-	      case _toString.types.GENERATOR:
-	      case _toString.types.INT_8_ARRAY:
-	      case _toString.types.INT_16_ARRAY:
-	      case _toString.types.INT_32_ARRAY:
-	      case _toString.types.ERROR:
-	      case _toString.types.MAP:
-	      case _toString.types.MATH:
-	      case _toString.types.NULL:
-	      case _toString.types.PROMISE:
-	      case _toString.types.REGEXP:
-	      case _toString.types.SET:
-	      case _toString.types.SYMBOL:
-	      case _toString.types.UINT_8_ARRAY:
-	      case _toString.types.UINT_8_CLAMPED_ARRAY:
-	      case _toString.types.UINT_16_ARRAY:
-	      case _toString.types.UINT_32_ARRAY:
-	      case _toString.types.UNDEFINED:
-	      case _toString.types.WEAKMAP:
-	      case _toString.types.WEAKSET:
+	      case _toString.ARRAY_BUFFER:
+	      case _toString.DATA_VIEW:
+	      case _toString.DATE:
+	      case _toString.FLOAT_32_ARRAY:
+	      case _toString.FLOAT_64_ARRAY:
+	      case _toString.FUNCTION:
+	      case _toString.GENERATOR:
+	      case _toString.INT_8_ARRAY:
+	      case _toString.INT_16_ARRAY:
+	      case _toString.INT_32_ARRAY:
+	      case _toString.ERROR:
+	      case _toString.MAP:
+	      case _toString.MATH:
+	      case _toString.NULL:
+	      case _toString.PROMISE:
+	      case _toString.REGEXP:
+	      case _toString.SET:
+	      case _toString.SYMBOL:
+	      case _toString.UINT_8_ARRAY:
+	      case _toString.UINT_8_CLAMPED_ARRAY:
+	      case _toString.UINT_16_ARRAY:
+	      case _toString.UINT_32_ARRAY:
+	      case _toString.UNDEFINED:
+	      case _toString.WEAKMAP:
+	      case _toString.WEAKSET:
 	        return getValueForStringification(value);
 	
 	      default:
@@ -413,7 +425,7 @@ var hashIt =
 	 * move try/catch to standalone function as any function that contains a try/catch
 	 * is not optimized (this allows optimization for as much as possible)
 	 * 
-	 * @param {any} value
+	 * @param {*} value
 	 * @returns {string}
 	 */
 	var tryCatch = function tryCatch(value) {
@@ -427,7 +439,7 @@ var hashIt =
 	/**
 	 * stringify the object passed leveraging the REPLACER
 	 *
-	 * @param {any} object
+	 * @param {*} object
 	 * @returns {string}
 	 */
 	var stringify = function stringify(object) {
@@ -444,9 +456,11 @@ var hashIt =
 
 	'use strict';
 	
-	exports.__esModule = true;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 	
 	var _toString = __webpack_require__(4);
 	
@@ -500,14 +514,14 @@ var hashIt =
 	  return !ESCAPABLE.test(string) ? '"' + string + '"' : '"' + string.replace(ESCAPABLE, function (a) {
 	    c = META[a];
 	
-	    return (0, _toString.toString)(c) === _toString.types.STRING ? c : '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+	    return (0, _toString.toString)(c) === _toString.STRING ? c : '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
 	  }) + '"';
 	};
 	
 	/**
 	 * prune JSON for stringification
 	 *
-	 * @param {any} value
+	 * @param {*} value
 	 * @returns {string}
 	 */
 	var prune = function prune(value) {
@@ -543,7 +557,7 @@ var hashIt =
 	        }
 	
 	        switch ((0, _toString.toString)(value)) {
-	          case _toString.types.ARRAY:
+	          case _toString.ARRAY:
 	            seen.push(value);
 	
 	            var length = Math.min(value.length, DEFAULT_ARRAY_MAX_LENGTH);
@@ -558,7 +572,7 @@ var hashIt =
 	
 	            return v;
 	
-	          case _toString.types.DATE:
+	          case _toString.DATE:
 	            return '' + value.valueOf();
 	
 	          default:
@@ -597,74 +611,40 @@ var hashIt =
 
 	'use strict';
 	
-	exports.__esModule = true;
-	var ARGUMENTS = '[object Arguments]';
-	var ARRAY = '[object Array]';
-	var ARRAY_BUFFER = '[object ArrayBuffer]';
-	var BOOLEAN = '[object Boolean]';
-	var DATA_VIEW = '[object DataView]';
-	var DATE = '[object Date]';
-	var ERROR = '[object Error]';
-	var FLOAT_32_ARRAY = '[object Float32Array]';
-	var FLOAT_64_ARRAY = '[object Float64Array]';
-	var FUNCTION = '[object Function]';
-	var GENERATOR = '[object GeneratorFunction]';
-	var INT_8_ARRAY = '[object Int8Array]';
-	var INT_16_ARRAY = '[object Int16Array]';
-	var INT_32_ARRAY = '[object Int32Array]';
-	var MAP = '[object Map]';
-	var MATH = '[object Math]';
-	var NULL = '[object Null]';
-	var NUMBER = '[object Number]';
-	var OBJECT = '[object Object]';
-	var PROMISE = '[object Promise]';
-	var REGEXP = '[object RegExp]';
-	var SET = '[object Set]';
-	var STRING = '[object String]';
-	var SYMBOL = '[object Symbol]';
-	var UINT_8_ARRAY = '[object Uint8Array]';
-	var UINT_8_CLAMPED_ARRAY = '[object Uint8ClampedArray]';
-	var UINT_16_ARRAY = '[object Uint16Array]';
-	var UINT_32_ARRAY = '[object Uint32Array]';
-	var UNDEFINED = '[object Undefined]';
-	var WEAKMAP = '[object WeakMap]';
-	var WEAKSET = '[object WeakSet]';
-	var WINDOW = '[object Window]';
-	
-	var TYPES = {
-	  ARGUMENTS: ARGUMENTS,
-	  ARRAY: ARRAY,
-	  ARRAY_BUFFER: ARRAY_BUFFER,
-	  BOOLEAN: BOOLEAN,
-	  DATA_VIEW: DATA_VIEW,
-	  DATE: DATE,
-	  ERROR: ERROR,
-	  FLOAT_32_ARRAY: FLOAT_32_ARRAY,
-	  FLOAT_64_ARRAY: FLOAT_64_ARRAY,
-	  FUNCTION: FUNCTION,
-	  GENERATOR: GENERATOR,
-	  INT_8_ARRAY: INT_8_ARRAY,
-	  INT_16_ARRAY: INT_16_ARRAY,
-	  INT_32_ARRAY: INT_32_ARRAY,
-	  MAP: MAP,
-	  MATH: MATH,
-	  NULL: NULL,
-	  NUMBER: NUMBER,
-	  OBJECT: OBJECT,
-	  PROMISE: PROMISE,
-	  REGEXP: REGEXP,
-	  SET: SET,
-	  STRING: STRING,
-	  SYMBOL: SYMBOL,
-	  UINT_8_ARRAY: UINT_8_ARRAY,
-	  UINT_8_CLAMPED_ARRAY: UINT_8_CLAMPED_ARRAY,
-	  UINT_16_ARRAY: UINT_16_ARRAY,
-	  UINT_32_ARRAY: UINT_32_ARRAY,
-	  UNDEFINED: UNDEFINED,
-	  WEAKMAP: WEAKMAP,
-	  WEAKSET: WEAKSET,
-	  WINDOW: WINDOW
-	};
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var ARGUMENTS = exports.ARGUMENTS = '[object Arguments]';
+	var ARRAY = exports.ARRAY = '[object Array]';
+	var ARRAY_BUFFER = exports.ARRAY_BUFFER = '[object ArrayBuffer]';
+	var BOOLEAN = exports.BOOLEAN = '[object Boolean]';
+	var DATA_VIEW = exports.DATA_VIEW = '[object DataView]';
+	var DATE = exports.DATE = '[object Date]';
+	var ERROR = exports.ERROR = '[object Error]';
+	var FLOAT_32_ARRAY = exports.FLOAT_32_ARRAY = '[object Float32Array]';
+	var FLOAT_64_ARRAY = exports.FLOAT_64_ARRAY = '[object Float64Array]';
+	var FUNCTION = exports.FUNCTION = '[object Function]';
+	var GENERATOR = exports.GENERATOR = '[object GeneratorFunction]';
+	var INT_8_ARRAY = exports.INT_8_ARRAY = '[object Int8Array]';
+	var INT_16_ARRAY = exports.INT_16_ARRAY = '[object Int16Array]';
+	var INT_32_ARRAY = exports.INT_32_ARRAY = '[object Int32Array]';
+	var MAP = exports.MAP = '[object Map]';
+	var MATH = exports.MATH = '[object Math]';
+	var NULL = exports.NULL = '[object Null]';
+	var NUMBER = exports.NUMBER = '[object Number]';
+	var OBJECT = exports.OBJECT = '[object Object]';
+	var PROMISE = exports.PROMISE = '[object Promise]';
+	var REGEXP = exports.REGEXP = '[object RegExp]';
+	var SET = exports.SET = '[object Set]';
+	var STRING = exports.STRING = '[object String]';
+	var SYMBOL = exports.SYMBOL = '[object Symbol]';
+	var UINT_8_ARRAY = exports.UINT_8_ARRAY = '[object Uint8Array]';
+	var UINT_8_CLAMPED_ARRAY = exports.UINT_8_CLAMPED_ARRAY = '[object Uint8ClampedArray]';
+	var UINT_16_ARRAY = exports.UINT_16_ARRAY = '[object Uint16Array]';
+	var UINT_32_ARRAY = exports.UINT_32_ARRAY = '[object Uint32Array]';
+	var UNDEFINED = exports.UNDEFINED = '[object Undefined]';
+	var WEAKMAP = exports.WEAKMAP = '[object WeakMap]';
+	var WEAKSET = exports.WEAKSET = '[object WeakSet]';
 	
 	/**
 	 * get the generic string value of the function passed
@@ -673,8 +653,8 @@ var hashIt =
 	 * @param {boolean} isGenerator=false
 	 * @returns {string}
 	 */
-	var toFunctionString = function toFunctionString(fn) {
-	  var isGenerator = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	var toFunctionString = exports.toFunctionString = function toFunctionString(fn) {
+	  var isGenerator = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 	
 	  return 'function' + (isGenerator ? '*' : '') + ' ' + (fn.name || 'anonymous') + '(' + new Array(fn.length + 1).join(',arg').slice(1) + '){}';
 	};
@@ -682,17 +662,15 @@ var hashIt =
 	/**
 	 * get the toString value of object
 	 *
-	 * @param {any} object
+	 * @param {*} object
 	 * @returns {string}
 	 */
-	var toString = function toString(object) {
+	var toString = exports.toString = function toString(object) {
 	  return Object.prototype.toString.call(object);
 	};
-	
-	exports.toFunctionString = toFunctionString;
-	exports.toString = toString;
-	exports.types = TYPES;
 
 /***/ }
-/******/ ]);
+/******/ ])
+});
+;
 //# sourceMappingURL=hash-it.js.map

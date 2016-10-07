@@ -62,14 +62,20 @@ module.exports = {
             'add-module-exports'
           ],
           presets: [
-            'es2015-loose',
+            ['latest', {
+              loose: true
+            }],
             'react',
-            'stage-0'
+            'stage-2'
           ]
         },
         test: /\.js$/
       }
     ]
+  },
+
+  node: {
+    fs: 'empty'
   },
 
   output: {
