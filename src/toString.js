@@ -30,6 +30,14 @@ export const UNDEFINED = '[object Undefined]';
 export const WEAKMAP = '[object WeakMap]';
 export const WEAKSET = '[object WeakSet]';
 
+export const BOOLEAN_TYPEOF = 'boolean';
+export const FUNCTION_TYPEOF = 'function';
+export const NUMBER_TYPEOF = 'number';
+export const STRING_TYPEOF = 'string';
+export const UNDEFINED_TYPEOF = 'undefined';
+
+const objectToString = Object.prototype.toString;
+
 /**
  * get the generic string value of the function passed
  *
@@ -48,5 +56,5 @@ export const toFunctionString = (fn, isGenerator = false) => {
  * @returns {string}
  */
 export const toString = (object) => {
-  return Object.prototype.toString.call(object);
+  return objectToString.call(object);
 };
