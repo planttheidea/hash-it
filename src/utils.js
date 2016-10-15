@@ -4,7 +4,6 @@ import {
   ARGUMENTS,
   ARRAY,
   ARRAY_BUFFER,
-  BOOLEAN,
   DATA_VIEW,
   DATE,
   ERROR,
@@ -18,12 +17,10 @@ import {
   MAP,
   MATH,
   NULL,
-  NUMBER,
   OBJECT,
   PROMISE,
   REGEXP,
   SET,
-  STRING,
   SYMBOL,
   UINT_8_ARRAY,
   UINT_8_CLAMPED_ARRAY,
@@ -32,12 +29,18 @@ import {
   UNDEFINED,
   WEAKMAP,
   WEAKSET,
+
+  BOOLEAN_TYPEOF,
+  FUNCTION_TYPEOF,
+  NUMBER_TYPEOF,
+  STRING_TYPEOF,
+  UNDEFINED_TYPEOF,
   toFunctionString,
   toString
 } from './toString';
 
 const HTML_ELEMENT_REGEXP = /\[object (HTML(.*)Element)\]/;
-const MATH_PROPERTIES = [
+const MATH_OBJECT = [
   'E',
   'LN2',
   'LN10',
@@ -46,11 +49,16 @@ const MATH_PROPERTIES = [
   'PI',
   'SQRT1_2',
   'SQRT2'
-];
+].reduce((mathObject, property) => {
+  return {
+    ...mathObject,
+    [property]: Math[property]
+  };
+}, {});
 
 /**
  * get the string value of the buffer passed
- * 
+ *
  * @param {ArrayBuffer} buffer
  * @returns {string}
  */
@@ -63,9 +71,26 @@ const arrayBufferToString = (buffer) => {
 };
 
 /**
+ * get the key,value pairs for maps and sets
+ *
+ * @param {Map|Set} iterable
+ * @param {string} type
+ * @returns {Array<Array>}
+ */
+const getIterablePairs = (iterable, type) => {
+  let pairs = [getObjectType(type)];
+
+  iterable.forEach((item, key) => {
+    pairs.push([key, item]);
+  });
+
+  return pairs;
+};
+
+/**
  * strip away [object and ] from return of toString()
  * to get the object class
- * 
+ *
  * @param {string} type
  * @returns {string}
  */
@@ -75,7 +100,7 @@ const getObjectType = (type) => {
 
 /**
  * prepend type to string value
- * 
+ *
  * @param {string} string
  * @param {string} type
  * @returns {string}
@@ -97,78 +122,68 @@ const prependTypeToString = (string, type) => {
 const getValueForStringification = (object) => {
   const type = toString(object);
 
-  switch (type) {
-    case ARGUMENTS:
-    case ARRAY:
-    case BOOLEAN:
-    case NUMBER:
-    case STRING:
+  switch (typeof object) {
+    case STRING_TYPEOF:
+    case NUMBER_TYPEOF:
       return object;
 
-    case OBJECT:
-      return !!object ? object : prependTypeToString(object, type);
-
-    case ERROR:
-    case NULL:
-    case REGEXP:
-    case UNDEFINED:
+    case BOOLEAN_TYPEOF:
+    case UNDEFINED_TYPEOF:
       return prependTypeToString(object, type);
 
-    case DATE:
-      return prependTypeToString(object.valueOf(), type);
-
-    case FUNCTION:
-    case GENERATOR:
+    case FUNCTION_TYPEOF:
       return toFunctionString(object, type === GENERATOR);
 
-    case SYMBOL:
-      return object.toString();
-
-    case PROMISE:
-    case WEAKMAP:
-    case WEAKSET:
-      return prependTypeToString('NOT_ENUMERABLE', type);
-
-    case MAP:
-    case SET:
-      let pairs = [getObjectType(type)];
-
-      object.forEach((item, key) => {
-        pairs.push([
-          key, item
-        ]);
-      });
-
-      return pairs;
-
-    case ARRAY_BUFFER:
-      return prependTypeToString(arrayBufferToString(object), type);
-
-    case DATA_VIEW:
-      return prependTypeToString(arrayBufferToString(object.buffer), type);
-
-    case FLOAT_32_ARRAY:
-    case FLOAT_64_ARRAY:
-    case INT_8_ARRAY:
-    case INT_16_ARRAY:
-    case INT_32_ARRAY:
-    case UINT_8_ARRAY:
-    case UINT_8_CLAMPED_ARRAY:
-    case UINT_16_ARRAY:
-    case UINT_32_ARRAY:
-      return prependTypeToString(object.join(','), type);
-
-    case MATH:
-      let mathObject = {};
-
-      MATH_PROPERTIES.forEach((prop) => {
-        mathObject[prop] = object[prop];
-      });
-
-      return mathObject;
-
     default:
-      return HTML_ELEMENT_REGEXP.test(type) ? `HTMLElement ${object.textContent}` : object;
+      switch (type) {
+        case ARRAY:
+        case OBJECT:
+        case ARGUMENTS:
+          return object;
+
+        case ERROR:
+        case NULL:
+        case REGEXP:
+          return prependTypeToString(object, type);
+
+        case DATE:
+          return prependTypeToString(object.valueOf(), type);
+
+        case SYMBOL:
+          return object.toString();
+
+        case PROMISE:
+        case WEAKMAP:
+        case WEAKSET:
+          return prependTypeToString('NOT_ENUMERABLE', type);
+
+        case MAP:
+        case SET:
+          return getIterablePairs(object, type);
+
+        case ARRAY_BUFFER:
+          return prependTypeToString(arrayBufferToString(object), type);
+
+        case DATA_VIEW:
+          return prependTypeToString(arrayBufferToString(object.buffer), type);
+
+        case FLOAT_32_ARRAY:
+        case FLOAT_64_ARRAY:
+        case INT_8_ARRAY:
+        case INT_16_ARRAY:
+        case INT_32_ARRAY:
+        case UINT_8_ARRAY:
+        case UINT_8_CLAMPED_ARRAY:
+        case UINT_16_ARRAY:
+        case UINT_32_ARRAY:
+          return prependTypeToString(object.join(','), type);
+
+        case MATH:
+          return MATH_OBJECT;
+
+        default:
+          return HTML_ELEMENT_REGEXP.test(type) ? `HTMLElement ${object.textContent}` : object;
+      }
   }
 };
 
@@ -178,7 +193,7 @@ const getValueForStringification = (object) => {
  */
 const REPLACER = ((stack, undefined, recursiveCounter, index) => {
   return (key, value) => {
-    if (key === '') {
+    if (!key) {
       stack = [value];
       recursiveCounter = 0;
 
@@ -187,62 +202,71 @@ const REPLACER = ((stack, undefined, recursiveCounter, index) => {
 
     const type = toString(value);
 
-    switch (type) {
-      case ARGUMENTS:
-      case BOOLEAN:
-      case NUMBER:
-      case STRING:
+    switch (typeof value) {
+      case STRING_TYPEOF:
+      case NUMBER_TYPEOF:
+      case BOOLEAN_TYPEOF:
         return value;
 
-      case ARRAY:
-      case OBJECT:
-        if (!value) {
-          return prependTypeToString(value, type);
-        }
-
-        if (++recursiveCounter > 255) {
-          return 'Undefined undefined';
-        }
-
-        index = stack.indexOf(value);
-
-        if (!~index) {
-          stack.push(value);
-
-          return value;
-        }
-
-        return `*Recursive-${index}`;
-
-      case ARRAY_BUFFER:
-      case DATA_VIEW:
-      case DATE:
-      case FLOAT_32_ARRAY:
-      case FLOAT_64_ARRAY:
-      case FUNCTION:
-      case GENERATOR:
-      case INT_8_ARRAY:
-      case INT_16_ARRAY:
-      case INT_32_ARRAY:
-      case ERROR:
-      case MAP:
-      case MATH:
-      case NULL:
-      case PROMISE:
-      case REGEXP:
-      case SET:
-      case SYMBOL:
-      case UINT_8_ARRAY:
-      case UINT_8_CLAMPED_ARRAY:
-      case UINT_16_ARRAY:
-      case UINT_32_ARRAY:
-      case UNDEFINED:
-      case WEAKMAP:
-      case WEAKSET:
+      case UNDEFINED_TYPEOF:
+      case FUNCTION_TYPEOF:
         return getValueForStringification(value);
 
       default:
-        return value;
+        switch (type) {
+          case ARRAY:
+          case OBJECT:
+            if (!value) {
+              return prependTypeToString(value, type);
+            }
+
+            if (++recursiveCounter > 255) {
+              return 'Undefined undefined';
+            }
+
+            index = stack.indexOf(value);
+
+            if (!~index) {
+              stack.push(value);
+
+              return value;
+            }
+
+            return `*Recursive-${index}`;
+
+          case ARGUMENTS:
+            return value;
+
+          case DATE:
+          case FUNCTION:
+          case MAP:
+          case SET:
+          case PROMISE:
+          case REGEXP:
+          case NULL:
+          case ARRAY_BUFFER:
+          case DATA_VIEW:
+          case FLOAT_32_ARRAY:
+          case FLOAT_64_ARRAY:
+          case GENERATOR:
+          case INT_8_ARRAY:
+          case INT_16_ARRAY:
+          case INT_32_ARRAY:
+          case ERROR:
+          case MATH:
+          case SYMBOL:
+          case UINT_8_ARRAY:
+          case UINT_8_CLAMPED_ARRAY:
+          case UINT_16_ARRAY:
+          case UINT_32_ARRAY:
+          case UNDEFINED:
+          case WEAKMAP:
+          case WEAKSET:
+            return getValueForStringification(value);
+
+          default:
+            return value;
+        }
     }
   };
 })();
@@ -259,41 +283,76 @@ const getIntegerHashValue = (string) => {
     return 0;
   }
 
-  let hashValue = 5381,
-      index = string.length;
+  const length = string.length;
 
-  while (index) {
-    hashValue = (hashValue * 33) ^ string.charCodeAt(--index);
+  let hashValue = 5381,
+      index = -1;
+
+  while (++index < length) {
+    hashValue = ((hashValue << 5) + hashValue) + string.charCodeAt(index);
   }
 
   return hashValue >>> 0;
 };
 
+const stringify = (value) => {
+  return JSON.stringify(value, REPLACER);
+};
+
+const prune = (value) => {
+  return json.prune(value);
+};
+
 /**
  * move try/catch to standalone function as any function that contains a try/catch
  * is not optimized (this allows optimization for as much as possible)
- * 
+ * fac
  * @param {*} value
  * @returns {string}
  */
 const tryCatch = (value) => {
   try {
-    return JSON.stringify(value, REPLACER);
+    return stringify(value, REPLACER);
   } catch (exception) {
-    return json.prune(value);
+    return prune(value);
   }
 };
 
 /**
- * stringify the object passed leveraging the REPLACER
+ * stringify the object passed leveraging JSON.stringify
+ * with REPLACER, falling back to prune
  *
  * @param {*} object
  * @returns {string}
  */
-const stringify = (object) => {
+const getStringifiedValue = (object) => {
+  const valueForStringification = getValueForStringification(object);
+
+  if (typeof valueForStringification === 'string') {
+    return valueForStringification;
+  }
+
+  return stringify(valueForStringification);
+};
+
+/**
+ * stringify the object passed leveraging JSON.stringify
+ * with REPLACER
+ *
+ * @param {*} object
+ * @returns {string}
+ */
+const getStringifiedValueWithRecursion = (object) => {
+  const valueForStringification = getValueForStringification(object);
+
+  if (typeof valueForStringification === 'string') {
+    return valueForStringification;
+  }
+
   return tryCatch(getValueForStringification(object));
 };
 
 export {getIntegerHashValue};
+export {getStringifiedValue};
+export {getStringifiedValueWithRecursion};
 export {REPLACER as replacer};
-export {stringify};

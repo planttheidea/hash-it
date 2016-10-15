@@ -3,8 +3,9 @@ import sinon from 'sinon';
 
 import {
   getIntegerHashValue,
-  replacer,
-  stringify
+  getStringifiedValue,
+  getStringifiedValueWithRecursion,
+  replacer
 } from '../src/utils';
 
 import json from '../src/prune';
@@ -35,73 +36,73 @@ const TEST_VALUES = [
   }, {
     comparator: 'deepEqual',
     expectedResult: `ArrayBuffer \u0001\u0002\u0003`,
-    expectedString: `"ArrayBuffer \\u0001\\u0002\\u0003"`,
+    expectedString: `ArrayBuffer \u0001\u0002\u0003`,
     key: 'arrayBuffer',
     value: new Uint16Array(INTEGER_ARRAY).buffer
   }, {
     comparator: 'is',
     expectedResult: true,
-    expectedString: 'true',
+    expectedString: 'Boolean true',
     key: 'boolean',
     value: true
   }, {
     comparator: 'deepEqual',
     expectedResult: `DataView \u0000`,
-    expectedString: `"DataView \\u0000"`,
+    expectedString: `DataView \u0000`,
     key: 'dataView',
     value: new DataView(new ArrayBuffer(2))
   }, {
     comparator: 'is',
     expectedResult: `Date ${DATE.valueOf()}`,
-    expectedString: `"Date ${DATE.valueOf()}"`,
+    expectedString: `Date ${DATE.valueOf()}`,
     key: 'date',
     value: DATE
   }, {
     comparator: 'is',
     expectedResult: 'Error Error: test',
-    expectedString: '"Error Error: test"',
+    expectedString: 'Error Error: test',
     key: 'error',
     value: new Error('test')
   }, {
     comparator: 'deepEqual',
     expectedResult: 'Float32Array 1,2,3',
-    expectedString: '"Float32Array 1,2,3"',
+    expectedString: 'Float32Array 1,2,3',
     key: 'float32Array',
     value: new Float32Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
     expectedResult: 'Float64Array 1,2,3',
-    expectedString: '"Float64Array 1,2,3"',
+    expectedString: 'Float64Array 1,2,3',
     key: 'float64Array',
     value: new Float64Array(INTEGER_ARRAY)
   }, {
     comparator: 'is',
     expectedResult: 'function value(){}',
-    expectedString: '"function value(){}"',
+    expectedString: 'function value(){}',
     key: 'function',
     value: function() {}
   }, {
     comparator: 'is',
     expectedResult: 'function* value(){}',
-    expectedString: '"function* value(){}"',
+    expectedString: 'function* value(){}',
     key: 'generator',
     value: function* () {}
   }, {
     comparator: 'deepEqual',
     expectedResult: 'Int8Array 1,2,3',
-    expectedString: '"Int8Array 1,2,3"',
+    expectedString: 'Int8Array 1,2,3',
     key: 'int8Array',
     value: new Int8Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
     expectedResult: 'Int16Array 1,2,3',
-    expectedString: '"Int16Array 1,2,3"',
+    expectedString: 'Int16Array 1,2,3',
     key: 'int16Array',
     value: new Int16Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
     expectedResult: 'Int32Array 1,2,3',
-    expectedString: '"Int32Array 1,2,3"',
+    expectedString: 'Int32Array 1,2,3',
     key: 'int32Array',
     value: new Int32Array(INTEGER_ARRAY)
   }, {
@@ -119,7 +120,7 @@ const TEST_VALUES = [
   }, {
     comparator: 'is',
     expectedResult: 'Null null',
-    expectedString: '"Null null"',
+    expectedString: 'Null null',
     key: 'null',
     value: null
   }, {
@@ -137,13 +138,13 @@ const TEST_VALUES = [
   }, {
     comparator: 'is',
     expectedResult: 'Promise NOT_ENUMERABLE',
-    expectedString: '"Promise NOT_ENUMERABLE"',
+    expectedString: 'Promise NOT_ENUMERABLE',
     key: 'promise',
     value: Promise.resolve(1)
   }, {
     comparator: 'is',
     expectedResult: 'RegExp /foo/',
-    expectedString: '"RegExp /foo/"',
+    expectedString: 'RegExp /foo/',
     key: 'regexp',
     value: /foo/
   }, {
@@ -155,55 +156,55 @@ const TEST_VALUES = [
   }, {
     comparator: 'is',
     expectedResult: 'foo',
-    expectedString: '"foo"',
+    expectedString: 'foo',
     key: 'string',
     value: 'foo'
   }, {
     comparator: 'is',
     expectedResult: 'Symbol(foo)',
-    expectedString: '"Symbol(foo)"',
+    expectedString: 'Symbol(foo)',
     key: 'symbol',
     value: Symbol('foo')
   }, {
     comparator: 'deepEqual',
     expectedResult: 'Uint8Array 1,2,3',
-    expectedString: '"Uint8Array 1,2,3"',
+    expectedString: 'Uint8Array 1,2,3',
     key: 'uint8Array',
     value: new Uint8Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
     expectedResult: 'Uint8ClampedArray 1,2,3',
-    expectedString: '"Uint8ClampedArray 1,2,3"',
+    expectedString: 'Uint8ClampedArray 1,2,3',
     key: 'uint8ClampedArray',
     value: new Uint8ClampedArray(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
     expectedResult: 'Uint16Array 1,2,3',
-    expectedString: '"Uint16Array 1,2,3"',
+    expectedString: 'Uint16Array 1,2,3',
     key: 'uint16Array',
     value: new Uint16Array(INTEGER_ARRAY)
   }, {
     comparator: 'deepEqual',
     expectedResult: 'Uint32Array 1,2,3',
-    expectedString: '"Uint32Array 1,2,3"',
+    expectedString: 'Uint32Array 1,2,3',
     key: 'uint32Array',
     value: new Uint32Array(INTEGER_ARRAY)
   }, {
     comparator: 'is',
     expectedResult: 'Undefined undefined',
-    expectedString: '"Undefined undefined"',
+    expectedString: 'Undefined undefined',
     key: 'undefined',
     value: undefined
   }, {
     comparator: 'is',
     expectedResult: 'WeakMap NOT_ENUMERABLE',
-    expectedString: '"WeakMap NOT_ENUMERABLE"',
+    expectedString: 'WeakMap NOT_ENUMERABLE',
     key: 'weakMap',
     value: new WeakMap().set({}, 'foo')
   }, {
     comparator: 'is',
     expectedResult: 'WeakSet NOT_ENUMERABLE',
-    expectedString: '"WeakSet NOT_ENUMERABLE"',
+    expectedString: 'WeakSet NOT_ENUMERABLE',
     key: 'weakSet',
     value: new WeakSet().add({})
   }
@@ -216,7 +217,7 @@ test('if getIntegerHashValue returns correct values', (t) => {
 
   t.is(getIntegerHashValue(undef), 0);
   t.is(getIntegerHashValue(nil), 0);
-  t.is(getIntegerHashValue(string), 193420387);
+  t.is(getIntegerHashValue(string), 193491849);
 });
 
 test('if replacer provides correct values for different object types', (t) => {
@@ -225,14 +226,22 @@ test('if replacer provides correct values for different object types', (t) => {
   });
 });
 
-test('if stringify uses JSON.stringify with replacer correctly, and falls back to prune when needed', sinon.test(function(t) {
+test('if getStringifiedValue uses JSON.stringify with replacer correctly', sinon.test(function(t) {
+  TEST_VALUES.forEach(({comparator, expectedString, value}) => {
+    t[comparator](getStringifiedValue(value), expectedString);
+  });
+}));
+
+test('if getStringifiedValue throws for window object (deeply recursive)', sinon.test(function(t) {
+  t.throws(() => {
+    getStringifiedValue(window);
+  });
+}));
+
+test('if getStringifiedValueWithRecursion handles deeply-recursive objects', sinon.test(function(t) {
   const spy = this.spy(json, 'prune');
 
-  TEST_VALUES.forEach(({comparator, expectedString, value}) => {
-    t[comparator](stringify(value), expectedString);
-  });
-
-  stringify(window);
+  getStringifiedValueWithRecursion(window);
 
   t.true(spy.calledOnce);
 }));

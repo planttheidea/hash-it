@@ -83,6 +83,10 @@ This is basically all I could think of, but if I have missed an object class let
 
 ### Utility functions
 
+**withRecursion(object)** *returns `Number`*
+
+Performs the same kind of hashing, but handles very deep recursion on objects (such as the `window` object).
+
 **isEmpty(object)** *returns `Boolean`*
 
 Determines if object is empty based on hashCode, with empty defined as:

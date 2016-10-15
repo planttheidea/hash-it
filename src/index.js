@@ -1,6 +1,7 @@
 import {
   getIntegerHashValue,
-  stringify
+  getStringifiedValue,
+  getStringifiedValueWithRecursion
 } from './utils';
 
 /**
@@ -10,7 +11,9 @@ import {
  * @returns {number}
  */
 const hashIt = (object) => {
-  return getIntegerHashValue(stringify(object));
+  const stringifiedValue = getStringifiedValue(object);
+
+  return getIntegerHashValue(stringifiedValue);
 };
 
 const UNDEFINED_HASH = hashIt(undefined);
@@ -84,6 +87,18 @@ hashIt.isNull = (object) => {
  */
 hashIt.isUndefined = (object) => {
   return hashIt(object) === UNDEFINED_HASH;
+};
+
+/**
+ * return the unique integer hash value for the object
+ *
+ * @param {*} object
+ * @returns {number}
+ */
+hashIt.withRecursion = (object) => {
+  const stringifiedValue = getStringifiedValueWithRecursion(object);
+
+  return getIntegerHashValue(stringifiedValue);
 };
 
 export default hashIt;

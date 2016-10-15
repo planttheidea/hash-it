@@ -76,7 +76,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @returns {number}
 	 */
 	var hashIt = function hashIt(object) {
-	  return (0, _utils.getIntegerHashValue)((0, _utils.stringify)(object));
+	  var stringifiedValue = (0, _utils.getStringifiedValue)(object);
+	
+	  return (0, _utils.getIntegerHashValue)(stringifiedValue);
 	};
 	
 	var UNDEFINED_HASH = hashIt(undefined);
@@ -145,6 +147,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return hashIt(object) === UNDEFINED_HASH;
 	};
 	
+	/**
+	 * return the unique integer hash value for the object
+	 *
+	 * @param {*} object
+	 * @returns {number}
+	 */
+	hashIt.withRecursion = function (object) {
+	  var stringifiedValue = (0, _utils.getStringifiedValueWithRecursion)(object);
+	
+	  return (0, _utils.getIntegerHashValue)(stringifiedValue);
+	};
+	
 	exports.default = hashIt;
 	module.exports = exports['default'];
 
@@ -157,9 +171,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.stringify = exports.replacer = exports.getIntegerHashValue = undefined;
+	exports.replacer = exports.getStringifiedValueWithRecursion = exports.getStringifiedValue = exports.getIntegerHashValue = undefined;
 	
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
 	var _prune = __webpack_require__(3);
 	
@@ -169,12 +185,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+	
 	var HTML_ELEMENT_REGEXP = /\[object (HTML(.*)Element)\]/;
-	var MATH_PROPERTIES = ['E', 'LN2', 'LN10', 'LOG2E', 'LOG10E', 'PI', 'SQRT1_2', 'SQRT2'];
+	var MATH_OBJECT = ['E', 'LN2', 'LN10', 'LOG2E', 'LOG10E', 'PI', 'SQRT1_2', 'SQRT2'].reduce(function (mathObject, property) {
+	  return _extends({}, mathObject, _defineProperty({}, property, Math[property]));
+	}, {});
 	
 	/**
 	 * get the string value of the buffer passed
-	 * 
+	 *
 	 * @param {ArrayBuffer} buffer
 	 * @returns {string}
 	 */
@@ -187,9 +207,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	
 	/**
+	 * get the key,value pairs for maps and sets
+	 *
+	 * @param {Map|Set} iterable
+	 * @param {string} type
+	 * @returns {Array<Array>}
+	 */
+	var getIterablePairs = function getIterablePairs(iterable, type) {
+	  var pairs = [getObjectType(type)];
+	
+	  iterable.forEach(function (item, key) {
+	    pairs.push([key, item]);
+	  });
+	
+	  return pairs;
+	};
+	
+	/**
 	 * strip away [object and ] from return of toString()
 	 * to get the object class
-	 * 
+	 *
 	 * @param {string} type
 	 * @returns {string}
 	 */
@@ -199,7 +236,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	/**
 	 * prepend type to string value
-	 * 
+	 *
 	 * @param {string} string
 	 * @param {string} type
 	 * @returns {string}
@@ -221,107 +258,69 @@ return /******/ (function(modules) { // webpackBootstrap
 	var getValueForStringification = function getValueForStringification(object) {
 	  var type = (0, _toString.toString)(object);
 	
-	  var _ret = function () {
-	    switch (type) {
-	      case _toString.ARGUMENTS:
-	      case _toString.ARRAY:
-	      case _toString.BOOLEAN:
-	      case _toString.NUMBER:
-	      case _toString.STRING:
-	        return {
-	          v: object
-	        };
+	  switch (typeof object === 'undefined' ? 'undefined' : _typeof(object)) {
+	    case _toString.STRING_TYPEOF:
+	    case _toString.NUMBER_TYPEOF:
+	      return object;
 	
-	      case _toString.OBJECT:
-	        return {
-	          v: !!object ? object : prependTypeToString(object, type)
-	        };
+	    case _toString.BOOLEAN_TYPEOF:
+	    case _toString.UNDEFINED_TYPEOF:
+	      return prependTypeToString(object, type);
 	
-	      case _toString.ERROR:
-	      case _toString.NULL:
-	      case _toString.REGEXP:
-	      case _toString.UNDEFINED:
-	        return {
-	          v: prependTypeToString(object, type)
-	        };
+	    case _toString.FUNCTION_TYPEOF:
+	      return (0, _toString.toFunctionString)(object, type === _toString.GENERATOR);
 	
-	      case _toString.DATE:
-	        return {
-	          v: prependTypeToString(object.valueOf(), type)
-	        };
+	    default:
+	      switch (type) {
+	        case _toString.ARRAY:
+	        case _toString.OBJECT:
+	        case _toString.ARGUMENTS:
+	          return object;
 	
-	      case _toString.FUNCTION:
-	      case _toString.GENERATOR:
-	        return {
-	          v: (0, _toString.toFunctionString)(object, type === _toString.GENERATOR)
-	        };
+	        case _toString.ERROR:
+	        case _toString.NULL:
+	        case _toString.REGEXP:
+	          return prependTypeToString(object, type);
 	
-	      case _toString.SYMBOL:
-	        return {
-	          v: object.toString()
-	        };
+	        case _toString.DATE:
+	          return prependTypeToString(object.valueOf(), type);
 	
-	      case _toString.PROMISE:
-	      case _toString.WEAKMAP:
-	      case _toString.WEAKSET:
-	        return {
-	          v: prependTypeToString('NOT_ENUMERABLE', type)
-	        };
+	        case _toString.SYMBOL:
+	          return object.toString();
 	
-	      case _toString.MAP:
-	      case _toString.SET:
-	        var pairs = [getObjectType(type)];
+	        case _toString.PROMISE:
+	        case _toString.WEAKMAP:
+	        case _toString.WEAKSET:
+	          return prependTypeToString('NOT_ENUMERABLE', type);
 	
-	        object.forEach(function (item, key) {
-	          pairs.push([key, item]);
-	        });
+	        case _toString.MAP:
+	        case _toString.SET:
+	          return getIterablePairs(object, type);
 	
-	        return {
-	          v: pairs
-	        };
+	        case _toString.ARRAY_BUFFER:
+	          return prependTypeToString(arrayBufferToString(object), type);
 	
-	      case _toString.ARRAY_BUFFER:
-	        return {
-	          v: prependTypeToString(arrayBufferToString(object), type)
-	        };
+	        case _toString.DATA_VIEW:
+	          return prependTypeToString(arrayBufferToString(object.buffer), type);
 	
-	      case _toString.DATA_VIEW:
-	        return {
-	          v: prependTypeToString(arrayBufferToString(object.buffer), type)
-	        };
+	        case _toString.FLOAT_32_ARRAY:
+	        case _toString.FLOAT_64_ARRAY:
+	        case _toString.INT_8_ARRAY:
+	        case _toString.INT_16_ARRAY:
+	        case _toString.INT_32_ARRAY:
+	        case _toString.UINT_8_ARRAY:
+	        case _toString.UINT_8_CLAMPED_ARRAY:
+	        case _toString.UINT_16_ARRAY:
+	        case _toString.UINT_32_ARRAY:
+	          return prependTypeToString(object.join(','), type);
 	
-	      case _toString.FLOAT_32_ARRAY:
-	      case _toString.FLOAT_64_ARRAY:
-	      case _toString.INT_8_ARRAY:
-	      case _toString.INT_16_ARRAY:
-	      case _toString.INT_32_ARRAY:
-	      case _toString.UINT_8_ARRAY:
-	      case _toString.UINT_8_CLAMPED_ARRAY:
-	      case _toString.UINT_16_ARRAY:
-	      case _toString.UINT_32_ARRAY:
-	        return {
-	          v: prependTypeToString(object.join(','), type)
-	        };
+	        case _toString.MATH:
+	          return MATH_OBJECT;
 	
-	      case _toString.MATH:
-	        var mathObject = {};
-	
-	        MATH_PROPERTIES.forEach(function (prop) {
-	          mathObject[prop] = object[prop];
-	        });
-	
-	        return {
-	          v: mathObject
-	        };
-	
-	      default:
-	        return {
-	          v: HTML_ELEMENT_REGEXP.test(type) ? 'HTMLElement ' + object.textContent : object
-	        };
-	    }
-	  }();
-	
-	  if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+	        default:
+	          return HTML_ELEMENT_REGEXP.test(type) ? 'HTMLElement ' + object.textContent : object;
+	      }
+	  }
 	};
 	
 	/**
@@ -330,7 +329,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	var REPLACER = function (stack, undefined, recursiveCounter, index) {
 	  return function (key, value) {
-	    if (key === '') {
+	    if (!key) {
 	      stack = [value];
 	      recursiveCounter = 0;
 	
@@ -339,62 +338,71 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    var type = (0, _toString.toString)(value);
 	
-	    switch (type) {
-	      case _toString.ARGUMENTS:
-	      case _toString.BOOLEAN:
-	      case _toString.NUMBER:
-	      case _toString.STRING:
+	    switch (typeof value === 'undefined' ? 'undefined' : _typeof(value)) {
+	      case _toString.STRING_TYPEOF:
+	      case _toString.NUMBER_TYPEOF:
+	      case _toString.BOOLEAN_TYPEOF:
 	        return value;
 	
-	      case _toString.ARRAY:
-	      case _toString.OBJECT:
-	        if (!value) {
-	          return prependTypeToString(value, type);
-	        }
-	
-	        if (++recursiveCounter > 255) {
-	          return 'Undefined undefined';
-	        }
-	
-	        index = stack.indexOf(value);
-	
-	        if (!~index) {
-	          stack.push(value);
-	
-	          return value;
-	        }
-	
-	        return '*Recursive-' + index;
-	
-	      case _toString.ARRAY_BUFFER:
-	      case _toString.DATA_VIEW:
-	      case _toString.DATE:
-	      case _toString.FLOAT_32_ARRAY:
-	      case _toString.FLOAT_64_ARRAY:
-	      case _toString.FUNCTION:
-	      case _toString.GENERATOR:
-	      case _toString.INT_8_ARRAY:
-	      case _toString.INT_16_ARRAY:
-	      case _toString.INT_32_ARRAY:
-	      case _toString.ERROR:
-	      case _toString.MAP:
-	      case _toString.MATH:
-	      case _toString.NULL:
-	      case _toString.PROMISE:
-	      case _toString.REGEXP:
-	      case _toString.SET:
-	      case _toString.SYMBOL:
-	      case _toString.UINT_8_ARRAY:
-	      case _toString.UINT_8_CLAMPED_ARRAY:
-	      case _toString.UINT_16_ARRAY:
-	      case _toString.UINT_32_ARRAY:
-	      case _toString.UNDEFINED:
-	      case _toString.WEAKMAP:
-	      case _toString.WEAKSET:
+	      case _toString.UNDEFINED_TYPEOF:
+	      case _toString.FUNCTION_TYPEOF:
 	        return getValueForStringification(value);
 	
 	      default:
-	        return value;
+	        switch (type) {
+	          case _toString.ARRAY:
+	          case _toString.OBJECT:
+	            if (!value) {
+	              return prependTypeToString(value, type);
+	            }
+	
+	            if (++recursiveCounter > 255) {
+	              return 'Undefined undefined';
+	            }
+	
+	            index = stack.indexOf(value);
+	
+	            if (!~index) {
+	              stack.push(value);
+	
+	              return value;
+	            }
+	
+	            return '*Recursive-' + index;
+	
+	          case _toString.ARGUMENTS:
+	            return value;
+	
+	          case _toString.DATE:
+	          case _toString.FUNCTION:
+	          case _toString.MAP:
+	          case _toString.SET:
+	          case _toString.PROMISE:
+	          case _toString.REGEXP:
+	          case _toString.NULL:
+	          case _toString.ARRAY_BUFFER:
+	          case _toString.DATA_VIEW:
+	          case _toString.FLOAT_32_ARRAY:
+	          case _toString.FLOAT_64_ARRAY:
+	          case _toString.GENERATOR:
+	          case _toString.INT_8_ARRAY:
+	          case _toString.INT_16_ARRAY:
+	          case _toString.INT_32_ARRAY:
+	          case _toString.ERROR:
+	          case _toString.MATH:
+	          case _toString.SYMBOL:
+	          case _toString.UINT_8_ARRAY:
+	          case _toString.UINT_8_CLAMPED_ARRAY:
+	          case _toString.UINT_16_ARRAY:
+	          case _toString.UINT_32_ARRAY:
+	          case _toString.UNDEFINED:
+	          case _toString.WEAKMAP:
+	          case _toString.WEAKSET:
+	            return getValueForStringification(value);
+	
+	          default:
+	            return value;
+	        }
 	    }
 	  };
 	}();
@@ -411,44 +419,79 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return 0;
 	  }
 	
-	  var hashValue = 5381,
-	      index = string.length;
+	  var length = string.length;
 	
-	  while (index) {
-	    hashValue = hashValue * 33 ^ string.charCodeAt(--index);
+	  var hashValue = 5381,
+	      index = -1;
+	
+	  while (++index < length) {
+	    hashValue = (hashValue << 5) + hashValue + string.charCodeAt(index);
 	  }
 	
 	  return hashValue >>> 0;
 	};
 	
+	var stringify = function stringify(value) {
+	  return JSON.stringify(value, REPLACER);
+	};
+	
+	var prune = function prune(value) {
+	  return _prune2.default.prune(value);
+	};
+	
 	/**
 	 * move try/catch to standalone function as any function that contains a try/catch
 	 * is not optimized (this allows optimization for as much as possible)
-	 * 
+	 * fac
 	 * @param {*} value
 	 * @returns {string}
 	 */
 	var tryCatch = function tryCatch(value) {
 	  try {
-	    return JSON.stringify(value, REPLACER);
+	    return stringify(value, REPLACER);
 	  } catch (exception) {
-	    return _prune2.default.prune(value);
+	    return prune(value);
 	  }
 	};
 	
 	/**
-	 * stringify the object passed leveraging the REPLACER
+	 * stringify the object passed leveraging JSON.stringify
+	 * with REPLACER, falling back to prune
 	 *
 	 * @param {*} object
 	 * @returns {string}
 	 */
-	var stringify = function stringify(object) {
+	var getStringifiedValue = function getStringifiedValue(object) {
+	  var valueForStringification = getValueForStringification(object);
+	
+	  if (typeof valueForStringification === 'string') {
+	    return valueForStringification;
+	  }
+	
+	  return stringify(valueForStringification);
+	};
+	
+	/**
+	 * stringify the object passed leveraging JSON.stringify
+	 * with REPLACER
+	 *
+	 * @param {*} object
+	 * @returns {string}
+	 */
+	var getStringifiedValueWithRecursion = function getStringifiedValueWithRecursion(object) {
+	  var valueForStringification = getValueForStringification(object);
+	
+	  if (typeof valueForStringification === 'string') {
+	    return valueForStringification;
+	  }
+	
 	  return tryCatch(getValueForStringification(object));
 	};
 	
 	exports.getIntegerHashValue = getIntegerHashValue;
+	exports.getStringifiedValue = getStringifiedValue;
+	exports.getStringifiedValueWithRecursion = getStringifiedValueWithRecursion;
 	exports.replacer = REPLACER;
-	exports.stringify = stringify;
 
 /***/ },
 /* 3 */
@@ -646,6 +689,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	var WEAKMAP = exports.WEAKMAP = '[object WeakMap]';
 	var WEAKSET = exports.WEAKSET = '[object WeakSet]';
 	
+	var BOOLEAN_TYPEOF = exports.BOOLEAN_TYPEOF = 'boolean';
+	var FUNCTION_TYPEOF = exports.FUNCTION_TYPEOF = 'function';
+	var NUMBER_TYPEOF = exports.NUMBER_TYPEOF = 'number';
+	var STRING_TYPEOF = exports.STRING_TYPEOF = 'string';
+	var UNDEFINED_TYPEOF = exports.UNDEFINED_TYPEOF = 'undefined';
+	
+	var objectToString = Object.prototype.toString;
+	
 	/**
 	 * get the generic string value of the function passed
 	 *
@@ -666,7 +717,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @returns {string}
 	 */
 	var toString = exports.toString = function toString(object) {
-	  return Object.prototype.toString.call(object);
+	  return objectToString.call(object);
 	};
 
 /***/ }
