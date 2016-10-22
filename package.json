@@ -40,12 +40,12 @@
     "babel-preset-stage-2": "6.17.0",
     "babel-register": "6.16.3",
     "babel-runtime": "^6.11.6",
-    "eslint": "3.7.1",
+    "eslint": "3.8.1",
     "eslint-friendly-formatter": "2.0.6",
-    "eslint-loader": "1.5.0",
-    "html-webpack-plugin": "2.22.0",
+    "eslint-loader": "1.6.0",
+    "html-webpack-plugin": "2.24.0",
     "in-publish": "2.0.0",
-    "jsdom": "9.6.0",
+    "jsdom": "9.8.0",
     "optimize-js-plugin": "0.0.4",
     "react": "15.3.2",
     "react-dom": "15.3.2",
@@ -82,5 +82,5 @@
     "test:watch": "NODE_ENV=test ava --verbose --watch",
     "transpile": "./node_modules/babel-cli/lib/babel/index.js -d lib/ src/"
   },
-  "version": "2.0.0"
+  "version": "2.0.1"
 }

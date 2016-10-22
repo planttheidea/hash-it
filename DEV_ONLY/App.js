@@ -195,7 +195,16 @@ const hashOnlyValidation = (iterations = 100) => {
   // console.log(hashIt(window));
 };
 
-benchmark();
+const testGetObjectType = (object) => {
+  const string = Object.prototype.toString.call(object);
+
+  console.log(string);
+  console.log(string.substring(8, string.length - 1));
+};
+
+testGetObjectType(new Map());
+
+// benchmark();
 // profile(1000);
 // visualValidation();
 // hashOnlyValidation();

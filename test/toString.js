@@ -58,7 +58,6 @@ test('if types are correct string values', (t) => {
   t.is(types.REGEXP, '[object RegExp]');
   t.is(types.SET, '[object Set]');
   t.is(types.STRING, '[object String]');
-  t.is(types.SYMBOL, '[object Symbol]');
   t.is(types.UINT_8_ARRAY, '[object Uint8Array]');
   t.is(types.UINT_8_CLAMPED_ARRAY, '[object Uint8ClampedArray]');
   t.is(types.UINT_16_ARRAY, '[object Uint16Array]');
@@ -90,7 +89,6 @@ test('if types.toString correctly identifies to object class values', (t) => {
   t.is(types.toString(OBJECTS.regexp), types.REGEXP);
   t.is(types.toString(OBJECTS.set), types.SET);
   t.is(types.toString(OBJECTS.string), types.STRING);
-  t.is(types.toString(OBJECTS.symbol), types.SYMBOL);
   t.is(types.toString(OBJECTS.uint8Array), types.UINT_8_ARRAY);
   t.is(types.toString(OBJECTS.uint8ClampedArray), types.UINT_8_CLAMPED_ARRAY);
   t.is(types.toString(OBJECTS.uint16Array), types.UINT_16_ARRAY);

@@ -21,7 +21,6 @@ export const PROMISE = '[object Promise]';
 export const REGEXP = '[object RegExp]';
 export const SET = '[object Set]';
 export const STRING = '[object String]';
-export const SYMBOL = '[object Symbol]';
 export const UINT_8_ARRAY = '[object Uint8Array]';
 export const UINT_8_CLAMPED_ARRAY = '[object Uint8ClampedArray]';
 export const UINT_16_ARRAY = '[object Uint16Array]';
@@ -34,6 +33,7 @@ export const BOOLEAN_TYPEOF = 'boolean';
 export const FUNCTION_TYPEOF = 'function';
 export const NUMBER_TYPEOF = 'number';
 export const STRING_TYPEOF = 'string';
+export const SYMBOL_TYPEOF = 'symbol';
 export const UNDEFINED_TYPEOF = 'undefined';
 
 const objectToString = Object.prototype.toString;
