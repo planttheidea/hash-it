@@ -1,5 +1,8 @@
 # hashIt CHANGELOG
 
+#### 2.0.1
+* More speed improvements
+
 #### 2.0.0
 * Use JSON.stringify with replacer as default, without try/catch
 * Move use of try/catch with fallback to prune to new `hashIt.withRecursion` method (only necessary for deeply-recursive objects like `window`)
