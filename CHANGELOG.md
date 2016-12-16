@@ -1,5 +1,11 @@
 # hashIt CHANGELOG
 
+#### 2.1.2
+* Move up isNull check in replacer (improve performance of more likely use-case)
+
+#### 2.1.1
+* Create isNull utility instead of checking strict equality in multiple places
+
 #### 2.1.0
 * Overall speed improvement by an average of 18.74% (35.27% improvement on complex objects)
 
