@@ -1,3 +1,5 @@
+'use strict';
+
 /* eslint no-console: 0 */
 const fs = require('fs');
 const {
@@ -25,7 +27,9 @@ const {
 } = require('./complex');
 
 const header = () => {
-  return `Benchmark (all times in milliseconds): ${repeats.join(', ')}`;
+  return `Benchmark cycles: ${repeats.map((cycles) => {
+    return cycles.toLocaleString();
+  }).join(' ')}`;
 };
 
 let results = [];

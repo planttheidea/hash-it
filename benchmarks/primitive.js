@@ -1,3 +1,5 @@
+'use strict';
+
 const hashIt = require('../lib');
 
 const boolean = exports.boolean = true;

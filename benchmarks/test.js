@@ -1,9 +1,15 @@
-const repeats = [1000, 5000, 10000, 50000, 100000, 500000/*, 1000000, 5000000*/];
+'use strict';
+
+const REPEATS = [1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000];
+const TOTAL = REPEATS.reduce((sum, cycles) => {
+  return sum + cycles;
+}, 0);
 
 exports.test = (name, benchmark) => {
-  let startTime, testTime;
+  let totalTime = 0,
+      startTime, testTime;
 
-  return `${name}: ${repeats.map(cycles => {
+  let displayText = `\n${name}:\n${REPEATS.map(cycles => {
     startTime = Date.now();
 
     benchmark(cycles);
@@ -14,8 +20,14 @@ exports.test = (name, benchmark) => {
       global.gc();
     }
 
-    return testTime;
-  }).join(', ')}`;
+    totalTime += testTime;
+
+    return `${cycles.toLocaleString()}: ${testTime / 1000} sec`;
+  }).join('\n')}`;
+
+  displayText += `\nAverage: ${Math.round((TOTAL / totalTime) * 1000).toLocaleString()} ops/sec`;
+
+  return displayText;
 };
 
-exports.repeats = repeats;
+exports.repeats = REPEATS;

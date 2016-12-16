@@ -250,7 +250,7 @@ export const REPLACER = (() => {
       return value;
     }
 
-    if (type === UNDEFINED_TYPEOF || type === FUNCTION_TYPEOF) {
+    if (type === UNDEFINED_TYPEOF || type === FUNCTION_TYPEOF || isNull(value)) {
       return getValueForStringification(value);
     }
 
@@ -274,7 +274,6 @@ export const REPLACER = (() => {
       type === SET ||
       type === PROMISE ||
       type === REGEXP ||
-      isNull(value) ||
       type === ERROR ||
       type === GENERATOR ||
       type === WEAKMAP ||

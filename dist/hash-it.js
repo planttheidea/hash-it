@@ -390,7 +390,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return value;
 	    }
 	
-	    if (type === _constants.UNDEFINED_TYPEOF || type === _constants.FUNCTION_TYPEOF) {
+	    if (type === _constants.UNDEFINED_TYPEOF || type === _constants.FUNCTION_TYPEOF || isNull(value)) {
 	      return getValueForStringification(value);
 	    }
 	
@@ -408,7 +408,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return value;
 	    }
 	
-	    if (type === _constants.DATE || type === _constants.MAP || type === _constants.SET || type === _constants.PROMISE || type === _constants.REGEXP || isNull(value) || type === _constants.ERROR || type === _constants.GENERATOR || type === _constants.WEAKMAP || type === _constants.WEAKSET || type === _constants.MATH || type === _constants.ARRAY_BUFFER || type === _constants.DATA_VIEW || type === _constants.FLOAT_32_ARRAY || type === _constants.FLOAT_64_ARRAY || type === _constants.INT_8_ARRAY || type === _constants.INT_16_ARRAY || type === _constants.INT_32_ARRAY || type === _constants.UINT_8_ARRAY || type === _constants.UINT_8_CLAMPED_ARRAY || type === _constants.UINT_16_ARRAY || type === _constants.UINT_32_ARRAY) {
+	    if (type === _constants.DATE || type === _constants.MAP || type === _constants.SET || type === _constants.PROMISE || type === _constants.REGEXP || type === _constants.ERROR || type === _constants.GENERATOR || type === _constants.WEAKMAP || type === _constants.WEAKSET || type === _constants.MATH || type === _constants.ARRAY_BUFFER || type === _constants.DATA_VIEW || type === _constants.FLOAT_32_ARRAY || type === _constants.FLOAT_64_ARRAY || type === _constants.INT_8_ARRAY || type === _constants.INT_16_ARRAY || type === _constants.INT_32_ARRAY || type === _constants.UINT_8_ARRAY || type === _constants.UINT_8_CLAMPED_ARRAY || type === _constants.UINT_16_ARRAY || type === _constants.UINT_32_ARRAY) {
 	      return getValueForStringification(value);
 	    }
 	
