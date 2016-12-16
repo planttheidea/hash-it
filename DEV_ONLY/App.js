@@ -195,7 +195,7 @@ const hashOnlyValidation = (iterations = 100) => {
   // console.log(hashIt(window));
 };
 
-benchmark();
+// benchmark();
 // profile(1000);
-// visualValidation();
+visualValidation();
 // hashOnlyValidation();

@@ -138,7 +138,6 @@ test('if hash is consistent', (t) => {
 });
 
 test('if isEqual checks all objects for value equality based on hash', (t) => {
-
   const equalTest1 = {
     foo: 'bar'
   };
@@ -168,6 +167,14 @@ test('if isEqual checks all objects for value equality based on hash', (t) => {
   t.false(hashIt.isEqual(equalTest2, equalTest3, equalTest4));
 });
 
+test('if isEqual throws when only one argument is passed', (t) => {
+  t.throws(() => {
+    hashIt.isEqual({
+      foo: 'bar'
+    });
+  });
+});
+
 test('if isUndefined checks if the object is undefined', (t) => {
   t.true(hashIt.isUndefined(undefined));
   t.false(hashIt.isUndefined('undefined'));
@@ -195,4 +202,16 @@ test('if isEmpty checks if the object has value', (t) => {
   t.false(hashIt.isEmpty(1));
   t.false(hashIt.isEmpty('foo'));
   t.false(hashIt.isEmpty(true));
+});
+
+test('if withRecursion gets the right value when value is recursive', (t) => {
+  const foo = {
+    bar: 'baz'
+  };
+
+  foo.baz = foo;
+
+  const result = hashIt.withRecursion(foo);
+
+  t.is(result, 2687538939);
 });
