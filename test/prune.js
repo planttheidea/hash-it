@@ -2,7 +2,7 @@ import test from 'ava';
 
 import json from '../src/prune';
 
-test('if prune handles recursive objects correctly', (t) => {
+test.only('if prune handles recursive objects correctly', (t) => {
   const a = {
     foo: 'bar'
   };

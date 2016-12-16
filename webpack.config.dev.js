@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const eslintFriendlyFormatter = require('eslint-friendly-formatter');
+const WebpackDashboard = require('webpack-dashboard/plugin');
 
 const PORT = 3000;
 
@@ -90,6 +91,9 @@ module.exports = {
     new webpack.EnvironmentPlugin([
       'NODE_ENV'
     ]),
+    new WebpackDashboard({
+      port: 3456
+    }),
     new HtmlWebpackPlugin()
   ],
 

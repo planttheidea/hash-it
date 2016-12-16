@@ -1,5 +1,8 @@
 # hashIt CHANGELOG
 
+#### 2.1.0
+* Overall speed improvement by an average of 18.74% (35.27% improvement on complex objects)
+
 #### 2.0.1
 * More speed improvements
 

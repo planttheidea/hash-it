@@ -5,7 +5,7 @@ import {
   getIntegerHashValue,
   getStringifiedValue,
   getStringifiedValueWithRecursion,
-  replacer
+  REPLACER
 } from '../src/utils';
 
 import json from '../src/prune';
@@ -19,14 +19,6 @@ const TEST_VALUES = [
     expectedString: '{}',
     key: '',
     value: {}
-  }, {
-    comparator: 'deepEqual',
-    expectedResult: ['foo', 'bar'],
-    expectedString: '{"0":"foo","1":"bar"}',
-    key: 'arguments',
-    value: (function() {
-      return arguments;
-    })('foo', 'bar')
   }, {
     comparator: 'deepEqual',
     expectedResult: ['foo', 'bar'],
@@ -220,28 +212,30 @@ test('if getIntegerHashValue returns correct values', (t) => {
   t.is(getIntegerHashValue(string), 193491849);
 });
 
-test('if replacer provides correct values for different object types', (t) => {
+test('if REPLACER provides correct values for different object types', (t) => {
   TEST_VALUES.forEach(({comparator, expectedResult, key, value}) => {
-    t[comparator](replacer(key, value), expectedResult);
+    t[comparator](REPLACER(key, value), expectedResult);
   });
 });
 
-test('if getStringifiedValue uses JSON.stringify with replacer correctly', sinon.test(function(t) {
+test('if getStringifiedValue uses JSON.stringify with REPLACER correctly', (t) => {
   TEST_VALUES.forEach(({comparator, expectedString, value}) => {
     t[comparator](getStringifiedValue(value), expectedString);
   });
-}));
+});
 
-test('if getStringifiedValue throws for window object (deeply recursive)', sinon.test(function(t) {
+test('if getStringifiedValue throws for window object (deeply recursive)', (t) => {
   t.throws(() => {
     getStringifiedValue(window);
   });
-}));
+});
 
-test('if getStringifiedValueWithRecursion handles deeply-recursive objects', sinon.test(function(t) {
-  const spy = this.spy(json, 'prune');
+test('if getStringifiedValueWithRecursion handles deeply-recursive objects', (t) => {
+  const spy = sinon.spy(json, 'prune');
 
   getStringifiedValueWithRecursion(window);
 
   t.true(spy.calledOnce);
-}));
+
+  spy.restore();
+});
