@@ -5,6 +5,7 @@ import {
   getIntegerHashValue,
   getStringifiedValue,
   getStringifiedValueWithRecursion,
+  isNull,
   REPLACER
 } from '../src/utils';
 
@@ -238,4 +239,12 @@ test('if getStringifiedValueWithRecursion handles deeply-recursive objects', (t)
   t.true(spy.calledOnce);
 
   spy.restore();
+});
+
+test('if isNull correctly determines if object passed is null or not', (t) => {
+  const nil = null;
+  const notNil = 'null';
+
+  t.true(isNull(nil));
+  t.false(isNull(notNil));
 });
