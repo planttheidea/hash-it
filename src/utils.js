@@ -98,6 +98,22 @@ export const prependTypeToString = (string, type) => {
   return `${getObjectType(type)} ${string}`;
 };
 
+/**
+ * is the object passed null
+ *
+ * @param {*} object
+ * @returns {boolean}
+ */
+export const isNull = (object) => {
+  return object === null;
+};
+
+/**
+ * get the stringified value of the object based based on its toString class
+ *
+ * @param {*} object
+ * @returns {*}
+ */
 export const getStringifiedValueByObjectClass = (object) => {
   const type = toString(object);
 
@@ -105,7 +121,7 @@ export const getStringifiedValueByObjectClass = (object) => {
     return object;
   }
 
-  if (type === ERROR || type === REGEXP || object === null) {
+  if (type === ERROR || type === REGEXP || isNull(object)) {
     return prependTypeToString(object, type);
   }
 
@@ -258,7 +274,7 @@ export const REPLACER = (() => {
       type === SET ||
       type === PROMISE ||
       type === REGEXP ||
-      value === null ||
+      isNull(value) ||
       type === ERROR ||
       type === GENERATOR ||
       type === WEAKMAP ||

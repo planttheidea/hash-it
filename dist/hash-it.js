@@ -171,7 +171,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.getStringifiedValueWithRecursion = exports.getStringifiedValue = exports.tryCatch = exports.stringify = exports.getIntegerHashValue = exports.REPLACER = exports.getRecursiveStackValue = exports.getValueForStringification = exports.getStringifiedValueByObjectClass = exports.prependTypeToString = exports.getIterablePairs = exports.getObjectType = exports.arrayBufferToString = undefined;
+	exports.getStringifiedValueWithRecursion = exports.getStringifiedValue = exports.tryCatch = exports.stringify = exports.getIntegerHashValue = exports.REPLACER = exports.getRecursiveStackValue = exports.getValueForStringification = exports.getStringifiedValueByObjectClass = exports.isNull = exports.prependTypeToString = exports.getIterablePairs = exports.getObjectType = exports.arrayBufferToString = undefined;
 	
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; // external dependencies
 	
@@ -245,6 +245,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return getObjectType(type) + ' ' + string;
 	};
 	
+	/**
+	 * is the object passed null
+	 *
+	 * @param {*} object
+	 * @returns {boolean}
+	 */
+	var isNull = exports.isNull = function isNull(object) {
+	  return object === null;
+	};
+	
+	/**
+	 * get the stringified value of the object based based on its toString class
+	 *
+	 * @param {*} object
+	 * @returns {*}
+	 */
 	var getStringifiedValueByObjectClass = exports.getStringifiedValueByObjectClass = function getStringifiedValueByObjectClass(object) {
 	  var type = (0, _toString.toString)(object);
 	
@@ -252,7 +268,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return object;
 	  }
 	
-	  if (type === _constants.ERROR || type === _constants.REGEXP || object === null) {
+	  if (type === _constants.ERROR || type === _constants.REGEXP || isNull(object)) {
 	    return prependTypeToString(object, type);
 	  }
 	
@@ -392,7 +408,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return value;
 	    }
 	
-	    if (type === _constants.DATE || type === _constants.MAP || type === _constants.SET || type === _constants.PROMISE || type === _constants.REGEXP || value === null || type === _constants.ERROR || type === _constants.GENERATOR || type === _constants.WEAKMAP || type === _constants.WEAKSET || type === _constants.MATH || type === _constants.ARRAY_BUFFER || type === _constants.DATA_VIEW || type === _constants.FLOAT_32_ARRAY || type === _constants.FLOAT_64_ARRAY || type === _constants.INT_8_ARRAY || type === _constants.INT_16_ARRAY || type === _constants.INT_32_ARRAY || type === _constants.UINT_8_ARRAY || type === _constants.UINT_8_CLAMPED_ARRAY || type === _constants.UINT_16_ARRAY || type === _constants.UINT_32_ARRAY) {
+	    if (type === _constants.DATE || type === _constants.MAP || type === _constants.SET || type === _constants.PROMISE || type === _constants.REGEXP || isNull(value) || type === _constants.ERROR || type === _constants.GENERATOR || type === _constants.WEAKMAP || type === _constants.WEAKSET || type === _constants.MATH || type === _constants.ARRAY_BUFFER || type === _constants.DATA_VIEW || type === _constants.FLOAT_32_ARRAY || type === _constants.FLOAT_64_ARRAY || type === _constants.INT_8_ARRAY || type === _constants.INT_16_ARRAY || type === _constants.INT_32_ARRAY || type === _constants.UINT_8_ARRAY || type === _constants.UINT_8_CLAMPED_ARRAY || type === _constants.UINT_16_ARRAY || type === _constants.UINT_32_ARRAY) {
 	      return getValueForStringification(value);
 	    }
 	

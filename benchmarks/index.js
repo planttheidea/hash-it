@@ -44,7 +44,7 @@ console.log('');
 console.log('Starting benchmarks...');
 console.log('');
 
-console.log('Primitive objects:');
+console.log('Standard value objects:');
 
 // primitive tests
 logAndSave(test('Boolean', hashBoolean));
@@ -54,17 +54,17 @@ logAndSave(test('null', hashNull));
 logAndSave(test('Number', hashNumber));
 logAndSave(test('String', hashString));
 logAndSave(test('undefined', hashUndefined));
+logAndSave(test('Function', hashFunction));
+logAndSave(test('RegExp', hashRegExp));
 
 console.log('');
-console.log('Complex objects:');
+console.log('Nested value objects:');
 
 // complex tests
 logAndSave(test('Array', hashArray));
-logAndSave(test('Function', hashFunction));
 logAndSave(test('Map', hashMap));
 logAndSave(test('Object', hashObject));
 logAndSave(test('Object (recursive)', hashRecursiveObject));
-logAndSave(test('RegExp', hashRegExp));
 logAndSave(test('Set', hashSet));
 
 console.log('');
