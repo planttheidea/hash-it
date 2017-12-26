@@ -3,14 +3,29 @@
   "ava": {
     "babel": {
       "babelrc": true,
-      "presets": ["react"]
+      "presets": [
+        "react"
+      ]
     },
     "failFast": true,
-    "files": ["test/*.js"],
-    "require": ["babel-register", "babel-polyfill", "./test/helpers/setup-browser-env.js"],
+    "files": [
+      "test/*.js"
+    ],
+    "require": [
+      "babel-register",
+      "babel-polyfill",
+      "./test/helpers/setup-browser-env.js"
+    ],
     "verbose": true
   },
-  "browserslist": ["defaults", "Explorer >= 9", "Safari >= 6", "Opera >= 15", "iOS >= 8", "Android >= 4"],
+  "browserslist": [
+    "defaults",
+    "Explorer >= 9",
+    "Safari >= 6",
+    "Opera >= 15",
+    "iOS >= 8",
+    "Android >= 4"
+  ],
   "bugs": {
     "url": "https://github.com/planttheidea/hash-it/issues"
   },
@@ -19,7 +34,7 @@
     "ava": "^0.24.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
-    "babel-eslint": "^8.1.1",
+    "babel-eslint": "^8.1.2",
     "babel-loader": "^7.1.2",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.26.0",
@@ -46,7 +61,12 @@
     "webpack-dev-server": "2.9.7"
   },
   "homepage": "https://github.com/planttheidea/hash-it#readme",
-  "keywords": ["hash", "hashcode", "java", "object-hash"],
+  "keywords": [
+    "hash",
+    "hashcode",
+    "java",
+    "object-hash"
+  ],
   "license": "MIT",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -63,8 +83,7 @@
     "dist": "rimraf dist && npm run build && npm run build:minified",
     "lint": "NODE_ENV=test eslint src",
     "prepublish": "if in-publish; then npm run prepublish:compile; fi",
-    "prepublish:compile":
-      "npm run lint && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
+    "prepublish:compile": "npm run lint && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
     "start": "npm run dev",
     "test": "NODE_PATH=. NODE_ENV=test ava",
     "test:coverage": "nyc npm test",
