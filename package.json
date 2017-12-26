@@ -49,6 +49,7 @@
   "keywords": ["hash", "hashcode", "java", "object-hash"],
   "license": "MIT",
   "main": "lib/index.js",
+  "module": "es/index.js",
   "name": "hash-it",
   "repository": {
     "type": "git",
