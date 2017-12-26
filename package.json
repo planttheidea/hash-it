@@ -91,7 +91,7 @@
     "transpile:es": "rimraf es && BABEL_ENV=es babel src --out-dir es",
     "transpile:lib": "rimraf lib && BABEL_ENV=lib babel src --out-dir lib"
   },
-  "version": "2.1.2",
+  "version": "3.0.0",
   "dependencies": {
     "json-prune": "^1.1.0"
   }
