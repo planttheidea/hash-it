@@ -32,7 +32,7 @@ const hashIt = window.hashIt;
 console.log(hashIt({foo: 'bar'})); // 2639617176
 
 // or if you know it is a circular object
-console.lo(hashIt(window, true)); // 482488043
+console.log(hashIt(window, true)); // 482488043
 ```
 
 ## Overview
