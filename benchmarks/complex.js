@@ -1,25 +1,9 @@
 'use strict';
 
-const hashIt = require('../lib');
-const {
-  boolean,
-  infinite,
-  notANumber,
-  nul,
-  number,
-  string,
-  undef
-} = require('./primitive');
+const hashIt = require('../lib').default;
+const {boolean, infinite, notANumber, nul, number, string, undef} = require('./primitive');
 
-const array = [
-  boolean,
-  infinite,
-  notANumber,
-  nul,
-  number,
-  string,
-  undef
-];
+const array = [boolean, infinite, notANumber, nul, number, string, undef];
 const object = {
   boolean,
   infinite,
@@ -43,7 +27,7 @@ const recursiveObject = (() => {
 
 exports.hashArray = (cycles) => {
   let index = -1,
-    val;
+      val;
 
   while (++index < cycles) {
     val = hashIt(array);
@@ -52,7 +36,7 @@ exports.hashArray = (cycles) => {
 
 exports.hashFunction = (cycles) => {
   let index = -1,
-    val;
+      val;
 
   while (++index < cycles) {
     val = hashIt(func);
@@ -61,7 +45,7 @@ exports.hashFunction = (cycles) => {
 
 exports.hashMap = (cycles) => {
   let index = -1,
-    val;
+      val;
 
   while (++index < cycles) {
     val = hashIt(map);
@@ -70,16 +54,16 @@ exports.hashMap = (cycles) => {
 
 exports.hashObject = (cycles) => {
   let index = -1,
-    val;
+      val;
 
   while (++index < cycles) {
     val = hashIt(object);
   }
 };
 
-exports.hashRecursiveObject = (cycles) => {
+exports.hashCircularObject = (cycles) => {
   let index = -1,
-    val;
+      val;
 
   while (++index < cycles) {
     val = hashIt(recursiveObject, true);
@@ -88,7 +72,7 @@ exports.hashRecursiveObject = (cycles) => {
 
 exports.hashRegExp = (cycles) => {
   let index = -1,
-    val;
+      val;
 
   while (++index < cycles) {
     val = hashIt(regex);
@@ -97,7 +81,7 @@ exports.hashRegExp = (cycles) => {
 
 exports.hashSet = (cycles) => {
   let index = -1,
-    val;
+      val;
 
   while (++index < cycles) {
     val = hashIt(set);

@@ -1,63 +1,165 @@
-export const ARGUMENTS = '[object Arguments]';
-export const ARRAY = '[object Array]';
-export const ARRAY_BUFFER = '[object ArrayBuffer]';
-export const DATA_VIEW = '[object DataView]';
-export const DATE = '[object Date]';
-export const ERROR = '[object Error]';
-export const FLOAT_32_ARRAY = '[object Float32Array]';
-export const FLOAT_64_ARRAY = '[object Float64Array]';
-export const GENERATOR = '[object GeneratorFunction]';
-export const INT_8_ARRAY = '[object Int8Array]';
-export const INT_16_ARRAY = '[object Int16Array]';
-export const INT_32_ARRAY = '[object Int32Array]';
-export const MAP = '[object Map]';
-export const MATH = '[object Math]';
-export const OBJECT = '[object Object]';
-export const PROMISE = '[object Promise]';
-export const REGEXP = '[object RegExp]';
-export const SET = '[object Set]';
-export const STRING = '[object String]';
-export const UINT_8_ARRAY = '[object Uint8Array]';
-export const UINT_8_CLAMPED_ARRAY = '[object Uint8ClampedArray]';
-export const UINT_16_ARRAY = '[object Uint16Array]';
-export const UINT_32_ARRAY = '[object Uint32Array]';
-export const WEAKMAP = '[object WeakMap]';
-export const WEAKSET = '[object WeakSet]';
+/**
+ * @constant {Array<string>} OBJECT_CLASSES
+ */
+export const OBJECT_CLASSES = [
+  'Arguments',
+  'Array',
+  'ArrayBuffer',
+  'Boolean',
+  'DataView',
+  'Date',
+  'Error',
+  'Float32Array',
+  'Float64Array',
+  'Function',
+  'GeneratorFunction',
+  'HTMLElement',
+  'Int8Array',
+  'Int16Array',
+  'Int32Array',
+  'Map',
+  'Math',
+  'Null',
+  'Object',
+  'Promise',
+  'RegExp',
+  'Set',
+  'String',
+  'Uint8Array',
+  'Uint8ClampedArray',
+  'Uint16Array',
+  'Uint32Array',
+  'Undefined',
+  'WeakMap',
+  'WeakSet'
+];
 
-export const BOOLEAN_TYPEOF = 'boolean';
-export const FUNCTION_TYPEOF = 'function';
-export const NUMBER_TYPEOF = 'number';
-export const STRING_TYPEOF = 'string';
-export const SYMBOL_TYPEOF = 'symbol';
-export const UNDEFINED_TYPEOF = 'undefined';
+/**
+ * @constant {Object} OBJECT_CLASS_MAP
+ */
+export const OBJECT_CLASS_MAP = OBJECT_CLASSES.reduce((objectClasses, type) => {
+  objectClasses[`[object ${type}]`] = type;
 
-export const DEFAULT_MAX_DEPTH = 6;
-export const DEFAULT_ARRAY_MAX_LENGTH = 50;
-export const DEFAULT_PRUNED_VALUE = '*Recursive';
-export const ESCAPABLE = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
-export const META = {	// table of character substitutions
-  '\b': '\\b',
-  '\t': '\\t',
-  '\n': '\\n',
-  '\f': '\\f',
-  '\r': '\\r',
-  '"' : '\\"',
-  '\\': '\\\\'
-};
-
-export const HTML_ELEMENT_REGEXP = /\[object (HTML(.*)Element)\]/;
-export const MATH_OBJECT = [
-  'E',
-  'LN2',
-  'LN10',
-  'LOG2E',
-  'LOG10E',
-  'PI',
-  'SQRT1_2',
-  'SQRT2'
-].reduce((mathObject, property) => {
-  return {
-    ...mathObject,
-    [property]: Math[property]
-  };
+  return objectClasses;
 }, {});
+
+/**
+ * @constant {Object} OBJECT_CLASS_TYPE_MAP
+ */
+export const OBJECT_CLASS_TYPE_MAP = OBJECT_CLASSES.reduce((objectClasses, type) => {
+  objectClasses[type.toUpperCase()] = `[object ${type}]`;
+
+  return objectClasses;
+}, {});
+
+/**
+ * @constant {number} RECURSIVE_COUNTER_CUTOFF
+ */
+export const RECURSIVE_COUNTER_CUTOFF = 512;
+
+/**
+ * @constant {Array<string>} REPLACE_RECURSIVE_VALUE_CLASSES
+ */
+export const REPLACE_RECURSIVE_VALUE_CLASSES = [OBJECT_CLASS_TYPE_MAP.ARRAY, OBJECT_CLASS_TYPE_MAP.OBJECT];
+
+/**
+ * @constant {Array<string>} REPLACE_STRINGIFICATION_CLASSES
+ */
+export const REPLACE_STRINGIFICATION_CLASSES = [
+  OBJECT_CLASS_TYPE_MAP.DATE,
+  OBJECT_CLASS_TYPE_MAP.MAP,
+  OBJECT_CLASS_TYPE_MAP.SET,
+  OBJECT_CLASS_TYPE_MAP.PROMISE,
+  OBJECT_CLASS_TYPE_MAP.REGEXP,
+  OBJECT_CLASS_TYPE_MAP.ERROR,
+  OBJECT_CLASS_TYPE_MAP.GENERATORFUNCTION,
+  OBJECT_CLASS_TYPE_MAP.WEAKMAP,
+  OBJECT_CLASS_TYPE_MAP.WEAKSET,
+  OBJECT_CLASS_TYPE_MAP.MATH,
+  OBJECT_CLASS_TYPE_MAP.ARRAYBUFFER,
+  OBJECT_CLASS_TYPE_MAP.DATAVIEW,
+  OBJECT_CLASS_TYPE_MAP.FLOAT32ARRAY,
+  OBJECT_CLASS_TYPE_MAP.FLOAT64ARRAY,
+  OBJECT_CLASS_TYPE_MAP.INT8ARRAY,
+  OBJECT_CLASS_TYPE_MAP.INT16ARRAY,
+  OBJECT_CLASS_TYPE_MAP.INT32ARRAY,
+  OBJECT_CLASS_TYPE_MAP.UINT8ARRAY,
+  OBJECT_CLASS_TYPE_MAP.UINT8CLAMPEDARRAY,
+  OBJECT_CLASS_TYPE_MAP.UINT16ARRAY,
+  OBJECT_CLASS_TYPE_MAP.UINT32ARRAY
+];
+
+/**
+ * @constant {Array<string>} STRINGIFY_SELF_CLASSES
+ */
+export const STRINGIFY_SELF_CLASSES = [
+  OBJECT_CLASS_TYPE_MAP.ARRAY,
+  OBJECT_CLASS_TYPE_MAP.OBJECT,
+  OBJECT_CLASS_TYPE_MAP.ARGUMENTS
+];
+
+/**
+ * @constant {Array<string>} STRINGIFY_PREFIX_CLASSES
+ */
+export const STRINGIFY_PREFIX_CLASSES = [OBJECT_CLASS_TYPE_MAP.ERROR, OBJECT_CLASS_TYPE_MAP.REGEXP];
+
+/**
+ * @constant {Array<string>} STRINGIFY_ITERABLE_CLASSES
+ */
+export const STRINGIFY_ITERABLE_CLASSES = [OBJECT_CLASS_TYPE_MAP.MAP, OBJECT_CLASS_TYPE_MAP.SET];
+
+/**
+ * @constant {Array<string>} STRINGIFY_NOT_ENUMERABLE_CLASSES
+ */
+export const STRINGIFY_NOT_ENUMERABLE_CLASSES = [
+  OBJECT_CLASS_TYPE_MAP.PROMISE,
+  OBJECT_CLASS_TYPE_MAP.WEAKMAP,
+  OBJECT_CLASS_TYPE_MAP.WEAKSET
+];
+
+/**
+ * @constant {Array<string>} STRINGIFY_PREFIX_JOIN_CLASSES
+ */
+export const STRINGIFY_PREFIX_JOIN_CLASSES = [
+  OBJECT_CLASS_TYPE_MAP.FLOAT32ARRAY,
+  OBJECT_CLASS_TYPE_MAP.FLOAT64ARRAY,
+  OBJECT_CLASS_TYPE_MAP.INT8ARRAY,
+  OBJECT_CLASS_TYPE_MAP.INT16ARRAY,
+  OBJECT_CLASS_TYPE_MAP.INT32ARRAY,
+  OBJECT_CLASS_TYPE_MAP.UINT8ARRAY,
+  OBJECT_CLASS_TYPE_MAP.UINT8CLAMPEDARRAY,
+  OBJECT_CLASS_TYPE_MAP.UINT16ARRAY,
+  OBJECT_CLASS_TYPE_MAP.UINT32ARRAY
+];
+
+/**
+ * @constant {Array<string>} STRINGIFY_SELF_TYPES
+ */
+export const STRINGIFY_SELF_TYPES = ['string', 'number'];
+
+/**
+ * @constant {Array<string>} STRINGIFY_PREFIX_TYPES
+ */
+export const STRINGIFY_PREFIX_TYPES = ['boolean', 'undefined', 'function'];
+/**
+ * @constant {Array<string>} STRINGIFY_TOSTRING_TYPES
+ */
+export const STRINGIFY_TOSTRING_TYPES = ['symbol'];
+
+/**
+ * @constant {RegExp} HTML_ELEMENT_REGEXP
+ */
+export const HTML_ELEMENT_REGEXP = /\[object (HTML(.*)Element)\]/;
+
+/**
+ * @constant {Object} MATH_OBJECT
+ */
+export const MATH_OBJECT = ['E', 'LN2', 'LN10', 'LOG2E', 'LOG10E', 'PI', 'SQRT1_2', 'SQRT2'].reduce(
+  (mathObject, property) => {
+    return {
+      ...mathObject,
+      [property]: Math[property]
+    };
+  },
+  {}
+);
