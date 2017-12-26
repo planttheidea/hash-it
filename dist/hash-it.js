@@ -237,11 +237,7 @@ var toString = function toString(object) {
  * @returns {Array<Array>} the [key, value] pairs
  */
 var getIterablePairs = function getIterablePairs(iterable, type) {
-  if (__WEBPACK_IMPORTED_MODULE_1__constants__["a" /* HAS_ARRAY_FROM_SUPPORT */] && typeof iterable.entries === 'function') {
-    return [__WEBPACK_IMPORTED_MODULE_1__constants__["d" /* OBJECT_CLASS_MAP */][type]].concat(Array.from(iterable.entries()));
-  }
-
-  var pairs = [__WEBPACK_IMPORTED_MODULE_1__constants__["d" /* OBJECT_CLASS_MAP */][type]];
+  var pairs = [__WEBPACK_IMPORTED_MODULE_1__constants__["c" /* OBJECT_CLASS_MAP */][type]];
 
   iterable.forEach(function (item, key) {
     pairs.push([key, item]);
@@ -273,7 +269,7 @@ var getStringFromArrayBuffer = function getStringFromArrayBuffer(buffer) {
  * @returns {string} the prefixed string
  */
 var getTypePrefixedString = function getTypePrefixedString(string, type) {
-  return __WEBPACK_IMPORTED_MODULE_1__constants__["d" /* OBJECT_CLASS_MAP */][type] + ' ' + string;
+  return __WEBPACK_IMPORTED_MODULE_1__constants__["c" /* OBJECT_CLASS_MAP */][type] + ' ' + string;
 };
 
 /**
@@ -288,43 +284,43 @@ var getTypePrefixedString = function getTypePrefixedString(string, type) {
 var getStringifiedValueByObjectClass = function getStringifiedValueByObjectClass(object) {
   var objectClass = toString(object);
 
-  if (~__WEBPACK_IMPORTED_MODULE_1__constants__["n" /* STRINGIFY_SELF_CLASSES */].indexOf(objectClass)) {
+  if (~__WEBPACK_IMPORTED_MODULE_1__constants__["m" /* STRINGIFY_SELF_CLASSES */].indexOf(objectClass)) {
     return object;
   }
 
-  if (~__WEBPACK_IMPORTED_MODULE_1__constants__["k" /* STRINGIFY_PREFIX_CLASSES */].indexOf(objectClass) || object === null) {
+  if (~__WEBPACK_IMPORTED_MODULE_1__constants__["j" /* STRINGIFY_PREFIX_CLASSES */].indexOf(objectClass) || object === null) {
     return getTypePrefixedString(object, objectClass);
   }
 
-  if (objectClass === __WEBPACK_IMPORTED_MODULE_1__constants__["e" /* OBJECT_CLASS_TYPE_MAP */].DATE) {
+  if (objectClass === __WEBPACK_IMPORTED_MODULE_1__constants__["d" /* OBJECT_CLASS_TYPE_MAP */].DATE) {
     return getTypePrefixedString(object.valueOf(), objectClass);
   }
 
-  if (~__WEBPACK_IMPORTED_MODULE_1__constants__["i" /* STRINGIFY_ITERABLE_CLASSES */].indexOf(objectClass)) {
+  if (~__WEBPACK_IMPORTED_MODULE_1__constants__["h" /* STRINGIFY_ITERABLE_CLASSES */].indexOf(objectClass)) {
     return getIterablePairs(object, objectClass);
   }
 
-  if (~__WEBPACK_IMPORTED_MODULE_1__constants__["j" /* STRINGIFY_NOT_ENUMERABLE_CLASSES */].indexOf(objectClass)) {
+  if (~__WEBPACK_IMPORTED_MODULE_1__constants__["i" /* STRINGIFY_NOT_ENUMERABLE_CLASSES */].indexOf(objectClass)) {
     return getTypePrefixedString('NOT_ENUMERABLE', objectClass);
   }
 
-  if (objectClass === __WEBPACK_IMPORTED_MODULE_1__constants__["e" /* OBJECT_CLASS_TYPE_MAP */].ARRAYBUFFER) {
+  if (objectClass === __WEBPACK_IMPORTED_MODULE_1__constants__["d" /* OBJECT_CLASS_TYPE_MAP */].ARRAYBUFFER) {
     return getTypePrefixedString(getStringFromArrayBuffer(object), objectClass);
   }
 
-  if (objectClass === __WEBPACK_IMPORTED_MODULE_1__constants__["e" /* OBJECT_CLASS_TYPE_MAP */].DATAVIEW) {
+  if (objectClass === __WEBPACK_IMPORTED_MODULE_1__constants__["d" /* OBJECT_CLASS_TYPE_MAP */].DATAVIEW) {
     return getTypePrefixedString(getStringFromArrayBuffer(object.buffer), objectClass);
   }
 
-  if (~__WEBPACK_IMPORTED_MODULE_1__constants__["l" /* STRINGIFY_PREFIX_JOIN_CLASSES */].indexOf(objectClass)) {
+  if (~__WEBPACK_IMPORTED_MODULE_1__constants__["k" /* STRINGIFY_PREFIX_JOIN_CLASSES */].indexOf(objectClass)) {
     return getTypePrefixedString(object.join(','), objectClass);
   }
 
-  if (objectClass === __WEBPACK_IMPORTED_MODULE_1__constants__["e" /* OBJECT_CLASS_TYPE_MAP */].MATH) {
-    return __WEBPACK_IMPORTED_MODULE_1__constants__["c" /* MATH_OBJECT */];
+  if (objectClass === __WEBPACK_IMPORTED_MODULE_1__constants__["d" /* OBJECT_CLASS_TYPE_MAP */].MATH) {
+    return __WEBPACK_IMPORTED_MODULE_1__constants__["b" /* MATH_OBJECT */];
   }
 
-  return __WEBPACK_IMPORTED_MODULE_1__constants__["b" /* HTML_ELEMENT_REGEXP */].test(objectClass) ? __WEBPACK_IMPORTED_MODULE_1__constants__["d" /* OBJECT_CLASS_MAP */][__WEBPACK_IMPORTED_MODULE_1__constants__["e" /* OBJECT_CLASS_TYPE_MAP */].HTMLELEMENT] + ' ' + object.textContent : object;
+  return __WEBPACK_IMPORTED_MODULE_1__constants__["a" /* HTML_ELEMENT_REGEXP */].test(objectClass) ? __WEBPACK_IMPORTED_MODULE_1__constants__["c" /* OBJECT_CLASS_MAP */][__WEBPACK_IMPORTED_MODULE_1__constants__["d" /* OBJECT_CLASS_TYPE_MAP */].HTMLELEMENT] + ' ' + object.textContent : object;
 };
 
 /**
@@ -339,15 +335,15 @@ var getStringifiedValueByObjectClass = function getStringifiedValueByObjectClass
 var getValueForStringification = function getValueForStringification(object) {
   var type = typeof object === 'undefined' ? 'undefined' : _typeof(object);
 
-  if (~__WEBPACK_IMPORTED_MODULE_1__constants__["o" /* STRINGIFY_SELF_TYPES */].indexOf(type)) {
+  if (~__WEBPACK_IMPORTED_MODULE_1__constants__["n" /* STRINGIFY_SELF_TYPES */].indexOf(type)) {
     return object;
   }
 
-  if (~__WEBPACK_IMPORTED_MODULE_1__constants__["m" /* STRINGIFY_PREFIX_TYPES */].indexOf(type)) {
+  if (~__WEBPACK_IMPORTED_MODULE_1__constants__["l" /* STRINGIFY_PREFIX_TYPES */].indexOf(type)) {
     return getTypePrefixedString(object, toString(object));
   }
 
-  if (~__WEBPACK_IMPORTED_MODULE_1__constants__["p" /* STRINGIFY_TOSTRING_TYPES */].indexOf(type)) {
+  if (~__WEBPACK_IMPORTED_MODULE_1__constants__["o" /* STRINGIFY_TOSTRING_TYPES */].indexOf(type)) {
     return object.toString();
   }
 
@@ -372,7 +368,7 @@ var getRecursiveStackValue = function getRecursiveStackValue(value, type, stack,
     return getTypePrefixedString(value, type);
   }
 
-  if (recursiveCounter > __WEBPACK_IMPORTED_MODULE_1__constants__["f" /* RECURSIVE_COUNTER_CUTOFF */]) {
+  if (recursiveCounter > __WEBPACK_IMPORTED_MODULE_1__constants__["e" /* RECURSIVE_COUNTER_CUTOFF */]) {
     stack.length = 0;
 
     return value;
@@ -412,29 +408,29 @@ var createReplacer = function createReplacer(stack) {
 
     type = typeof value === 'undefined' ? 'undefined' : _typeof(value);
 
-    if (~__WEBPACK_IMPORTED_MODULE_1__constants__["o" /* STRINGIFY_SELF_TYPES */].indexOf(type)) {
+    if (~__WEBPACK_IMPORTED_MODULE_1__constants__["n" /* STRINGIFY_SELF_TYPES */].indexOf(type)) {
       return value;
     }
 
-    if (~__WEBPACK_IMPORTED_MODULE_1__constants__["m" /* STRINGIFY_PREFIX_TYPES */].indexOf(type) || value === null) {
+    if (~__WEBPACK_IMPORTED_MODULE_1__constants__["l" /* STRINGIFY_PREFIX_TYPES */].indexOf(type) || value === null) {
       return getValueForStringification(value);
     }
 
-    if (~__WEBPACK_IMPORTED_MODULE_1__constants__["p" /* STRINGIFY_TOSTRING_TYPES */].indexOf(type)) {
+    if (~__WEBPACK_IMPORTED_MODULE_1__constants__["o" /* STRINGIFY_TOSTRING_TYPES */].indexOf(type)) {
       return value.toString();
     }
 
     objectClass = toString(value);
 
-    if (~__WEBPACK_IMPORTED_MODULE_1__constants__["g" /* REPLACE_RECURSIVE_VALUE_CLASSES */].indexOf(objectClass)) {
+    if (~__WEBPACK_IMPORTED_MODULE_1__constants__["f" /* REPLACE_RECURSIVE_VALUE_CLASSES */].indexOf(objectClass)) {
       return getRecursiveStackValue(value, objectClass, stack, ++recursiveCounter);
     }
 
-    if (objectClass === __WEBPACK_IMPORTED_MODULE_1__constants__["e" /* OBJECT_CLASS_TYPE_MAP */].ARGUMENTS) {
+    if (objectClass === __WEBPACK_IMPORTED_MODULE_1__constants__["d" /* OBJECT_CLASS_TYPE_MAP */].ARGUMENTS) {
       return value;
     }
 
-    if (~__WEBPACK_IMPORTED_MODULE_1__constants__["h" /* REPLACE_STRINGIFICATION_CLASSES */].indexOf(objectClass)) {
+    if (~__WEBPACK_IMPORTED_MODULE_1__constants__["g" /* REPLACE_STRINGIFICATION_CLASSES */].indexOf(objectClass)) {
       return getValueForStringification(value);
     }
 
@@ -677,29 +673,23 @@ var getStringifiedValue = function getStringifiedValue(object, isCircular) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HAS_ARRAY_FROM_SUPPORT; });
 /* unused harmony export OBJECT_CLASSES */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return OBJECT_CLASS_MAP; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return OBJECT_CLASS_TYPE_MAP; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return RECURSIVE_COUNTER_CUTOFF; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return REPLACE_RECURSIVE_VALUE_CLASSES; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return REPLACE_STRINGIFICATION_CLASSES; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return STRINGIFY_SELF_CLASSES; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return STRINGIFY_PREFIX_CLASSES; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return STRINGIFY_ITERABLE_CLASSES; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return STRINGIFY_NOT_ENUMERABLE_CLASSES; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return STRINGIFY_PREFIX_JOIN_CLASSES; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "o", function() { return STRINGIFY_SELF_TYPES; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return STRINGIFY_PREFIX_TYPES; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "p", function() { return STRINGIFY_TOSTRING_TYPES; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return HTML_ELEMENT_REGEXP; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return MATH_OBJECT; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return OBJECT_CLASS_MAP; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return OBJECT_CLASS_TYPE_MAP; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return RECURSIVE_COUNTER_CUTOFF; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return REPLACE_RECURSIVE_VALUE_CLASSES; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return REPLACE_STRINGIFICATION_CLASSES; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return STRINGIFY_SELF_CLASSES; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return STRINGIFY_PREFIX_CLASSES; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return STRINGIFY_ITERABLE_CLASSES; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return STRINGIFY_NOT_ENUMERABLE_CLASSES; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return STRINGIFY_PREFIX_JOIN_CLASSES; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return STRINGIFY_SELF_TYPES; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return STRINGIFY_PREFIX_TYPES; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "o", function() { return STRINGIFY_TOSTRING_TYPES; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HTML_ELEMENT_REGEXP; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return MATH_OBJECT; });
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-/**
- * @constant {boolean} HAS_ARRAY_FROM_SUPPORT
- */
-var HAS_ARRAY_FROM_SUPPORT = typeof Array.from === 'function';
 
 /**
  * @constant {Array<string>} OBJECT_CLASSES
