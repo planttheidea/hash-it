@@ -1,19 +1,19 @@
 'use strict';
 
-const hashIt = require('../lib');
+const hashIt = require('../lib').default;
 
-const boolean = exports.boolean = true;
-const infinite = exports.infinite = Infinity;
-const notANumber = exports.notANumber = NaN;
-const nul = exports.nul = null;
-const number = exports.number = 12;
-const string = exports.string = 'foo';
-const undef = exports.undef = undefined;
+const boolean = (exports.boolean = true);
+const infinite = (exports.infinite = Infinity);
+const notANumber = (exports.notANumber = NaN);
+const nul = (exports.nul = null);
+const number = (exports.number = 12);
+const string = (exports.string = 'foo');
+const undef = (exports.undef = undefined);
 
 exports.hashBoolean = (cycles) => {
   let index = -1,
       val;
-  
+
   while (++index < cycles) {
     val = hashIt(boolean);
   }
@@ -22,7 +22,7 @@ exports.hashBoolean = (cycles) => {
 exports.hashInfinity = (cycles) => {
   let index = -1,
       val;
-  
+
   while (++index < cycles) {
     val = hashIt(infinite);
   }
@@ -31,7 +31,7 @@ exports.hashInfinity = (cycles) => {
 exports.hashNaN = (cycles) => {
   let index = -1,
       val;
-  
+
   while (++index < cycles) {
     val = hashIt(notANumber);
   }
@@ -40,7 +40,7 @@ exports.hashNaN = (cycles) => {
 exports.hashNull = (cycles) => {
   let index = -1,
       val;
-  
+
   while (++index < cycles) {
     val = hashIt(nul);
   }
@@ -49,7 +49,7 @@ exports.hashNull = (cycles) => {
 exports.hashNumber = (cycles) => {
   let index = -1,
       val;
-  
+
   while (++index < cycles) {
     val = hashIt(number);
   }
@@ -58,7 +58,7 @@ exports.hashNumber = (cycles) => {
 exports.hashString = (cycles) => {
   let index = -1,
       val;
-  
+
   while (++index < cycles) {
     val = hashIt(string);
   }
@@ -67,7 +67,7 @@ exports.hashString = (cycles) => {
 exports.hashUndefined = (cycles) => {
   let index = -1,
       val;
-  
+
   while (++index < cycles) {
     val = hashIt(undef);
   }

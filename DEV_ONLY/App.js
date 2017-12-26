@@ -1,22 +1,19 @@
-import hashIt from '../src/index';
-
 import React from 'react';
-import {
-  render
-} from 'react-dom';
+import {render} from 'react-dom';
+
+import hashIt from '../src';
+
+console.log(hashIt({foo: 'bar'}));
+console.log(hashIt(window, true));
 
 class StatefulComponent extends React.Component {
   render() {
-    return (
-      <div>test</div>
-    );
+    return <div>test</div>;
   }
 }
 
 const StatelessComponent = () => {
-  return (
-    <div>test</div>
-  );
+  return <div>test</div>;
 };
 
 const a = {
@@ -36,7 +33,7 @@ const object = {
   func() {
     alert('y');
   },
-  generator: function* () {
+  * generator() {
     let value = yield 1;
 
     yield value + 2;
@@ -46,14 +43,11 @@ const object = {
   obj: {
     foo: 'bar'
   },
-  arr: [
-    'foo',
-    'bar'
-  ],
+  arr: ['foo', 'bar'],
   el: document.createElement('div'),
   math: Math,
   regexp: /test/,
-  
+
   // comment out for older browser testing
   symbol: Symbol('test'),
   arrayBuffer: new Uint16Array([1, 2, 3]).buffer,
@@ -75,9 +69,9 @@ const object = {
   weakSet: new WeakSet().add({}).add({foo: 'bar'}),
 
   ReactStatefulClass: StatefulComponent,
-  ReactStatefulElement: <StatefulComponent/>,
+  ReactStatefulElement: <StatefulComponent />,
   ReactStatelessClass: StatelessComponent,
-  ReactStatelessElement: <StatelessComponent/>
+  ReactStatelessElement: <StatelessComponent />
 };
 
 const profile = (iterations = 100) => {
@@ -122,7 +116,7 @@ const visualValidation = (iterations = 100) => {
   console.log(object.math, hashIt(object.math));
   console.log(object.regexp, hashIt(object.regexp));
   console.log(object.symbol, hashIt(object.symbol));
-  
+
   // comment out for older browser testing
   console.log(object.err, hashIt(object.err));
   console.log(object.map, hashIt(object.map));
@@ -148,7 +142,7 @@ const visualValidation = (iterations = 100) => {
   console.log(object.ReactStatelessClass, hashIt(object.ReactStatelessClass));
   console.log(object.ReactStatelessElement, hashIt(object.ReactStatelessElement));
   console.log(document.body, hashIt(document.body));
-  // console.log(window, hashIt(window));
+  console.log(window, hashIt(window, true));
 };
 
 const hashOnlyValidation = (iterations = 100) => {
@@ -166,7 +160,7 @@ const hashOnlyValidation = (iterations = 100) => {
   console.log(hashIt(object.math));
   console.log(hashIt(object.regexp));
   console.log(hashIt(object.symbol));
-  
+
   // comment out for older browser testing
   console.log(hashIt(object.err));
   console.log(hashIt(object.map));
@@ -197,5 +191,5 @@ const hashOnlyValidation = (iterations = 100) => {
 
 // benchmark();
 // profile(1000);
-visualValidation();
+// visualValidation();
 // hashOnlyValidation();

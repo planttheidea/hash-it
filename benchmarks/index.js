@@ -2,34 +2,17 @@
 
 /* eslint no-console: 0 */
 const fs = require('fs');
-const {
-  repeats,
-  test
-} = require('./test');
+const {repeats, test} = require('./test');
 
-const {
-  hashBoolean,
-  hashInfinity,
-  hashNaN,
-  hashNull,
-  hashNumber,
-  hashString,
-  hashUndefined
-} = require('./primitive');
-const {
-  hashArray,
-  hashFunction,
-  hashMap,
-  hashObject,
-  hashRecursiveObject,
-  hashRegExp,
-  hashSet
-} = require('./complex');
+const {hashBoolean, hashInfinity, hashNaN, hashNull, hashNumber, hashString, hashUndefined} = require('./primitive');
+const {hashArray, hashCircularObject, hashFunction, hashMap, hashObject, hashRegExp, hashSet} = require('./complex');
 
 const header = () => {
-  return `Benchmark cycles: ${repeats.map((cycles) => {
-    return cycles.toLocaleString();
-  }).join(' ')}`;
+  return `Benchmark cycles: ${repeats
+    .map((cycles) => {
+      return cycles.toLocaleString();
+    })
+    .join(' ')}`;
 };
 
 let results = [];
@@ -68,7 +51,7 @@ console.log('Nested value objects:');
 logAndSave(test('Array', hashArray));
 logAndSave(test('Map', hashMap));
 logAndSave(test('Object', hashObject));
-logAndSave(test('Object (recursive)', hashRecursiveObject));
+logAndSave(test('Object (circular)', hashCircularObject));
 logAndSave(test('Set', hashSet));
 
 console.log('');
@@ -80,3 +63,4 @@ if (fs && fs.writeFileSync) {
 } else {
   console.log('Benchmarks done!');
 }
+

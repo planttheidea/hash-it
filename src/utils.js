@@ -1,84 +1,47 @@
 // external dependencies
-import json from './prune';
+import prune from 'json-prune';
 
 // constants
 import {
-  ARGUMENTS,
-  ARRAY,
-  ARRAY_BUFFER,
-  DATA_VIEW,
-  DATE,
-  ERROR,
-  FLOAT_32_ARRAY,
-  FLOAT_64_ARRAY,
-  GENERATOR,
-  INT_8_ARRAY,
-  INT_16_ARRAY,
-  INT_32_ARRAY,
-  MAP,
-  MATH,
-  OBJECT,
-  PROMISE,
-  REGEXP,
-  SET,
-  UINT_8_ARRAY,
-  UINT_8_CLAMPED_ARRAY,
-  UINT_16_ARRAY,
-  UINT_32_ARRAY,
-  WEAKMAP,
-  WEAKSET,
-
-  BOOLEAN_TYPEOF,
-  FUNCTION_TYPEOF,
-  NUMBER_TYPEOF,
-  STRING_TYPEOF,
-  SYMBOL_TYPEOF,
-  UNDEFINED_TYPEOF,
-
   HTML_ELEMENT_REGEXP,
-  MATH_OBJECT
+  OBJECT_CLASS_MAP,
+  OBJECT_CLASS_TYPE_MAP,
+  MATH_OBJECT,
+  RECURSIVE_COUNTER_CUTOFF,
+  REPLACE_RECURSIVE_VALUE_CLASSES,
+  REPLACE_STRINGIFICATION_CLASSES,
+  STRINGIFY_ITERABLE_CLASSES,
+  STRINGIFY_NOT_ENUMERABLE_CLASSES,
+  STRINGIFY_PREFIX_JOIN_CLASSES,
+  STRINGIFY_PREFIX_CLASSES,
+  STRINGIFY_PREFIX_TYPES,
+  STRINGIFY_SELF_CLASSES,
+  STRINGIFY_SELF_TYPES,
+  STRINGIFY_TOSTRING_TYPES
 } from './constants';
 
-// toString
-import {
-  toFunctionString,
-  toString
-} from './toString';
-
 /**
- * get the string value of the buffer passed
+ * get the toString value of object
  *
- * @param {ArrayBuffer} buffer
+ * @param {*} object
  * @returns {string}
  */
-export const arrayBufferToString = (buffer) => {
-  if (typeof Uint16Array === UNDEFINED_TYPEOF) {
-    return '';
-  }
-
-  return String.fromCharCode.apply(null, new Uint16Array(buffer));
+export const toString = (object) => {
+  return Object.prototype.toString.call(object);
 };
 
 /**
- * strip away [object and ] from return of toString()
- * to get the object class
+ * @function getIterablePairs
  *
- * @param {string} type
- * @returns {string}
- */
-export const getObjectType = (type) => {
-  return type.slice(8, -1);
-};
-
-/**
- * get the key,value pairs for maps and sets
+ * @description
+ * get the [key,value] pairs for maps and sets
  *
- * @param {Map|Set} iterable
- * @param {string} type
- * @returns {Array<Array>}
+ * @param {Map|Set} iterable the iterable to map
+ * @param {string} type the type of object class
+ * @returns {Array<Array>} the [key, value] pairs
  */
 export const getIterablePairs = (iterable, type) => {
-  let pairs = [getObjectType(type)];
+  let pairs = [OBJECT_CLASS_MAP[type]];
 
   iterable.forEach((item, key) => {
     pairs.push([key, item]);
@@ -88,110 +51,105 @@ export const getIterablePairs = (iterable, type) => {
 };
 
 /**
+ * @function getStringFromArrayBuffer
+ *
+ * @description
+ * get the string value of the buffer passed
+ *
+ * @param {ArrayBuffer} buffer the array buffer to convert
+ * @returns {string} the stringified buffer
+ */
+export const getStringFromArrayBuffer = (buffer) => {
+  return typeof Uint16Array === 'undefined' ? '' : String.fromCharCode.apply(null, new Uint16Array(buffer));
+};
+/**
+ * @function getTypePrefixedString
+ *
+ * @description
  * prepend type to string value
  *
- * @param {string} string
- * @param {string} type
- * @returns {string}
+ * @param {string} string the string to prepend
+ * @param {string} type the type to add as a prefix
+ * @returns {string} the prefixed string
  */
-export const prependTypeToString = (string, type) => {
-  return `${getObjectType(type)} ${string}`;
+export const getTypePrefixedString = (string, type) => {
+  return `${OBJECT_CLASS_MAP[type]} ${string}`;
 };
 
 /**
- * is the object passed null
+ * @function getStringifiedValueByObjectClass
  *
- * @param {*} object
- * @returns {boolean}
- */
-export const isNull = (object) => {
-  return object === null;
-};
-
-/**
+ * @description
  * get the stringified value of the object based based on its toString class
  *
- * @param {*} object
- * @returns {*}
+ * @param {*} object the object to get the stringification value for
+ * @returns {*} the value to stringify with
  */
 export const getStringifiedValueByObjectClass = (object) => {
-  const type = toString(object);
+  const objectClass = toString(object);
 
-  if (type === ARRAY || type === OBJECT || type === ARGUMENTS) {
+  if (~STRINGIFY_SELF_CLASSES.indexOf(objectClass)) {
     return object;
   }
 
-  if (type === ERROR || type === REGEXP || isNull(object)) {
-    return prependTypeToString(object, type);
+  if (~STRINGIFY_PREFIX_CLASSES.indexOf(objectClass) || object === null) {
+    return getTypePrefixedString(object, objectClass);
   }
 
-  if (type === DATE) {
-    return prependTypeToString(object.valueOf(), type);
+  if (objectClass === OBJECT_CLASS_TYPE_MAP.DATE) {
+    return getTypePrefixedString(object.valueOf(), objectClass);
   }
 
-  if (type === MAP || type === SET) {
-    return getIterablePairs(object, type);
+  if (~STRINGIFY_ITERABLE_CLASSES.indexOf(objectClass)) {
+    return getIterablePairs(object, objectClass);
   }
 
-  if (type === PROMISE || type === WEAKMAP || type === WEAKSET) {
-    return prependTypeToString('NOT_ENUMERABLE', type);
+  if (~STRINGIFY_NOT_ENUMERABLE_CLASSES.indexOf(objectClass)) {
+    return getTypePrefixedString('NOT_ENUMERABLE', objectClass);
   }
 
-  if (type === ARRAY_BUFFER) {
-    return prependTypeToString(arrayBufferToString(object), type);
+  if (objectClass === OBJECT_CLASS_TYPE_MAP.ARRAYBUFFER) {
+    return getTypePrefixedString(getStringFromArrayBuffer(object), objectClass);
   }
 
-  if (type === DATA_VIEW) {
-    return prependTypeToString(arrayBufferToString(object.buffer), type);
+  if (objectClass === OBJECT_CLASS_TYPE_MAP.DATAVIEW) {
+    return getTypePrefixedString(getStringFromArrayBuffer(object.buffer), objectClass);
   }
 
-  if (
-    type === FLOAT_32_ARRAY ||
-    type === FLOAT_64_ARRAY ||
-    type === INT_8_ARRAY ||
-    type === INT_16_ARRAY ||
-    type === INT_32_ARRAY ||
-    type === UINT_8_ARRAY ||
-    type === UINT_8_CLAMPED_ARRAY ||
-    type === UINT_16_ARRAY ||
-    type === UINT_32_ARRAY
-  ) {
-    return prependTypeToString(object.join(','), type);
+  if (~STRINGIFY_PREFIX_JOIN_CLASSES.indexOf(objectClass)) {
+    return getTypePrefixedString(object.join(','), objectClass);
   }
 
-  if (type === MATH) {
+  if (objectClass === OBJECT_CLASS_TYPE_MAP.MATH) {
     return MATH_OBJECT;
   }
 
-  return HTML_ELEMENT_REGEXP.test(type) ? `HTMLElement ${object.textContent}` : object;
+  return HTML_ELEMENT_REGEXP.test(objectClass)
+    ? `${OBJECT_CLASS_MAP[OBJECT_CLASS_TYPE_MAP.HTMLELEMENT]} ${object.textContent}`
+    : object;
 };
 
 /**
+ * @function getValueForStringification
+ *
+ * @description
  * get the string value for the object used for stringification
  *
- * @param {*} object
- * @param {ArrayBuffer} [object.buffer]
- * @param {function} [object.forEach]
- * @param {function} [object.join]
- * @param {string} [object.textContent]
- * @returns {*}
+ * @param {*} object the object to get the stringification value for
+ * @returns {*} the value to stringify with
  */
 export const getValueForStringification = (object) => {
   const type = typeof object;
 
-  if (type === STRING_TYPEOF || type === NUMBER_TYPEOF) {
+  if (~STRINGIFY_SELF_TYPES.indexOf(type)) {
     return object;
   }
 
-  if (type === BOOLEAN_TYPEOF || type === UNDEFINED_TYPEOF) {
-    return prependTypeToString(object, toString(object));
+  if (~STRINGIFY_PREFIX_TYPES.indexOf(type)) {
+    return getTypePrefixedString(object, toString(object));
   }
 
-  if (type === FUNCTION_TYPEOF) {
-    return toFunctionString(object, toString(object) === GENERATOR);
-  }
-
-  if (type === SYMBOL_TYPEOF) {
+  if (~STRINGIFY_TOSTRING_TYPES.indexOf(type)) {
     return object.toString();
   }
 
@@ -199,184 +157,154 @@ export const getValueForStringification = (object) => {
 };
 
 /**
+ * @function getRecursiveStackValue
+ *
+ * @description
  * get the value either from the recursive storage stack
  * or itself after being added to that stack
  *
- * @param {*} value
- * @param {string} type
- * @param {Array<*>} stack
- * @param {number} index
- * @param {number} recursiveCounter
- * @returns {*}
+ * @param {*} value the value to check for existing
+ * @param {string} type the type of the value
+ * @param {Array<*>} stack the current stack of values
+ * @param {number} recursiveCounter the counter of circular references
+ * @returns {*} the value to apply
  */
-export const getRecursiveStackValue = (value, type, stack, index, recursiveCounter) => {
+export const getRecursiveStackValue = (value, type, stack, recursiveCounter) => {
   if (!value) {
-    return prependTypeToString(value, type);
+    return getTypePrefixedString(value, type);
   }
 
-  if (recursiveCounter > 255) {
-    return 'Undefined undefined';
+  if (recursiveCounter > RECURSIVE_COUNTER_CUTOFF) {
+    stack.length = 0;
+
+    return value;
   }
 
-  index = stack.indexOf(value);
+  let existingIndex = stack.indexOf(value);
 
-  if (!~index) {
+  if (!~existingIndex) {
     stack.push(value);
 
     return value;
   }
 
-  return `*Recursive-${index}`;
+  return `*Circular-${existingIndex}`;
 };
 
 /**
- * create the replacer function leveraging closure for
- * recursive stack storage
+ * @function createReplacer
+ *
+ * @description
+ * create the replacer function leveraging closure for recursive stack storage
+ *
+ * @param {Array<*>} stack the stack to store in memory
+ * @returns {function} the replacer to use
  */
-export const REPLACER = (() => {
-  let stack, recursiveCounter, index, type;
+export const createReplacer = (stack) => {
+  let recursiveCounter = 1,
+      type,
+      objectClass;
 
   return (key, value) => {
     if (!key) {
       stack = [value];
-      recursiveCounter = 0;
 
       return value;
     }
 
     type = typeof value;
 
-    if (type === STRING_TYPEOF || type === NUMBER_TYPEOF || type === BOOLEAN_TYPEOF) {
+    if (~STRINGIFY_SELF_TYPES.indexOf(type)) {
       return value;
     }
 
-    if (type === UNDEFINED_TYPEOF || type === FUNCTION_TYPEOF || isNull(value)) {
+    if (~STRINGIFY_PREFIX_TYPES.indexOf(type) || value === null) {
       return getValueForStringification(value);
     }
 
-    if (type === SYMBOL_TYPEOF) {
+    if (~STRINGIFY_TOSTRING_TYPES.indexOf(type)) {
       return value.toString();
     }
 
-    type = toString(value);
+    objectClass = toString(value);
 
-    if (type === ARRAY || type === OBJECT) {
-      return getRecursiveStackValue(value, type, stack, index, ++recursiveCounter);
+    if (~REPLACE_RECURSIVE_VALUE_CLASSES.indexOf(objectClass)) {
+      return getRecursiveStackValue(value, objectClass, stack, ++recursiveCounter);
     }
 
-    if (type === ARGUMENTS) {
+    if (objectClass === OBJECT_CLASS_TYPE_MAP.ARGUMENTS) {
       return value;
     }
 
-    if (
-      type === DATE ||
-      type === MAP ||
-      type === SET ||
-      type === PROMISE ||
-      type === REGEXP ||
-      type === ERROR ||
-      type === GENERATOR ||
-      type === WEAKMAP ||
-      type === WEAKSET ||
-      type === MATH ||
-      type === ARRAY_BUFFER ||
-      type === DATA_VIEW ||
-      type === FLOAT_32_ARRAY ||
-      type === FLOAT_64_ARRAY ||
-      type === INT_8_ARRAY ||
-      type === INT_16_ARRAY ||
-      type === INT_32_ARRAY ||
-      type === UINT_8_ARRAY ||
-      type === UINT_8_CLAMPED_ARRAY ||
-      type === UINT_16_ARRAY ||
-      type === UINT_32_ARRAY
-    ) {
+    if (~REPLACE_STRINGIFICATION_CLASSES.indexOf(objectClass)) {
       return getValueForStringification(value);
     }
 
     return value;
   };
-})();
+};
 
 /**
+ * @function getIntegerHashValue
+ *
+ * @description
  * based on string passed, get the integer hash value
  * through bitwise operation (based on spinoff of dbj2)
  *
- * @param {string} string
- * @returns {number}
+ * @param {string} string the string to get the hash value for
+ * @returns {number} the hash value
  */
 export const getIntegerHashValue = (string) => {
   if (!string) {
     return 0;
   }
 
-  const length = string.length;
+  let hashValue = 5381;
 
-  let hashValue = 5381,
-      index = -1;
-
-  while (++index < length) {
-    hashValue = ((hashValue << 5) + hashValue) + string.charCodeAt(index);
+  for (let index = 0; index < string.length; index++) {
+    hashValue = (hashValue << 5) + hashValue + string.charCodeAt(index);
   }
 
   return hashValue >>> 0;
 };
 
 /**
- * perform JSON.stringify on the value with the custom REPLACER
+ * @function tryCatch
  *
- * @param {*} value
- * @returns {string}
- */
-export const stringify = (value) => {
-  return JSON.stringify(value, REPLACER);
-};
-
-/**
+ * @description
  * move try/catch to standalone function as any function that contains a try/catch
  * is not optimized (this allows optimization for as much as possible)
- * fac
- * @param {*} value
- * @returns {string}
+ *
+ * @param {*} value the value to stringify
+ * @returns {string} the stringified value
  */
 export const tryCatch = (value) => {
   try {
-    return stringify(value);
+    return JSON.stringify(value, createReplacer([]));
   } catch (exception) {
-    return json.prune(value);
+    return prune(value);
   }
 };
 
 /**
+ * @function getStringifiedValue
+ *
+ * @description
  * stringify the object passed leveraging JSON.stringify
  * with REPLACER, falling back to prune
  *
- * @param {*} object
- * @returns {string}
+ * @param {*} object the object to stringify
+ * @param {boolean} isCircular is the object circular or not
+ * @returns {string} the stringified object
  */
-export const getStringifiedValue = (object) => {
+export const getStringifiedValue = (object, isCircular) => {
   const valueForStringification = getValueForStringification(object);
 
-  if (typeof valueForStringification === STRING_TYPEOF) {
+  if (typeof valueForStringification === 'string') {
     return valueForStringification;
   }
 
-  return stringify(valueForStringification);
-};
-
-/**
- * stringify the object passed leveraging JSON.stringify
- * with REPLACER
- *
- * @param {*} object
- * @returns {string}
- */
-export const getStringifiedValueWithRecursion = (object) => {
-  const valueForStringification = getValueForStringification(object);
-
-  if (typeof valueForStringification === STRING_TYPEOF) {
-    return valueForStringification;
-  }
-
-  return tryCatch(getValueForStringification(object));
+  return isCircular
+    ? tryCatch(getValueForStringification(object))
+    : JSON.stringify(valueForStringification, createReplacer([]));
 };

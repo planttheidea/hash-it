@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import hashIt from '../src/index';
+import hashIt from 'src/index';
 
 const CONSISTENCY_ITERATIONS = 10000;
 
@@ -11,95 +11,125 @@ const TEST_VALUES = [
     key: 'arguments',
     value: (function() {
       return arguments;
-    })('foo', 'bar')
-  }, {
+    }('foo', 'bar'))
+  },
+  {
     key: 'array',
     value: ['foo', 'bar']
-  }, {
+  },
+  {
     key: 'arrayBuffer',
     value: new Uint16Array(INTEGER_ARRAY).buffer
-  }, {
+  },
+  {
     key: 'boolean',
     value: true
-  }, {
+  },
+  {
     key: 'dataView',
     value: new DataView(new ArrayBuffer(2))
-  }, {
+  },
+  {
     key: 'date',
     value: DATE
-  }, {
+  },
+  {
     key: 'error',
     value: new Error('test')
-  }, {
+  },
+  {
     key: 'float32Array',
     value: new Float32Array(INTEGER_ARRAY)
-  }, {
+  },
+  {
     key: 'float64Array',
     value: new Float64Array(INTEGER_ARRAY)
-  }, {
+  },
+  {
     key: 'function',
-    value: function() {}
-  }, {
+    value() {}
+  },
+  {
     key: 'generator',
-    value: function* () {}
-  }, {
+    * value() {}
+  },
+  {
     key: 'int8Array',
     value: new Int8Array(INTEGER_ARRAY)
-  }, {
+  },
+  {
     key: 'int16Array',
     value: new Int16Array(INTEGER_ARRAY)
-  }, {
+  },
+  {
     key: 'int32Array',
     value: new Int32Array(INTEGER_ARRAY)
-  }, {
+  },
+  {
     key: 'map',
     value: new Map().set('foo', 'bar')
-  }, {
+  },
+  {
     key: 'math',
     value: Math
-  }, {
+  },
+  {
     key: 'null',
     value: null
-  }, {
+  },
+  {
     key: 'number',
     value: 12
-  }, {
+  },
+  {
     key: 'object',
     value: {foo: 'bar'}
-  }, {
+  },
+  {
     key: 'promise',
     value: Promise.resolve(1)
-  }, {
+  },
+  {
     key: 'regexp',
     value: /foo/
-  }, {
+  },
+  {
     key: 'set',
     value: new Set().add('foo')
-  }, {
+  },
+  {
     key: 'string',
     value: 'foo'
-  }, {
+  },
+  {
     key: 'symbol',
     value: Symbol('foo')
-  }, {
+  },
+  {
     key: 'uint8Array',
     value: new Uint8Array(INTEGER_ARRAY)
-  }, {
+  },
+  {
     key: 'uint8ClampedArray',
     value: new Uint8ClampedArray(INTEGER_ARRAY)
-  }, {
+  },
+  {
     key: 'uint16Array',
     value: new Uint16Array(INTEGER_ARRAY)
-  }, {
+  },
+  {
     key: 'uint32Array',
     value: new Uint32Array(INTEGER_ARRAY)
-  }, {
+  },
+  {
     key: 'undefined',
     value: undefined
-  }, {
+  },
+  {
     key: 'weakMap',
     value: new WeakMap().set({}, 'foo')
-  }, {
+  },
+  {
     key: 'weakSet',
     value: new WeakSet().add({})
   }
@@ -202,16 +232,4 @@ test('if isEmpty checks if the object has value', (t) => {
   t.false(hashIt.isEmpty(1));
   t.false(hashIt.isEmpty('foo'));
   t.false(hashIt.isEmpty(true));
-});
-
-test('if withRecursion gets the right value when value is recursive', (t) => {
-  const foo = {
-    bar: 'baz'
-  };
-
-  foo.baz = foo;
-
-  const result = hashIt.withRecursion(foo);
-
-  t.is(result, 2687538939);
 });
