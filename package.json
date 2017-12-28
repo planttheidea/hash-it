@@ -64,7 +64,7 @@
     "clean:es": "rimraf es",
     "clean:lib": "rimraf lib",
     "dev": "NODE_ENV=development webpack-dev-server   --colors --progress --config=webpack/webpack.config.dev.js",
-    "dist": "npm run clean dist && npm run build && npm run build:minified",
+    "dist": "npm run clean:dist && npm run build && npm run build:minified",
     "lint": "NODE_ENV=test eslint src",
     "prepublish": "if in-publish; then npm run prepublish:compile; fi",
     "prepublish:compile":
