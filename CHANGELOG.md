@@ -1,5 +1,9 @@
 # hashIt CHANGELOG
 
+## 3.1.1
+
+* Improve hash uniqueness for HTML elements
+
 ## 3.1.0
 
 * Add support for `Generator` (not just `GeneratorFunction`)
