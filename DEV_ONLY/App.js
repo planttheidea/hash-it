@@ -3,9 +3,6 @@ import {render} from 'react-dom';
 
 import hashIt from '../src';
 
-console.log(hashIt({foo: 'bar'}));
-console.log(hashIt(window, true));
-
 class StatefulComponent extends React.Component {
   render() {
     return <div>test</div>;
@@ -193,3 +190,15 @@ const hashOnlyValidation = (iterations = 100) => {
 // profile(1000);
 // visualValidation();
 // hashOnlyValidation();
+
+function* gen() {
+  yield 1;
+  yield 2;
+  yield 3;
+}
+
+const div = document.createElement('div');
+
+render(<div>Check the console for more details!</div>, div);
+
+document.body.appendChild(div);

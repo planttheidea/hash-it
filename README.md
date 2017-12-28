@@ -49,6 +49,8 @@ Well ... sadly, no, there are a few exceptions.
 
 * `Promise`
   * There is no way to obtain the values contained within due to its asynchronous nature
+* `Generator` (the result of calling a `GeneratorFunction`)
+  * Like `Promise`, there is no way to obtain the values contained within due to its dynamic iterable nature
 * `WeakMap` / `WeakSet`
 
   * The spec explicitly forbids iteration over them, so the unique values cannot be discovered

@@ -17,18 +17,11 @@ import {
   STRINGIFY_PREFIX_TYPES,
   STRINGIFY_SELF_CLASSES,
   STRINGIFY_SELF_TYPES,
-  STRINGIFY_TOSTRING_TYPES
+  STRINGIFY_TOSTRING_TYPES,
+  STRINGIFY_TYPEOF_TYPES
 } from './constants';
 
-/**
- * get the toString value of object
- *
- * @param {*} object
- * @returns {string}
- */
-export const toString = (object) => {
-  return Object.prototype.toString.call(object);
-};
+const toString = Object.prototype.toString;
 
 /**
  * @function getIterablePairs
@@ -86,7 +79,7 @@ export const getTypePrefixedString = (string, type) => {
  * @returns {*} the value to stringify with
  */
 export const getStringifiedValueByObjectClass = (object) => {
-  const objectClass = toString(object);
+  const objectClass = toString.call(object);
 
   if (~STRINGIFY_SELF_CLASSES.indexOf(objectClass)) {
     return object;
@@ -146,18 +139,17 @@ export const getValueForStringification = (object) => {
   }
 
   if (~STRINGIFY_PREFIX_TYPES.indexOf(type)) {
-    return getTypePrefixedString(object, toString(object));
-  }
-
-  if (~STRINGIFY_TOSTRING_TYPES.indexOf(type)) {
-    return object.toString();
+    return getTypePrefixedString(
+      ~STRINGIFY_TOSTRING_TYPES.indexOf(type) ? object.constructor.prototype.toString.call(object) : object,
+      toString.call(object)
+    );
   }
 
   return getStringifiedValueByObjectClass(object);
 };
 
 /**
- * @function getRecursiveStackValue
+ * @function getCircularStackValue
  *
  * @description
  * get the value either from the recursive storage stack
@@ -166,15 +158,15 @@ export const getValueForStringification = (object) => {
  * @param {*} value the value to check for existing
  * @param {string} type the type of the value
  * @param {Array<*>} stack the current stack of values
- * @param {number} recursiveCounter the counter of circular references
+ * @param {number} circularCounter the counter of circular references
  * @returns {*} the value to apply
  */
-export const getRecursiveStackValue = (value, type, stack, recursiveCounter) => {
+export const getCircularStackValue = (value, type, stack, circularCounter) => {
   if (!value) {
     return getTypePrefixedString(value, type);
   }
 
-  if (recursiveCounter > RECURSIVE_COUNTER_CUTOFF) {
+  if (circularCounter > RECURSIVE_COUNTER_CUTOFF) {
     stack.length = 0;
 
     return value;
@@ -201,7 +193,7 @@ export const getRecursiveStackValue = (value, type, stack, recursiveCounter) => 
  * @returns {function} the replacer to use
  */
 export const createReplacer = (stack) => {
-  let recursiveCounter = 1,
+  let circularCounter = 1,
       type,
       objectClass;
 
@@ -212,32 +204,24 @@ export const createReplacer = (stack) => {
       return value;
     }
 
-    type = typeof value;
-
-    if (~STRINGIFY_SELF_TYPES.indexOf(type)) {
-      return value;
+    if (value === null) {
+      return getStringifiedValueByObjectClass(value);
     }
 
-    if (~STRINGIFY_PREFIX_TYPES.indexOf(type) || value === null) {
+    type = typeof value;
+
+    if (~STRINGIFY_TYPEOF_TYPES.indexOf(type)) {
       return getValueForStringification(value);
     }
 
-    if (~STRINGIFY_TOSTRING_TYPES.indexOf(type)) {
-      return value.toString();
-    }
-
-    objectClass = toString(value);
+    objectClass = toString.call(value);
 
     if (~REPLACE_RECURSIVE_VALUE_CLASSES.indexOf(objectClass)) {
-      return getRecursiveStackValue(value, objectClass, stack, ++recursiveCounter);
-    }
-
-    if (objectClass === OBJECT_CLASS_TYPE_MAP.ARGUMENTS) {
-      return value;
+      return getCircularStackValue(value, objectClass, stack, ++circularCounter);
     }
 
     if (~REPLACE_STRINGIFICATION_CLASSES.indexOf(objectClass)) {
-      return getValueForStringification(value);
+      return getStringifiedValueByObjectClass(value);
     }
 
     return value;
