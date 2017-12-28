@@ -95,7 +95,7 @@
     "transpile:es": "npm run clean:es && BABEL_ENV=es babel src --out-dir es",
     "transpile:lib": "npm run clean:lib && BABEL_ENV=lib babel src --out-dir lib"
   },
-  "version": "3.1.0",
+  "version": "3.1.1",
   "dependencies": {
     "json-prune": "^1.1.0"
   }
