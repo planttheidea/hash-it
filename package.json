@@ -3,14 +3,29 @@
   "ava": {
     "babel": {
       "babelrc": true,
-      "presets": ["react"]
+      "presets": [
+        "react"
+      ]
     },
     "failFast": true,
-    "files": ["test/*.js"],
-    "require": ["babel-register", "babel-polyfill", "./test/helpers/setup-browser-env.js"],
+    "files": [
+      "test/*.js"
+    ],
+    "require": [
+      "babel-register",
+      "babel-polyfill",
+      "./test/helpers/setup-browser-env.js"
+    ],
     "verbose": true
   },
-  "browserslist": ["defaults", "Explorer >= 9", "Safari >= 6", "Opera >= 15", "iOS >= 8", "Android >= 4"],
+  "browserslist": [
+    "defaults",
+    "Explorer >= 9",
+    "Safari >= 6",
+    "Opera >= 15",
+    "iOS >= 8",
+    "Android >= 4"
+  ],
   "bugs": {
     "url": "https://github.com/planttheidea/hash-it/issues"
   },
@@ -46,7 +61,12 @@
     "webpack-dev-server": "2.9.7"
   },
   "homepage": "https://github.com/planttheidea/hash-it#readme",
-  "keywords": ["hash", "hashcode", "java", "object-hash"],
+  "keywords": [
+    "hash",
+    "hashcode",
+    "java",
+    "object-hash"
+  ],
   "license": "MIT",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -67,8 +87,7 @@
     "dist": "npm run clean:dist && npm run build && npm run build:minified",
     "lint": "NODE_ENV=test eslint src",
     "prepublish": "if in-publish; then npm run prepublish:compile; fi",
-    "prepublish:compile":
-      "npm run lint && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
+    "prepublish:compile": "npm run lint && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
     "start": "npm run dev",
     "test": "NODE_PATH=. NODE_ENV=test ava",
     "test:coverage": "nyc npm test",
@@ -76,7 +95,7 @@
     "transpile:es": "npm run clean:es && BABEL_ENV=es babel src --out-dir es",
     "transpile:lib": "npm run clean:lib && BABEL_ENV=lib babel src --out-dir lib"
   },
-  "version": "3.0.0",
+  "version": "3.1.0",
   "dependencies": {
     "json-prune": "^1.1.0"
   }
