@@ -135,15 +135,17 @@ const TEST_VALUES = [
       const div = document.createElement('div');
 
       div.textContent = 'foo';
+      div.className = 'class';
 
       return div;
     })(),
-    expectedString: 'HTMLElement foo',
+    expectedString: 'HTMLElement DIV class="class", foo',
     key: 'htmlElement',
     value: (() => {
       const div = document.createElement('div');
 
       div.textContent = 'foo';
+      div.className = 'class';
 
       return div;
     })()
@@ -390,6 +392,45 @@ test('if getStringifiedValue uses JSON.stringify with createReplacer correctly',
   TEST_VALUES.forEach(({comparator, expectedString, value}) => {
     t[comparator](utils.getStringifiedValue(value), expectedString);
   });
+});
+
+test('if getStringifiedElement will return the string for an empty element', (t) => {
+  const element = document.createElement('div');
+
+  const result = utils.getStringifiedElement(element);
+
+  t.is(result, `${element.tagName}  `);
+});
+
+test('if getStringifiedElement will return the string for an element with inner HTML', (t) => {
+  const element = document.createElement('div');
+
+  element.innerHTML = '<span>contents</span>';
+
+  const result = utils.getStringifiedElement(element);
+
+  t.is(result, `${element.tagName}  ${element.innerHTML}`);
+});
+
+test('if getStringifiedElement will return the string for an element with attributes', (t) => {
+  const element = document.createElement('div');
+
+  element.className = 'class-name';
+
+  const result = utils.getStringifiedElement(element);
+
+  t.is(result, `${element.tagName} class="${element.className}", `);
+});
+
+test('if getStringifiedElement will return the string for an element with attributes and inner HTML', (t) => {
+  const element = document.createElement('div');
+
+  element.innerHTML = '<span>contents</span>';
+  element.className = 'class-name';
+
+  const result = utils.getStringifiedElement(element);
+
+  t.is(result, `${element.tagName} class="${element.className}", ${element.innerHTML}`);
 });
 
 test('if getStringifiedValue throws for window object (deeply recursive)', (t) => {

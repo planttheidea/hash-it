@@ -66,6 +66,7 @@ Here is the list of object classes that have been tested and shown to produce un
 * `DataView`
 * `Date` (based on `valueOf`)
 * `Error` (based on `message`)
+  * Includes all sub-types (e.g. `TypeError`, `ReferenceError`, etc.)
 * `Float32Array`
 * `Float64Array`
 * `Function` (based on `toString`)
@@ -73,7 +74,8 @@ Here is the list of object classes that have been tested and shown to produce un
 * `Int8Array`
 * `Int16Array`
 * `Int32Array`
-* `HTMLElement` (based on `textContent`, includes all sub-types, e.g. `HTMLAnchorElement`, `HTMLDivElement`, etc)
+* `HTMLElement` (based on `tagName`, `attributes`, and `innerHTML`)
+  * Includes all sub-types (e.g. `HTMLAnchorElement`, `HTMLDivElement`, etc.)
 * `Map`
 * `Math` (based on `E`, `LN2`, `LN10`, `LOG2E`, `LOG10E`, `PI`, `SQRT1_2`, and `SQRT2`)
 * `Null`

@@ -70,6 +70,27 @@ export const getTypePrefixedString = (string, type) => {
 };
 
 /**
+ * @function getStringifiedElement
+ *
+ * @description
+ * get the HTML element stringified by its type, attributes, and contents
+ *
+ * @param {HTMLElement} element the element to stringify
+ * @returns {string} the stringified elements
+ */
+export const getStringifiedElement = (element) => {
+  const attributes = element.attributes;
+
+  let attributesString = '';
+
+  for (let index = 0; index < attributes.length; index++) {
+    attributesString += `${attributes[index].name}="${attributes[index].value}",`;
+  }
+
+  return `${element.tagName} ${attributesString} ${element.innerHTML}`;
+};
+
+/**
  * @function getStringifiedValueByObjectClass
  *
  * @description
@@ -118,7 +139,7 @@ export const getStringifiedValueByObjectClass = (object) => {
   }
 
   return HTML_ELEMENT_REGEXP.test(objectClass)
-    ? `${OBJECT_CLASS_MAP[OBJECT_CLASS_TYPE_MAP.HTMLELEMENT]} ${object.textContent}`
+    ? getTypePrefixedString(getStringifiedElement(object), OBJECT_CLASS_TYPE_MAP.HTMLELEMENT)
     : object;
 };
 
