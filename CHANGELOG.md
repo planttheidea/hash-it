@@ -1,5 +1,10 @@
 # hashIt CHANGELOG
 
+## 3.1.0
+
+* Add support for `Generator` (not just `GeneratorFunction`)
+* Streamline `typeof`- vs `toString`-driven handling for improved speed for most types
+
 ## 3.0.0
 
 * Improve speed (2-4x faster depending on type)
