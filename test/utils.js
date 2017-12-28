@@ -89,29 +89,44 @@ const TEST_VALUES = [
   },
   {
     comparator: 'is',
+    expectedResult: 'Generator NOT_ENUMERABLE',
+    expectedString: 'Generator NOT_ENUMERABLE',
+    key: 'generator',
+    value: (() => {
+      function* gen() {
+        yield 1;
+        yield 2;
+        yield 3;
+      }
+
+      return gen();
+    })()
+  },
+  {
+    comparator: 'is',
     expectedResult: `GeneratorFunction function value() {
-    return regeneratorRuntime.wrap(function value$(_context) {
+    return regeneratorRuntime.wrap(function value$(_context2) {
       while (1) {
-        switch (_context.prev = _context.next) {
+        switch (_context2.prev = _context2.next) {
           case 0:
           case 'end':
-            return _context.stop();
+            return _context2.stop();
         }
       }
     }, value, this);
   }`,
     expectedString: `GeneratorFunction function value() {
-    return regeneratorRuntime.wrap(function value$(_context) {
+    return regeneratorRuntime.wrap(function value$(_context2) {
       while (1) {
-        switch (_context.prev = _context.next) {
+        switch (_context2.prev = _context2.next) {
           case 0:
           case 'end':
-            return _context.stop();
+            return _context2.stop();
         }
       }
     }, value, this);
   }`,
-    key: 'generator',
+    key: 'generatorFunction',
     * value() {}
   },
   {
@@ -229,8 +244,8 @@ const TEST_VALUES = [
   },
   {
     comparator: 'is',
-    expectedResult: 'Symbol(foo)',
-    expectedString: 'Symbol(foo)',
+    expectedResult: 'Symbol Symbol(foo)',
+    expectedString: 'Symbol Symbol(foo)',
     key: 'symbol',
     value: Symbol('foo')
   },
@@ -304,36 +319,36 @@ test('if getIterablePairs will return the iterable pairs', (t) => {
   t.deepEqual(result, [OBJECT_CLASS_MAP[type], ['foo', 'bar']]);
 });
 
-test('if getRecursiveStackValue will return the type prefixed string if there is no value', (t) => {
+test('if getCircularStackValue will return the type prefixed string if there is no value', (t) => {
   const value = null;
   const type = Object.prototype.toString.call(value);
   const stack = [];
-  const recursiveCounter = 0;
+  const circularCounter = 0;
 
-  const result = utils.getRecursiveStackValue(value, type, stack, recursiveCounter);
+  const result = utils.getCircularStackValue(value, type, stack, circularCounter);
 
   t.is(result, utils.getTypePrefixedString(value, type));
 });
 
-test('if getRecursiveStackValue will clear the stack and return the value when larger than the cutoff', (t) => {
+test('if getCircularStackValue will clear the stack and return the value when larger than the cutoff', (t) => {
   const value = 'new value';
   const type = Object.prototype.toString.call(value);
   const stack = ['value'];
-  const recursiveCounter = RECURSIVE_COUNTER_CUTOFF + 1;
+  const circularCounter = RECURSIVE_COUNTER_CUTOFF + 1;
 
-  const result = utils.getRecursiveStackValue(value, type, stack, recursiveCounter);
+  const result = utils.getCircularStackValue(value, type, stack, circularCounter);
 
   t.deepEqual(stack, []);
   t.is(result, value);
 });
 
-test('if getRecursiveStackValue will return a circular reference if a match is found', (t) => {
+test('if getCircularStackValue will return a circular reference if a match is found', (t) => {
   const value = 'new value';
   const type = Object.prototype.toString.call(value);
   const stack = [value];
-  const recursiveCounter = 1;
+  const circularCounter = 1;
 
-  const result = utils.getRecursiveStackValue(value, type, stack, recursiveCounter);
+  const result = utils.getCircularStackValue(value, type, stack, circularCounter);
 
   t.deepEqual(stack, [value]);
   t.is(result, `*Circular-${stack.indexOf(value)}`);
