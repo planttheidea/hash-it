@@ -97,10 +97,11 @@ export const getStringifiedElement = (element) => {
  * get the stringified value of the object based based on its toString class
  *
  * @param {*} object the object to get the stringification value for
+ * @param {string} [passedObjectClass] the object class for the object passed
  * @returns {*} the value to stringify with
  */
-export const getStringifiedValueByObjectClass = (object) => {
-  const objectClass = toString.call(object);
+export const getStringifiedValueByObjectClass = (object, passedObjectClass) => {
+  const objectClass = passedObjectClass || toString.call(object);
 
   if (~STRINGIFY_SELF_CLASSES.indexOf(objectClass)) {
     return object;
@@ -215,7 +216,6 @@ export const getCircularStackValue = (value, type, stack, circularCounter) => {
  */
 export const createReplacer = (stack) => {
   let circularCounter = 1,
-      type,
       objectClass;
 
   return (key, value) => {
@@ -226,12 +226,10 @@ export const createReplacer = (stack) => {
     }
 
     if (value === null) {
-      return getStringifiedValueByObjectClass(value);
+      return getStringifiedValueByObjectClass(value, OBJECT_CLASS_TYPE_MAP.NULL);
     }
 
-    type = typeof value;
-
-    if (~STRINGIFY_TYPEOF_TYPES.indexOf(type)) {
+    if (~STRINGIFY_TYPEOF_TYPES.indexOf(typeof value)) {
       return getValueForStringification(value);
     }
 
@@ -242,7 +240,7 @@ export const createReplacer = (stack) => {
     }
 
     if (~REPLACE_STRINGIFICATION_CLASSES.indexOf(objectClass)) {
-      return getStringifiedValueByObjectClass(value);
+      return getStringifiedValueByObjectClass(value, objectClass);
     }
 
     return value;
