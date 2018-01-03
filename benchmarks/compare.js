@@ -81,10 +81,6 @@ const objectHashOpts = {
 
 // add tests
 suite
-  .add('node-object-hash', () => {
-    nodeObjectHash.hash(dataStairs);
-    nodeObjectHash.hash(dataArray);
-  })
   .add('hash-object', () => {
     hashObject(dataStairs, hashObjectOpts);
     hashObject(dataArray, hashObjectOpts);
@@ -93,12 +89,16 @@ suite
     hashIt(dataStairs);
     hashIt(dataArray);
   })
+  .add('node-object-hash', () => {
+    nodeObjectHash.hash(dataStairs);
+    nodeObjectHash.hash(dataArray);
+  })
   .add('object-hash', () => {
     objectHash(dataStairs, objectHashOpts);
     objectHash(dataArray, objectHashOpts);
   })
   // add listeners
-  .on('cycle', event => {
+  .on('cycle', (event) => {
     console.log(String(event.target));
   })
   .on('complete', function() {

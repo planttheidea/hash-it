@@ -191,20 +191,6 @@ const hashOnlyValidation = (iterations = 100) => {
 // visualValidation();
 // hashOnlyValidation();
 
-function* gen() {
-  yield 1;
-  yield 2;
-  yield 3;
-}
-
-const Foo = function Foo(value) {
-  this.value = value;
-
-  return this;
-};
-
-console.log(hashIt({value: 'value'}), hashIt(new Foo('value')));
-
 const div = document.createElement('div');
 
 render(<div>Check the console for more details!</div>, div);

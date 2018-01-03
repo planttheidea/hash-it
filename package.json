@@ -81,6 +81,7 @@
   },
   "scripts": {
     "benchmark": "npm run transpile:lib && node benchmarks/index.js",
+    "benchmark:compare": "npm run transpile:lib && node benchmarks/compare.js",
     "build": "NODE_ENV=development webpack --progress --colors --config=webpack/webpack.config.js",
     "build:minified": "NODE_ENV=production webpack --progress --colors --config=webpack/webpack.config.minified.js",
     "clean": "npm run clean:lib && npm run clean:es && npm run clean:dist",
