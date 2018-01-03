@@ -49,9 +49,13 @@
     "eslint-config-rapid7": "^2.11.1",
     "eslint-friendly-formatter": "3.0.0",
     "eslint-loader": "^1.9.0",
+    "faker": "^4.1.0",
+    "hash-object": "^0.1.7",
     "html-webpack-plugin": "^2.30.1",
     "in-publish": "2.0.0",
+    "node-object-hash": "^1.3.0",
     "nyc": "^11.4.1",
+    "object-hash": "^1.2.0",
     "optimize-js-plugin": "^0.0.4",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
@@ -64,8 +68,8 @@
   "keywords": [
     "hash",
     "hashcode",
-    "java",
-    "object-hash"
+    "object-hash",
+    "unique"
   ],
   "license": "MIT",
   "main": "lib/index.js",
@@ -77,6 +81,7 @@
   },
   "scripts": {
     "benchmark": "npm run transpile:lib && node benchmarks/index.js",
+    "benchmark:compare": "npm run transpile:lib && node benchmarks/compare.js",
     "build": "NODE_ENV=development webpack --progress --colors --config=webpack/webpack.config.js",
     "build:minified": "NODE_ENV=production webpack --progress --colors --config=webpack/webpack.config.minified.js",
     "clean": "npm run clean:lib && npm run clean:es && npm run clean:dist",

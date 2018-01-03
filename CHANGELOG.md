@@ -1,5 +1,9 @@
 # hashIt CHANGELOG
 
+## 3.1.2
+
+* Remove extraneous `toString` call (performance)
+
 ## 3.1.1
 
 * Improve hash uniqueness for HTML elements

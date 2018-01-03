@@ -49,10 +49,10 @@ export const OBJECT_CLASS_MAP = OBJECT_CLASSES.reduce((objectClasses, type) => {
 /**
  * @constant {Object} OBJECT_CLASS_TYPE_MAP
  */
-export const OBJECT_CLASS_TYPE_MAP = OBJECT_CLASSES.reduce((objectClasses, type) => {
-  objectClasses[type.toUpperCase()] = `[object ${type}]`;
+export const OBJECT_CLASS_TYPE_MAP = Object.keys(OBJECT_CLASS_MAP).reduce((objectClassTypes, objectClass) => {
+  objectClassTypes[OBJECT_CLASS_MAP[objectClass].toUpperCase()] = objectClass;
 
-  return objectClasses;
+  return objectClassTypes;
 }, {});
 
 /**
