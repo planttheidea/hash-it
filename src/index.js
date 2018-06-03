@@ -1,38 +1,28 @@
-import {getIntegerHashValue, getStringifiedValue} from './utils';
+// utils
+import {getIntegerHashValue, stringify} from './utils';
 
 /**
  * @function hashIt
  *
  * @description
- * return the unique integer hash value for the object
+ * hash the value passed to a unique, consistent hash value
  *
- * @param {*} object the object to hash
- * @param {boolean} [isCircular] is the object a circular object
- * @returns {number}
+ * @param {any} value the value to hash
+ * @param {Object} [options={}] the options for derivation
+ * @returns {number} the object hash
  */
-const hashIt = (object, isCircular) => {
-  const stringifiedValue = getStringifiedValue(object, isCircular);
+export const hashIt = (value, options = {}) => getIntegerHashValue(stringify(value, options));
 
-  return getIntegerHashValue(stringifiedValue);
-};
-
-const UNDEFINED_HASH = hashIt(undefined);
 const NULL_HASH = hashIt(null);
-const EMPTY_ARRAY_HASH = hashIt([]);
-const EMPTY_MAP_HASH = hashIt(new Map());
-const EMPTY_NUMBER_HASH = hashIt(0);
-const EMPTY_OBJECT_HASH = hashIt({});
-const EMPTY_SET_HASH = hashIt(new Set());
-const EMPTY_STRING_HASH = hashIt('');
+const UNDEFINED_HASH = hashIt(undefined);
 
 const EMPTY_HASHES = {
-  [EMPTY_ARRAY_HASH]: true,
-  [EMPTY_MAP_HASH]: true,
-  [EMPTY_NUMBER_HASH]: true,
-  [EMPTY_OBJECT_HASH]: true,
-  [EMPTY_SET_HASH]: true,
-  [EMPTY_STRING_HASH]: true,
+  [hashIt([])]: true,
+  [hashIt(new Map())]: true,
   [NULL_HASH]: true,
+  [hashIt({})]: true,
+  [hashIt(new Set())]: true,
+  [hashIt('')]: true,
   [UNDEFINED_HASH]: true
 };
 
@@ -71,9 +61,7 @@ hashIt.isEqual = (...objects) => {
  * @param {*} object the object to test
  * @returns {boolean} is the object empty
  */
-hashIt.isEmpty = (object) => {
-  return !!EMPTY_HASHES[hashIt(object)];
-};
+hashIt.isEmpty = (object) => !!EMPTY_HASHES[hashIt(object)];
 
 /**
  * @function hashIt.isNull
@@ -84,9 +72,7 @@ hashIt.isEmpty = (object) => {
  * @param {*} object the object to test
  * @returns {boolean} is the object null
  */
-hashIt.isNull = (object) => {
-  return hashIt(object) === NULL_HASH;
-};
+hashIt.isNull = (object) => hashIt(object) === NULL_HASH;
 
 /**
  * @function hashIt.isUndefined
@@ -97,8 +83,6 @@ hashIt.isNull = (object) => {
  * @param {*} object the object to test
  * @returns {boolean} is the object undefined
  */
-hashIt.isUndefined = (object) => {
-  return hashIt(object) === UNDEFINED_HASH;
-};
+hashIt.isUndefined = (object) => hashIt(object) === UNDEFINED_HASH;
 
 export default hashIt;

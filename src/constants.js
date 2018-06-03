@@ -1,4 +1,19 @@
 /**
+ * @constant {boolean} HAS_BUFFER_FROM_SUPPORT
+ */
+export const HAS_BUFFER_FROM_SUPPORT = typeof Buffer !== 'undefined' && typeof Buffer.from === 'function';
+
+/**
+ * @constant {boolean} HAS_UINT16ARRAY_SUPPORT
+ */
+export const HAS_UINT16ARRAY_SUPPORT = typeof Uint16Array === 'function';
+
+/**
+ * @constant {RegExp} HTML_ELEMENT_REGEXP
+ */
+export const HTML_ELEMENT_REGEXP = /\[object (HTML(.*)Element)\]/;
+
+/**
  * @constant {Array<string>} OBJECT_CLASSES
  */
 export const OBJECT_CLASSES = [
@@ -19,7 +34,6 @@ export const OBJECT_CLASSES = [
   'Int16Array',
   'Int32Array',
   'Map',
-  'Math',
   'Null',
   'Number',
   'Object',
@@ -34,7 +48,8 @@ export const OBJECT_CLASSES = [
   'Uint32Array',
   'Undefined',
   'WeakMap',
-  'WeakSet'
+  'WeakSet',
+  'Window'
 ];
 
 /**
@@ -55,122 +70,49 @@ export const OBJECT_CLASS_TYPE_MAP = Object.keys(OBJECT_CLASS_MAP).reduce((objec
   return objectClassTypes;
 }, {});
 
-/**
- * @constant {number} RECURSIVE_COUNTER_CUTOFF
- */
-export const RECURSIVE_COUNTER_CUTOFF = 512;
+export const STRING_TYPEOF = 'string';
 
-/**
- * @constant {Array<string>} REPLACE_RECURSIVE_VALUE_CLASSES
- */
-export const REPLACE_RECURSIVE_VALUE_CLASSES = [OBJECT_CLASS_TYPE_MAP.ARRAY, OBJECT_CLASS_TYPE_MAP.OBJECT];
+export const SYMBOL_TYPEOF = 'symbol';
 
-/**
- * @constant {Array<string>} REPLACE_STRINGIFICATION_CLASSES
- */
-export const REPLACE_STRINGIFICATION_CLASSES = [
-  OBJECT_CLASS_TYPE_MAP.DATE,
-  OBJECT_CLASS_TYPE_MAP.MAP,
-  OBJECT_CLASS_TYPE_MAP.SET,
-  OBJECT_CLASS_TYPE_MAP.REGEXP,
-  OBJECT_CLASS_TYPE_MAP.ERROR,
-  OBJECT_CLASS_TYPE_MAP.GENERATORFUNCTION,
-  OBJECT_CLASS_TYPE_MAP.MATH,
-  OBJECT_CLASS_TYPE_MAP.ARRAYBUFFER,
-  OBJECT_CLASS_TYPE_MAP.DATAVIEW,
-  OBJECT_CLASS_TYPE_MAP.FLOAT32ARRAY,
-  OBJECT_CLASS_TYPE_MAP.FLOAT64ARRAY,
-  OBJECT_CLASS_TYPE_MAP.INT8ARRAY,
-  OBJECT_CLASS_TYPE_MAP.INT16ARRAY,
-  OBJECT_CLASS_TYPE_MAP.INT32ARRAY,
-  OBJECT_CLASS_TYPE_MAP.UINT8ARRAY,
-  OBJECT_CLASS_TYPE_MAP.UINT8CLAMPEDARRAY,
-  OBJECT_CLASS_TYPE_MAP.UINT16ARRAY,
-  OBJECT_CLASS_TYPE_MAP.UINT32ARRAY,
-  OBJECT_CLASS_TYPE_MAP.PROMISE,
-  OBJECT_CLASS_TYPE_MAP.GENERATOR,
-  OBJECT_CLASS_TYPE_MAP.WEAKMAP,
-  OBJECT_CLASS_TYPE_MAP.WEAKSET
-];
+export const ITERABLE_TAGS = {
+  '[object Map]': true,
+  '[object Set]': true
+};
 
-/**
- * @constant {Array<string>} STRINGIFY_SELF_CLASSES
- */
-export const STRINGIFY_SELF_CLASSES = [
-  OBJECT_CLASS_TYPE_MAP.ARRAY,
-  OBJECT_CLASS_TYPE_MAP.OBJECT,
-  OBJECT_CLASS_TYPE_MAP.ARGUMENTS
-];
+export const PRIMITIVE_TAGS = {
+  [STRING_TYPEOF]: true,
+  [SYMBOL_TYPEOF]: true,
+  boolean: true,
+  function: true,
+  number: true,
+  undefined: true
+};
 
-/**
- * @constant {Array<string>} STRINGIFY_PREFIX_CLASSES
- */
-export const STRINGIFY_PREFIX_CLASSES = [OBJECT_CLASS_TYPE_MAP.ERROR, OBJECT_CLASS_TYPE_MAP.REGEXP];
+export const SELF_TAGS = {
+  [OBJECT_CLASS_TYPE_MAP.ARGUMENTS]: true,
+  [OBJECT_CLASS_TYPE_MAP.ARRAY]: true
+};
 
-/**
- * @constant {Array<string>} STRINGIFY_ITERABLE_CLASSES
- */
-export const STRINGIFY_ITERABLE_CLASSES = [OBJECT_CLASS_TYPE_MAP.MAP, OBJECT_CLASS_TYPE_MAP.SET];
+export const TOSTRING_TAGS = {
+  [OBJECT_CLASS_TYPE_MAP.REGEXP]: true,
+  [SYMBOL_TYPEOF]: true
+};
 
-/**
- * @constant {Array<string>} STRINGIFY_NOT_ENUMERABLE_CLASSES
- */
-export const STRINGIFY_NOT_ENUMERABLE_CLASSES = [
-  OBJECT_CLASS_TYPE_MAP.PROMISE,
-  OBJECT_CLASS_TYPE_MAP.GENERATOR,
-  OBJECT_CLASS_TYPE_MAP.WEAKMAP,
-  OBJECT_CLASS_TYPE_MAP.WEAKSET
-];
+export const TYPEDARRAY_TAGS = {
+  [OBJECT_CLASS_TYPE_MAP.FLOAT32ARRAY]: true,
+  [OBJECT_CLASS_TYPE_MAP.FLOAT64ARRAY]: true,
+  [OBJECT_CLASS_TYPE_MAP.INT8ARRAY]: true,
+  [OBJECT_CLASS_TYPE_MAP.INT16ARRAY]: true,
+  [OBJECT_CLASS_TYPE_MAP.INT32ARRAY]: true,
+  [OBJECT_CLASS_TYPE_MAP.UINT8ARRAY]: true,
+  [OBJECT_CLASS_TYPE_MAP.UINT8CLAMPEDARRAY]: true,
+  [OBJECT_CLASS_TYPE_MAP.UINT16ARRAY]: true,
+  [OBJECT_CLASS_TYPE_MAP.UINT32ARRAY]: true
+};
 
-/**
- * @constant {Array<string>} STRINGIFY_PREFIX_JOIN_CLASSES
- */
-export const STRINGIFY_PREFIX_JOIN_CLASSES = [
-  OBJECT_CLASS_TYPE_MAP.FLOAT32ARRAY,
-  OBJECT_CLASS_TYPE_MAP.FLOAT64ARRAY,
-  OBJECT_CLASS_TYPE_MAP.INT8ARRAY,
-  OBJECT_CLASS_TYPE_MAP.INT16ARRAY,
-  OBJECT_CLASS_TYPE_MAP.INT32ARRAY,
-  OBJECT_CLASS_TYPE_MAP.UINT8ARRAY,
-  OBJECT_CLASS_TYPE_MAP.UINT8CLAMPEDARRAY,
-  OBJECT_CLASS_TYPE_MAP.UINT16ARRAY,
-  OBJECT_CLASS_TYPE_MAP.UINT32ARRAY
-];
-
-/**
- * @constant {Array<string>} STRINGIFY_SELF_TYPES
- */
-export const STRINGIFY_SELF_TYPES = ['string', 'number'];
-
-/**
- * @constant {Array<string>} STRINGIFY_PREFIX_TYPES
- */
-export const STRINGIFY_PREFIX_TYPES = ['boolean', 'undefined', 'function', 'symbol'];
-
-/**
- * @constant {Array<string>} STRINGIFY_TOSTRING_TYPES
- */
-export const STRINGIFY_TOSTRING_TYPES = ['symbol', 'function'];
-
-/**
- * @constant {Array<string>} STRINGIFY_TYPEOF_TYPES
- */
-export const STRINGIFY_TYPEOF_TYPES = [...STRINGIFY_SELF_TYPES, ...STRINGIFY_PREFIX_TYPES];
-
-/**
- * @constant {RegExp} HTML_ELEMENT_REGEXP
- */
-export const HTML_ELEMENT_REGEXP = /\[object (HTML(.*)Element)\]/;
-
-/**
- * @constant {Object} MATH_OBJECT
- */
-export const MATH_OBJECT = ['E', 'LN2', 'LN10', 'LOG2E', 'LOG10E', 'PI', 'SQRT1_2', 'SQRT2'].reduce(
-  (mathObject, property) => {
-    return {
-      ...mathObject,
-      [property]: Math[property]
-    };
-  },
-  {}
-);
+export const UNPARSEABLE_TAGS = {
+  [OBJECT_CLASS_TYPE_MAP.GENERATOR]: true,
+  [OBJECT_CLASS_TYPE_MAP.PROMISE]: true,
+  [OBJECT_CLASS_TYPE_MAP.WEAKMAP]: true,
+  [OBJECT_CLASS_TYPE_MAP.WEAKSET]: true
+};

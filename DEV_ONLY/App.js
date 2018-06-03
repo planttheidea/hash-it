@@ -2,6 +2,12 @@ import React from 'react';
 import {render} from 'react-dom';
 
 import hashIt from '../src';
+import * as utils from '../src/utils';
+
+document.body.style.backgroundColor = '#1d1d1d';
+document.body.style.color = '#d5d5d5';
+document.body.style.margin = 0;
+document.body.style.padding = 0;
 
 class StatefulComponent extends React.Component {
   render() {
@@ -9,9 +15,7 @@ class StatefulComponent extends React.Component {
   }
 }
 
-const StatelessComponent = () => {
-  return <div>test</div>;
-};
+const StatelessComponent = () => <div>test</div>;
 
 const a = {
   foo: 'bar'
@@ -42,7 +46,6 @@ const object = {
   },
   arr: ['foo', 'bar'],
   el: document.createElement('div'),
-  math: Math,
   regexp: /test/,
 
   // comment out for older browser testing
@@ -110,7 +113,6 @@ const visualValidation = (iterations = 100) => {
   console.log(object.obj, hashIt(object.obj));
   console.log(object.arr, hashIt(object.arr));
   console.log(object.el, hashIt(object.el));
-  console.log(object.math, hashIt(object.math));
   console.log(object.regexp, hashIt(object.regexp));
   console.log(object.symbol, hashIt(object.symbol));
 

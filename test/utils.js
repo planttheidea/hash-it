@@ -302,149 +302,145 @@ const TEST_VALUES = [
   }
 ];
 
-test('if getIntegerHashValue returns correct values', (t) => {
-  const undef = undefined;
-  const nil = null;
-  const string = 'foo';
+// test('if getIntegerHashValue returns correct values', (t) => {
+//   const undef = undefined;
+//   const nil = null;
+//   const string = 'foo';
 
-  t.is(utils.getIntegerHashValue(undef), 0);
-  t.is(utils.getIntegerHashValue(nil), 0);
-  t.is(utils.getIntegerHashValue(string), 193491849);
-});
+//   t.is(utils.getIntegerHashValue(undef), 0);
+//   t.is(utils.getIntegerHashValue(nil), 0);
+//   t.is(utils.getIntegerHashValue(string), 193491849);
+// });
 
-test('if getIterablePairs will return the iterable pairs', (t) => {
-  const iterable = new Map().set('foo', 'bar');
-  const type = Object.prototype.toString.call(iterable);
+// test('if getIterablePairs will return the iterable pairs', (t) => {
+//   const iterable = new Map().set('foo', 'bar');
+//   const type = Object.prototype.toString.call(iterable);
 
-  const result = utils.getIterablePairs(iterable, type);
+//   const result = utils.getIterablePairs(iterable, type);
 
-  t.deepEqual(result, [OBJECT_CLASS_MAP[type], ['foo', 'bar']]);
-});
+//   t.deepEqual(result, [OBJECT_CLASS_MAP[type], ['foo', 'bar']]);
+// });
 
-test('if getCircularStackValue will return the type prefixed string if there is no value', (t) => {
-  const value = null;
-  const type = Object.prototype.toString.call(value);
-  const stack = [];
-  const circularCounter = 0;
+// test('if getCircularStackValue will return the type prefixed string if there is no value', (t) => {
+//   const value = null;
+//   const type = Object.prototype.toString.call(value);
+//   const stack = [];
+//   const circularCounter = 0;
 
-  const result = utils.getCircularStackValue(value, type, stack, circularCounter);
+//   const result = utils.getCircularStackValue(value, type, stack, circularCounter);
 
-  t.is(result, utils.getTypePrefixedString(value, type));
-});
+//   t.is(result, utils.getTypePrefixedString(value, type));
+// });
 
-test('if getCircularStackValue will clear the stack and return the value when larger than the cutoff', (t) => {
-  const value = 'new value';
-  const type = Object.prototype.toString.call(value);
-  const stack = ['value'];
-  const circularCounter = RECURSIVE_COUNTER_CUTOFF + 1;
+// test('if getCircularStackValue will clear the stack and return the value when larger than the cutoff', (t) => {
+//   const value = 'new value';
+//   const type = Object.prototype.toString.call(value);
+//   const stack = ['value'];
+//   const circularCounter = RECURSIVE_COUNTER_CUTOFF + 1;
 
-  const result = utils.getCircularStackValue(value, type, stack, circularCounter);
+//   const result = utils.getCircularStackValue(value, type, stack, circularCounter);
 
-  t.deepEqual(stack, []);
-  t.is(result, value);
-});
+//   t.deepEqual(stack, []);
+//   t.is(result, value);
+// });
 
-test('if getCircularStackValue will return a circular reference if a match is found', (t) => {
-  const value = 'new value';
-  const type = Object.prototype.toString.call(value);
-  const stack = [value];
-  const circularCounter = 1;
+// test('if getCircularStackValue will return a circular reference if a match is found', (t) => {
+//   const value = 'new value';
+//   const type = Object.prototype.toString.call(value);
+//   const stack = [value];
+//   const circularCounter = 1;
 
-  const result = utils.getCircularStackValue(value, type, stack, circularCounter);
+//   const result = utils.getCircularStackValue(value, type, stack, circularCounter);
 
-  t.deepEqual(stack, [value]);
-  t.is(result, `*Circular-${stack.indexOf(value)}`);
-});
+//   t.deepEqual(stack, [value]);
+//   t.is(result, `*Circular-${stack.indexOf(value)}`);
+// });
 
-test('if getStringFromArrayBuffer will return the correct value when arraybuffer exists', (t) => {
-  const {value} = TEST_VALUES.find(({key}) => {
-    return key === 'arrayBuffer';
-  });
+// test('if getStringFromArrayBuffer will return the correct value when arraybuffer exists', (t) => {
+//   const {value} = TEST_VALUES.find(({key}) => key === 'arrayBuffer');
 
-  const result = utils.getStringFromArrayBuffer(value);
+//   const result = utils.getStringFromArrayBuffer(value);
 
-  t.is(result, String.fromCharCode.apply(null, new Uint16Array(value)));
-});
+//   t.is(result, String.fromCharCode.apply(null, new Uint16Array(value)));
+// });
 
-test.serial('if getStringFromArrayBuffer will return the correct value when arraybuffer does not exist', (t) => {
-  const {value} = TEST_VALUES.find(({key}) => {
-    return key === 'arrayBuffer';
-  });
+// test.serial('if getStringFromArrayBuffer will return the correct value when arraybuffer does not exist', (t) => {
+//   const {value} = TEST_VALUES.find(({key}) => key === 'arrayBuffer');
 
-  const existingUint16Array = global.Uint16Array;
+//   const existingUint16Array = global.Uint16Array;
 
-  global.Uint16Array = undefined;
+//   global.Uint16Array = undefined;
 
-  const result = utils.getStringFromArrayBuffer(value);
+//   const result = utils.getStringFromArrayBuffer(value);
 
-  global.Uint16Array = existingUint16Array;
+//   global.Uint16Array = existingUint16Array;
 
-  t.is(result, '');
-});
+//   t.is(result, '');
+// });
 
-test('if createReplacer provides correct values for different object types', (t) => {
-  TEST_VALUES.forEach(({comparator, expectedResult, key, value}) => {
-    t[comparator](utils.createReplacer([])(key, value), expectedResult, key);
-  });
-});
+// test('if createReplacer provides correct values for different object types', (t) => {
+//   TEST_VALUES.forEach(({comparator, expectedResult, key, value}) => {
+//     t[comparator](utils.createReplacer([])(key, value), expectedResult, key);
+//   });
+// });
 
-test('if getStringifiedValue uses JSON.stringify with createReplacer correctly', (t) => {
-  TEST_VALUES.forEach(({comparator, expectedString, value}) => {
-    t[comparator](utils.getStringifiedValue(value), expectedString);
-  });
-});
+// test('if getStringifiedValue uses JSON.stringify with createReplacer correctly', (t) => {
+//   TEST_VALUES.forEach(({comparator, expectedString, value}) => {
+//     t[comparator](utils.getStringifiedValue(value), expectedString);
+//   });
+// });
 
-test('if getStringifiedElement will return the string for an empty element', (t) => {
-  const element = document.createElement('div');
+// test('if getStringifiedElement will return the string for an empty element', (t) => {
+//   const element = document.createElement('div');
 
-  const result = utils.getStringifiedElement(element);
+//   const result = utils.getStringifiedElement(element);
 
-  t.is(result, `${element.tagName}  `);
-});
+//   t.is(result, `${element.tagName}  `);
+// });
 
-test('if getStringifiedElement will return the string for an element with inner HTML', (t) => {
-  const element = document.createElement('div');
+// test('if getStringifiedElement will return the string for an element with inner HTML', (t) => {
+//   const element = document.createElement('div');
 
-  element.innerHTML = '<span>contents</span>';
+//   element.innerHTML = '<span>contents</span>';
 
-  const result = utils.getStringifiedElement(element);
+//   const result = utils.getStringifiedElement(element);
 
-  t.is(result, `${element.tagName}  ${element.innerHTML}`);
-});
+//   t.is(result, `${element.tagName}  ${element.innerHTML}`);
+// });
 
-test('if getStringifiedElement will return the string for an element with attributes', (t) => {
-  const element = document.createElement('div');
+// test('if getStringifiedElement will return the string for an element with attributes', (t) => {
+//   const element = document.createElement('div');
 
-  element.className = 'class-name';
+//   element.className = 'class-name';
 
-  const result = utils.getStringifiedElement(element);
+//   const result = utils.getStringifiedElement(element);
 
-  t.is(result, `${element.tagName} class="${element.className}", `);
-});
+//   t.is(result, `${element.tagName} class="${element.className}", `);
+// });
 
-test('if getStringifiedElement will return the string for an element with attributes and inner HTML', (t) => {
-  const element = document.createElement('div');
+// test('if getStringifiedElement will return the string for an element with attributes and inner HTML', (t) => {
+//   const element = document.createElement('div');
 
-  element.innerHTML = '<span>contents</span>';
-  element.className = 'class-name';
+//   element.innerHTML = '<span>contents</span>';
+//   element.className = 'class-name';
 
-  const result = utils.getStringifiedElement(element);
+//   const result = utils.getStringifiedElement(element);
 
-  t.is(result, `${element.tagName} class="${element.className}", ${element.innerHTML}`);
-});
+//   t.is(result, `${element.tagName} class="${element.className}", ${element.innerHTML}`);
+// });
 
-test('if getStringifiedValue throws for window object (deeply recursive)', (t) => {
-  t.throws(() => {
-    utils.getStringifiedValue(window);
-  });
-});
+// test('if getStringifiedValue throws for window object (deeply recursive)', (t) => {
+//   t.throws(() => {
+//     utils.getStringifiedValue(window);
+//   });
+// });
 
-test('if getStringifiedValue handles deeply-recursive objects when passed true', (t) => {
-  try {
-    utils.getStringifiedValue(window, true);
+// test('if getStringifiedValue handles deeply-recursive objects when passed true', (t) => {
+//   try {
+//     utils.getStringifiedValue(window, true);
 
-    t.pass();
-  } catch (error) {
-    t.fail(error);
-  }
-});
+//     t.pass();
+//   } catch (error) {
+//     t.fail(error);
+//   }
+// });

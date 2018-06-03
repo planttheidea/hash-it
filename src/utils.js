@@ -1,251 +1,37 @@
 // external dependencies
-import prune from 'json-prune';
+import fastStringify from 'fast-stringify';
 
 // constants
 import {
+  HAS_BUFFER_FROM_SUPPORT,
+  HAS_UINT16ARRAY_SUPPORT,
   HTML_ELEMENT_REGEXP,
+  ITERABLE_TAGS,
   OBJECT_CLASS_MAP,
   OBJECT_CLASS_TYPE_MAP,
-  MATH_OBJECT,
-  RECURSIVE_COUNTER_CUTOFF,
-  REPLACE_RECURSIVE_VALUE_CLASSES,
-  REPLACE_STRINGIFICATION_CLASSES,
-  STRINGIFY_ITERABLE_CLASSES,
-  STRINGIFY_NOT_ENUMERABLE_CLASSES,
-  STRINGIFY_PREFIX_JOIN_CLASSES,
-  STRINGIFY_PREFIX_CLASSES,
-  STRINGIFY_PREFIX_TYPES,
-  STRINGIFY_SELF_CLASSES,
-  STRINGIFY_SELF_TYPES,
-  STRINGIFY_TOSTRING_TYPES,
-  STRINGIFY_TYPEOF_TYPES
+  PRIMITIVE_TAGS,
+  SELF_TAGS,
+  STRING_TYPEOF,
+  TOSTRING_TAGS,
+  TYPEDARRAY_TAGS,
+  UNPARSEABLE_TAGS
 } from './constants';
 
-const toString = Object.prototype.toString;
+const charCodeAt = String.prototype.charCodeAt;
+const keys = Object.keys;
 
 /**
- * @function getIterablePairs
+ * @function getCircularValue
  *
  * @description
- * get the [key,value] pairs for maps and sets
+ * get the value used when circular references are found
  *
- * @param {Map|Set} iterable the iterable to map
- * @param {string} type the type of object class
- * @returns {Array<Array>} the [key, value] pairs
+ * @param {string} key the key in the stringification object
+ * @param {any} value the value to stringify
+ * @param {number} refCount the circular reference count
+ * @returns {string} the value for stringification
  */
-export const getIterablePairs = (iterable, type) => {
-  let pairs = [OBJECT_CLASS_MAP[type]];
-
-  iterable.forEach((item, key) => {
-    pairs.push([key, item]);
-  });
-
-  return pairs;
-};
-
-/**
- * @function getStringFromArrayBuffer
- *
- * @description
- * get the string value of the buffer passed
- *
- * @param {ArrayBuffer} buffer the array buffer to convert
- * @returns {string} the stringified buffer
- */
-export const getStringFromArrayBuffer = (buffer) => {
-  return typeof Uint16Array === 'undefined' ? '' : String.fromCharCode.apply(null, new Uint16Array(buffer));
-};
-/**
- * @function getTypePrefixedString
- *
- * @description
- * prepend type to string value
- *
- * @param {string} string the string to prepend
- * @param {string} type the type to add as a prefix
- * @returns {string} the prefixed string
- */
-export const getTypePrefixedString = (string, type) => {
-  return `${OBJECT_CLASS_MAP[type]} ${string}`;
-};
-
-/**
- * @function getStringifiedElement
- *
- * @description
- * get the HTML element stringified by its type, attributes, and contents
- *
- * @param {HTMLElement} element the element to stringify
- * @returns {string} the stringified elements
- */
-export const getStringifiedElement = (element) => {
-  const attributes = element.attributes;
-
-  let attributesString = '';
-
-  for (let index = 0; index < attributes.length; index++) {
-    attributesString += `${attributes[index].name}="${attributes[index].value}",`;
-  }
-
-  return `${element.tagName} ${attributesString} ${element.innerHTML}`;
-};
-
-/**
- * @function getStringifiedValueByObjectClass
- *
- * @description
- * get the stringified value of the object based based on its toString class
- *
- * @param {*} object the object to get the stringification value for
- * @param {string} [passedObjectClass] the object class for the object passed
- * @returns {*} the value to stringify with
- */
-export const getStringifiedValueByObjectClass = (object, passedObjectClass) => {
-  const objectClass = passedObjectClass || toString.call(object);
-
-  if (~STRINGIFY_SELF_CLASSES.indexOf(objectClass)) {
-    return object;
-  }
-
-  if (~STRINGIFY_PREFIX_CLASSES.indexOf(objectClass) || object === null) {
-    return getTypePrefixedString(object, objectClass);
-  }
-
-  if (objectClass === OBJECT_CLASS_TYPE_MAP.DATE) {
-    return getTypePrefixedString(object.valueOf(), objectClass);
-  }
-
-  if (~STRINGIFY_ITERABLE_CLASSES.indexOf(objectClass)) {
-    return getIterablePairs(object, objectClass);
-  }
-
-  if (~STRINGIFY_NOT_ENUMERABLE_CLASSES.indexOf(objectClass)) {
-    return getTypePrefixedString('NOT_ENUMERABLE', objectClass);
-  }
-
-  if (objectClass === OBJECT_CLASS_TYPE_MAP.ARRAYBUFFER) {
-    return getTypePrefixedString(getStringFromArrayBuffer(object), objectClass);
-  }
-
-  if (objectClass === OBJECT_CLASS_TYPE_MAP.DATAVIEW) {
-    return getTypePrefixedString(getStringFromArrayBuffer(object.buffer), objectClass);
-  }
-
-  if (~STRINGIFY_PREFIX_JOIN_CLASSES.indexOf(objectClass)) {
-    return getTypePrefixedString(object.join(','), objectClass);
-  }
-
-  if (objectClass === OBJECT_CLASS_TYPE_MAP.MATH) {
-    return MATH_OBJECT;
-  }
-
-  return HTML_ELEMENT_REGEXP.test(objectClass)
-    ? getTypePrefixedString(getStringifiedElement(object), OBJECT_CLASS_TYPE_MAP.HTMLELEMENT)
-    : object;
-};
-
-/**
- * @function getValueForStringification
- *
- * @description
- * get the string value for the object used for stringification
- *
- * @param {*} object the object to get the stringification value for
- * @returns {*} the value to stringify with
- */
-export const getValueForStringification = (object) => {
-  const type = typeof object;
-
-  if (~STRINGIFY_SELF_TYPES.indexOf(type)) {
-    return object;
-  }
-
-  if (~STRINGIFY_PREFIX_TYPES.indexOf(type)) {
-    return getTypePrefixedString(
-      ~STRINGIFY_TOSTRING_TYPES.indexOf(type) ? object.constructor.prototype.toString.call(object) : object,
-      toString.call(object)
-    );
-  }
-
-  return getStringifiedValueByObjectClass(object);
-};
-
-/**
- * @function getCircularStackValue
- *
- * @description
- * get the value either from the recursive storage stack
- * or itself after being added to that stack
- *
- * @param {*} value the value to check for existing
- * @param {string} type the type of the value
- * @param {Array<*>} stack the current stack of values
- * @param {number} circularCounter the counter of circular references
- * @returns {*} the value to apply
- */
-export const getCircularStackValue = (value, type, stack, circularCounter) => {
-  if (!value) {
-    return getTypePrefixedString(value, type);
-  }
-
-  if (circularCounter > RECURSIVE_COUNTER_CUTOFF) {
-    stack.length = 0;
-
-    return value;
-  }
-
-  let existingIndex = stack.indexOf(value);
-
-  if (!~existingIndex) {
-    stack.push(value);
-
-    return value;
-  }
-
-  return `*Circular-${existingIndex}`;
-};
-
-/**
- * @function createReplacer
- *
- * @description
- * create the replacer function leveraging closure for recursive stack storage
- *
- * @param {Array<*>} stack the stack to store in memory
- * @returns {function} the replacer to use
- */
-export const createReplacer = (stack) => {
-  let circularCounter = 1,
-      objectClass;
-
-  return (key, value) => {
-    if (!key) {
-      stack = [value];
-
-      return value;
-    }
-
-    if (value === null) {
-      return getStringifiedValueByObjectClass(value, OBJECT_CLASS_TYPE_MAP.NULL);
-    }
-
-    if (~STRINGIFY_TYPEOF_TYPES.indexOf(typeof value)) {
-      return getValueForStringification(value);
-    }
-
-    objectClass = toString.call(value);
-
-    if (~REPLACE_RECURSIVE_VALUE_CLASSES.indexOf(objectClass)) {
-      return getCircularStackValue(value, objectClass, stack, ++circularCounter);
-    }
-
-    if (~REPLACE_STRINGIFICATION_CLASSES.indexOf(objectClass)) {
-      return getStringifiedValueByObjectClass(value, objectClass);
-    }
-
-    return value;
-  };
-};
+export const getCircularValue = (key, value, refCount) => `${refCount}`;
 
 /**
  * @function getIntegerHashValue
@@ -262,52 +48,231 @@ export const getIntegerHashValue = (string) => {
     return 0;
   }
 
-  let hashValue = 5381;
+  const length = string.length;
 
-  for (let index = 0; index < string.length; index++) {
-    hashValue = (hashValue << 5) + hashValue + string.charCodeAt(index);
+  let hash = 5381;
+
+  for (let index = 0; index < length; index++) {
+    hash = (hash << 5) + hash + charCodeAt.call(string, index);
   }
 
-  return hashValue >>> 0;
+  return hash >>> 0;
 };
 
 /**
- * @function tryCatch
+ * @function getIterablePairs
  *
  * @description
- * move try/catch to standalone function as any function that contains a try/catch
- * is not optimized (this allows optimization for as much as possible)
+ * get the pairs in the iterable for stringification
  *
- * @param {*} value the value to stringify
+ * @param {Map|Set} iterable the iterable to get the pairs for
+ * @param {Object} options the options for stringification
+ * @returns {Array<{key: string, value: any}>} the pairs
+ */
+export const getIterablePairs = (iterable, options) => {
+  const pairs = [];
+  const isMap = typeof iterable.get === 'function';
+
+  iterable.forEach((value, key) => {
+    pairs.push(
+      isMap
+        ? // eslint-disable-next-line no-use-before-define
+        {key, keyString: stringify(key, options), value}
+        : // eslint-disable-next-line no-use-before-define
+        {key, keyString: stringify(key, options)}
+    );
+  });
+
+  pairs.sort(
+    options.sortIterableBy ||
+      ((pairA, pairB) => (pairA.keyString > pairB.keyString ? 1 : pairA.keyString < pairB.keyString ? -1 : 0))
+  );
+
+  const finalPairs = new Array(pairs.length);
+
+  let pair;
+
+  for (let index = 0; finalPairs < iterable.size; index++) {
+    pair = pairs[index];
+
+    finalPairs[index] = isMap ? {key: pair.keyString, value: pair.value} : {key: pair.keyString};
+  }
+
+  return finalPairs;
+};
+
+/**
+ * @function getPrefixedValue
+ *
+ * @description
+ * get the value prefixed by the tag
+ *
+ * @param {string} tag the object tag
+ * @param {any} value the value to stringify
+ * @returns {string} the prefixed stringified value
+ */
+export const getPrefixedValue = (tag, value) => `${OBJECT_CLASS_MAP[tag] || tag}|${value}`;
+
+/**
+ * @function getSortedObject
+ *
+ * @description
+ * get the object with the keys sorted
+ *
+ * @param {Object} object the object to sort
+ * @param {Object} options the options for stringification
+ * @returns {Object} the sorted object
+ */
+export const getSortedObject = (object, options) => {
+  const objectKeys = keys(object);
+  const newObject = {};
+
+  objectKeys.sort(options.sortObjectBy);
+
+  let key;
+
+  for (let index = 0; index < objectKeys.length; index++) {
+    key = objectKeys[index];
+
+    newObject[key] = object[key];
+  }
+
+  return newObject;
+};
+
+/**
+ * @function getStringifiedArrayBuffer
+ *
+ * @description
+ * get the string value of the buffer passed
+ *
+ * @param {ArrayBuffer} buffer the array buffer to convert
+ * @returns {string} the stringified buffer
+ */
+export const getStringifiedArrayBuffer = (() =>
+  HAS_BUFFER_FROM_SUPPORT
+    ? (buffer) => Buffer.from(buffer).toString('utf8')
+    : HAS_UINT16ARRAY_SUPPORT
+      ? (buffer) => String.fromCharCode.apply(null, new Uint16Array(buffer))
+      : () => '')();
+
+/**
+ * @function getStringifiedElement
+ *
+ * @description
+ * get the HTML element stringified by its type, attributes, and contents
+ *
+ * @param {HTMLElement} element the element to stringify
+ * @returns {string} the stringified elements
+ */
+export const getStringifiedElement = (element) => {
+  const attributes = element.attributes;
+
+  let stringifiedElement = element.innerHTML ? `${element.tagName} ${element.innerHTML}` : element.tagName,
+      attribute;
+
+  for (let index = 0; index < attributes.length; index++) {
+    attribute = attributes[index];
+
+    stringifiedElement += ` ${attribute.name}="${attribute.value}"`;
+  }
+
+  return stringifiedElement;
+};
+
+/**
+ * @function getNormalizedValue
+ *
+ * @description
+ * get the value normalized for stringification
+ *
+ * @param {any} value the value to normalize
+ * @param {Object} options the options for stringification
+ * @returns {any} the normalized value
+ */
+export const getNormalizedValue = (value, options) => {
+  const type = typeof value;
+
+  if (type === STRING_TYPEOF) {
+    return value;
+  }
+
+  if (PRIMITIVE_TAGS[type] || value === null) {
+    return getPrefixedValue(type, TOSTRING_TAGS[type] ? value.toString() : value);
+  }
+
+  const tag = toString.call(value);
+
+  if (SELF_TAGS[tag]) {
+    return value;
+  }
+
+  if (tag === OBJECT_CLASS_TYPE_MAP.OBJECT) {
+    return getSortedObject(value, options);
+  }
+
+  if (TOSTRING_TAGS[tag]) {
+    return getPrefixedValue(tag, value.toString());
+  }
+
+  if (ITERABLE_TAGS[tag]) {
+    return getIterablePairs(value, options);
+  }
+
+  if (tag === OBJECT_CLASS_TYPE_MAP.DATE) {
+    return getPrefixedValue(tag, value.getTime());
+  }
+
+  if (tag === OBJECT_CLASS_TYPE_MAP.ERROR) {
+    return getPrefixedValue(tag, value.stack);
+  }
+
+  if (UNPARSEABLE_TAGS[tag]) {
+    return getPrefixedValue(tag, 'NOT_ENUMERABLE');
+  }
+
+  if (HTML_ELEMENT_REGEXP.test(tag)) {
+    return getPrefixedValue(tag.slice(8, -1), getStringifiedElement(value));
+  }
+
+  if (TYPEDARRAY_TAGS[tag]) {
+    return getPrefixedValue(tag, value.join(','));
+  }
+
+  if (tag === OBJECT_CLASS_TYPE_MAP.ARRAYBUFFER) {
+    return getPrefixedValue(tag, getStringifiedArrayBuffer(value));
+  }
+
+  if (tag === OBJECT_CLASS_TYPE_MAP.DATAVIEW) {
+    return getPrefixedValue(tag, getStringifiedArrayBuffer(value.buffer));
+  }
+
+  return value;
+};
+
+/**
+ * @function createReplacer
+ *
+ * @description
+ * create the replacer function used for stringification
+ *
+ * @param {Object} options the options for stringification
+ * @returns {function(string, any): any} the function that replaces the value with the normalized value
+ */
+export const createReplacer = (options) => (key, value) => getNormalizedValue(value, options);
+
+/**
+ * @function stringify
+ *
+ * @description
+ * stringify the value based on the options passed
+ *
+ * @param {any} value the value to stringify
+ * @param {Object} options the options for stringification
  * @returns {string} the stringified value
  */
-export const tryCatch = (value) => {
-  try {
-    return JSON.stringify(value, createReplacer([]));
-  } catch (exception) {
-    return prune(value);
-  }
-};
-
-/**
- * @function getStringifiedValue
- *
- * @description
- * stringify the object passed leveraging JSON.stringify
- * with REPLACER, falling back to prune
- *
- * @param {*} object the object to stringify
- * @param {boolean} isCircular is the object circular or not
- * @returns {string} the stringified object
- */
-export const getStringifiedValue = (object, isCircular) => {
-  const valueForStringification = getValueForStringification(object);
-
-  if (typeof valueForStringification === 'string') {
-    return valueForStringification;
-  }
-
-  return isCircular
-    ? tryCatch(getValueForStringification(object))
-    : JSON.stringify(valueForStringification, createReplacer([]));
-};
+export function stringify(value, options) {
+  return typeof value === 'object'
+    ? fastStringify(value, createReplacer(options), null, getCircularValue)
+    : getNormalizedValue(value, options);
+}
