@@ -1,10 +1,15 @@
+// test
 import test from 'ava';
+import sinon from 'sinon';
 
+// src
 import * as utils from 'src/utils';
-import {OBJECT_CLASS_MAP, RECURSIVE_COUNTER_CUTOFF} from 'src/constants';
+import * as constants from 'src/constants';
 
 const DATE = new Date();
+const ERROR = new Error('boom');
 const INTEGER_ARRAY = [1, 2, 3];
+const ARRAYBUFFER = new Uint16Array(INTEGER_ARRAY).buffer;
 const TEST_VALUES = [
   {
     comparator: 'deepEqual',
@@ -33,64 +38,64 @@ const TEST_VALUES = [
   },
   {
     comparator: 'deepEqual',
-    expectedResult: `ArrayBuffer \u0001\u0002\u0003`,
-    expectedString: `ArrayBuffer \u0001\u0002\u0003`,
+    expectedResult: `ArrayBuffer|${Buffer.from(ARRAYBUFFER).toString('utf8')}`,
+    expectedString: JSON.stringify(`ArrayBuffer|${Buffer.from(ARRAYBUFFER).toString('utf8')}`),
     key: 'arrayBuffer',
-    value: new Uint16Array(INTEGER_ARRAY).buffer
+    value: ARRAYBUFFER
   },
   {
     comparator: 'is',
-    expectedResult: 'Boolean true',
-    expectedString: 'Boolean true',
+    expectedResult: 'boolean|true',
+    expectedString: 'boolean|true',
     key: 'boolean',
     value: true
   },
   {
     comparator: 'deepEqual',
-    expectedResult: `DataView \u0000`,
-    expectedString: `DataView \u0000`,
+    expectedResult: `DataView|${Buffer.from(new DataView(new ArrayBuffer(2)).buffer).toString('utf8')}`,
+    expectedString: JSON.stringify(`DataView|${Buffer.from(new DataView(new ArrayBuffer(2)).buffer).toString('utf8')}`),
     key: 'dataView',
     value: new DataView(new ArrayBuffer(2))
   },
   {
     comparator: 'is',
-    expectedResult: `Date ${DATE.valueOf()}`,
-    expectedString: `Date ${DATE.valueOf()}`,
+    expectedResult: `Date|${DATE.valueOf()}`,
+    expectedString: `Date|${DATE.valueOf()}`,
     key: 'date',
     value: DATE
   },
   {
     comparator: 'is',
-    expectedResult: 'Error Error: test',
-    expectedString: 'Error Error: test',
+    expectedResult: `Error|${ERROR.stack}`,
+    expectedString: JSON.stringify(`Error|${ERROR.stack}`),
     key: 'error',
-    value: new Error('test')
+    value: ERROR
   },
   {
     comparator: 'deepEqual',
-    expectedResult: 'Float32Array 1,2,3',
-    expectedString: 'Float32Array 1,2,3',
+    expectedResult: 'Float32Array|1,2,3',
+    expectedString: JSON.stringify('Float32Array|1,2,3'),
     key: 'float32Array',
     value: new Float32Array(INTEGER_ARRAY)
   },
   {
     comparator: 'deepEqual',
-    expectedResult: 'Float64Array 1,2,3',
-    expectedString: 'Float64Array 1,2,3',
+    expectedResult: 'Float64Array|1,2,3',
+    expectedString: JSON.stringify('Float64Array|1,2,3'),
     key: 'float64Array',
     value: new Float64Array(INTEGER_ARRAY)
   },
   {
     comparator: 'is',
-    expectedResult: 'Function function value() {}',
-    expectedString: 'Function function value() {}',
+    expectedResult: 'function|function value() {}',
+    expectedString: 'function|function value() {}',
     key: 'function',
     value() {}
   },
   {
     comparator: 'is',
-    expectedResult: 'Generator NOT_ENUMERABLE',
-    expectedString: 'Generator NOT_ENUMERABLE',
+    expectedResult: 'Generator|NOT_ENUMERABLE',
+    expectedString: JSON.stringify('Generator|NOT_ENUMERABLE'),
     key: 'generator',
     value: (() => {
       function* gen() {
@@ -104,8 +109,8 @@ const TEST_VALUES = [
   },
   {
     comparator: 'is',
-    expectedResult: `GeneratorFunction function value() {
-    return regeneratorRuntime.wrap(function value$(_context2) {
+    expectedResult: `function|function value() {
+    return _regenerator2.default.wrap(function value$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
@@ -115,8 +120,8 @@ const TEST_VALUES = [
       }
     }, value, this);
   }`,
-    expectedString: `GeneratorFunction function value() {
-    return regeneratorRuntime.wrap(function value$(_context2) {
+    expectedString: `function|function value() {
+    return _regenerator2.default.wrap(function value$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
@@ -131,15 +136,8 @@ const TEST_VALUES = [
   },
   {
     comparator: 'deepEqual',
-    expectedResult: (() => {
-      const div = document.createElement('div');
-
-      div.textContent = 'foo';
-      div.className = 'class';
-
-      return div;
-    })(),
-    expectedString: 'HTMLElement DIV class="class", foo',
+    expectedResult: 'HTMLDivElement|DIV foo class="class"',
+    expectedString: JSON.stringify('HTMLDivElement|DIV foo class="class"'),
     key: 'htmlElement',
     value: (() => {
       const div = document.createElement('div');
@@ -152,60 +150,43 @@ const TEST_VALUES = [
   },
   {
     comparator: 'deepEqual',
-    expectedResult: 'Int8Array 1,2,3',
-    expectedString: 'Int8Array 1,2,3',
+    expectedResult: 'Int8Array|1,2,3',
+    expectedString: JSON.stringify('Int8Array|1,2,3'),
     key: 'int8Array',
     value: new Int8Array(INTEGER_ARRAY)
   },
   {
     comparator: 'deepEqual',
-    expectedResult: 'Int16Array 1,2,3',
-    expectedString: 'Int16Array 1,2,3',
+    expectedResult: 'Int16Array|1,2,3',
+    expectedString: JSON.stringify('Int16Array|1,2,3'),
     key: 'int16Array',
     value: new Int16Array(INTEGER_ARRAY)
   },
   {
     comparator: 'deepEqual',
-    expectedResult: 'Int32Array 1,2,3',
-    expectedString: 'Int32Array 1,2,3',
+    expectedResult: 'Int32Array|1,2,3',
+    expectedString: JSON.stringify('Int32Array|1,2,3'),
     key: 'int32Array',
     value: new Int32Array(INTEGER_ARRAY)
   },
   {
     comparator: 'deepEqual',
-    expectedResult: ['Map', ['foo', 'bar']],
-    expectedString: '["Map",["foo","bar"]]',
+    expectedResult: [{key: 'foo', value: 'bar'}],
+    expectedString: '[{"key":"foo","value":"bar"}]',
     key: 'map',
     value: new Map().set('foo', 'bar')
   },
   {
-    comparator: 'deepEqual',
-    expectedResult: {
-      E: 2.718281828459045,
-      LN2: 0.6931471805599453,
-      LN10: 2.302585092994046,
-      LOG2E: 1.4426950408889634,
-      LOG10E: 0.4342944819032518,
-      PI: 3.141592653589793,
-      SQRT1_2: 0.7071067811865476,
-      SQRT2: 1.4142135623730951
-    },
-    expectedString:
-      '{"E":2.718281828459045,"LN2":0.6931471805599453,"LN10":2.302585092994046,"LOG2E":1.4426950408889634,"LOG10E":0.4342944819032518,"PI":3.141592653589793,"SQRT1_2":0.7071067811865476,"SQRT2":1.4142135623730951}',
-    key: 'math',
-    value: Math
-  },
-  {
     comparator: 'is',
-    expectedResult: 'Null null',
-    expectedString: 'Null null',
+    expectedResult: 'null|null',
+    expectedString: 'null|null',
     key: 'null',
     value: null
   },
   {
     comparator: 'is',
-    expectedResult: 12,
-    expectedString: '12',
+    expectedResult: 'number|12',
+    expectedString: 'number|12',
     key: 'number',
     value: 12
   },
@@ -218,22 +199,22 @@ const TEST_VALUES = [
   },
   {
     comparator: 'is',
-    expectedResult: 'Promise NOT_ENUMERABLE',
-    expectedString: 'Promise NOT_ENUMERABLE',
+    expectedResult: 'Promise|NOT_ENUMERABLE',
+    expectedString: JSON.stringify('Promise|NOT_ENUMERABLE'),
     key: 'promise',
     value: Promise.resolve(1)
   },
   {
     comparator: 'is',
-    expectedResult: 'RegExp /foo/',
-    expectedString: 'RegExp /foo/',
+    expectedResult: 'RegExp|/foo/',
+    expectedString: 'RegExp|/foo/',
     key: 'regexp',
     value: /foo/
   },
   {
     comparator: 'deepEqual',
-    expectedResult: ['Set', ['foo', 'foo']],
-    expectedString: '["Set",["foo","foo"]]',
+    expectedResult: [{key: 'foo'}],
+    expectedString: '[{"key":"foo"}]',
     key: 'set',
     value: new Set().add('foo')
   },
@@ -246,201 +227,408 @@ const TEST_VALUES = [
   },
   {
     comparator: 'is',
-    expectedResult: 'Symbol Symbol(foo)',
-    expectedString: 'Symbol Symbol(foo)',
+    expectedResult: 'Symbol|Symbol(foo)',
+    expectedString: 'Symbol|Symbol(foo)',
     key: 'symbol',
     value: Symbol('foo')
   },
   {
     comparator: 'deepEqual',
-    expectedResult: 'Uint8Array 1,2,3',
-    expectedString: 'Uint8Array 1,2,3',
+    expectedResult: 'Uint8Array|1,2,3',
+    expectedString: JSON.stringify('Uint8Array|1,2,3'),
     key: 'uint8Array',
     value: new Uint8Array(INTEGER_ARRAY)
   },
   {
     comparator: 'deepEqual',
-    expectedResult: 'Uint8ClampedArray 1,2,3',
-    expectedString: 'Uint8ClampedArray 1,2,3',
+    expectedResult: 'Uint8ClampedArray|1,2,3',
+    expectedString: JSON.stringify('Uint8ClampedArray|1,2,3'),
     key: 'uint8ClampedArray',
     value: new Uint8ClampedArray(INTEGER_ARRAY)
   },
   {
     comparator: 'deepEqual',
-    expectedResult: 'Uint16Array 1,2,3',
-    expectedString: 'Uint16Array 1,2,3',
+    expectedResult: 'Uint16Array|1,2,3',
+    expectedString: JSON.stringify('Uint16Array|1,2,3'),
     key: 'uint16Array',
     value: new Uint16Array(INTEGER_ARRAY)
   },
   {
     comparator: 'deepEqual',
-    expectedResult: 'Uint32Array 1,2,3',
-    expectedString: 'Uint32Array 1,2,3',
+    expectedResult: 'Uint32Array|1,2,3',
+    expectedString: JSON.stringify('Uint32Array|1,2,3'),
     key: 'uint32Array',
     value: new Uint32Array(INTEGER_ARRAY)
   },
   {
     comparator: 'is',
-    expectedResult: 'Undefined undefined',
-    expectedString: 'Undefined undefined',
+    expectedResult: 'undefined|undefined',
+    expectedString: 'undefined|undefined',
     key: 'undefined',
     value: undefined
   },
   {
     comparator: 'is',
-    expectedResult: 'WeakMap NOT_ENUMERABLE',
-    expectedString: 'WeakMap NOT_ENUMERABLE',
+    expectedResult: 'WeakMap|NOT_ENUMERABLE',
+    expectedString: JSON.stringify('WeakMap|NOT_ENUMERABLE'),
     key: 'weakMap',
     value: new WeakMap().set({}, 'foo')
   },
   {
     comparator: 'is',
-    expectedResult: 'WeakSet NOT_ENUMERABLE',
-    expectedString: 'WeakSet NOT_ENUMERABLE',
+    expectedResult: 'WeakSet|NOT_ENUMERABLE',
+    expectedString: JSON.stringify('WeakSet|NOT_ENUMERABLE'),
     key: 'weakSet',
     value: new WeakSet().add({})
   }
 ];
 
-// test('if getIntegerHashValue returns correct values', (t) => {
-//   const undef = undefined;
-//   const nil = null;
-//   const string = 'foo';
+test('if getCircularValue returns the stringified refCount', (t) => {
+  const key = 'key';
+  const value = 'value';
+  const refCount = 123;
 
-//   t.is(utils.getIntegerHashValue(undef), 0);
-//   t.is(utils.getIntegerHashValue(nil), 0);
-//   t.is(utils.getIntegerHashValue(string), 193491849);
-// });
+  const result = utils.getCircularValue(key, value, refCount);
 
-// test('if getIterablePairs will return the iterable pairs', (t) => {
-//   const iterable = new Map().set('foo', 'bar');
-//   const type = Object.prototype.toString.call(iterable);
+  t.is(result, `${refCount}`);
+});
 
-//   const result = utils.getIterablePairs(iterable, type);
+test('if getIntegerHashValue returns correct values', (t) => {
+  const undef = undefined;
+  const nil = null;
+  const string = 'foo';
 
-//   t.deepEqual(result, [OBJECT_CLASS_MAP[type], ['foo', 'bar']]);
-// });
+  t.is(utils.getIntegerHashValue(undef), 0);
+  t.is(utils.getIntegerHashValue(nil), 0);
+  t.is(utils.getIntegerHashValue(string), 193491849);
+});
 
-// test('if getCircularStackValue will return the type prefixed string if there is no value', (t) => {
-//   const value = null;
-//   const type = Object.prototype.toString.call(value);
-//   const stack = [];
-//   const circularCounter = 0;
+test('if sortIterablePair will return 1 when the first pair keystring is greater than the second', (t) => {
+  const pairA = {keyString: 'foo'};
+  const pairB = {keyString: 'bar'};
 
-//   const result = utils.getCircularStackValue(value, type, stack, circularCounter);
+  const result = utils.sortIterablePair(pairA, pairB);
 
-//   t.is(result, utils.getTypePrefixedString(value, type));
-// });
+  t.is(result, 1);
+});
 
-// test('if getCircularStackValue will clear the stack and return the value when larger than the cutoff', (t) => {
-//   const value = 'new value';
-//   const type = Object.prototype.toString.call(value);
-//   const stack = ['value'];
-//   const circularCounter = RECURSIVE_COUNTER_CUTOFF + 1;
+test('if sortIterablePair will return -1 when the first pair keystring is less than the second', (t) => {
+  const pairA = {keyString: 'bar'};
+  const pairB = {keyString: 'baz'};
 
-//   const result = utils.getCircularStackValue(value, type, stack, circularCounter);
+  const result = utils.sortIterablePair(pairA, pairB);
 
-//   t.deepEqual(stack, []);
-//   t.is(result, value);
-// });
+  t.is(result, -1);
+});
 
-// test('if getCircularStackValue will return a circular reference if a match is found', (t) => {
-//   const value = 'new value';
-//   const type = Object.prototype.toString.call(value);
-//   const stack = [value];
-//   const circularCounter = 1;
+test('if sortIterablePair will return 0 when the first pair keystring is the same as the second', (t) => {
+  const pairA = {keyString: 'quz'};
+  const pairB = {keyString: 'quz'};
 
-//   const result = utils.getCircularStackValue(value, type, stack, circularCounter);
+  const result = utils.sortIterablePair(pairA, pairB);
 
-//   t.deepEqual(stack, [value]);
-//   t.is(result, `*Circular-${stack.indexOf(value)}`);
-// });
+  t.is(result, 0);
+});
 
-// test('if getStringFromArrayBuffer will return the correct value when arraybuffer exists', (t) => {
-//   const {value} = TEST_VALUES.find(({key}) => key === 'arrayBuffer');
+test('if getIterablePairs will return the map pairs', (t) => {
+  const iterable = new Map().set('foo', 'bar');
 
-//   const result = utils.getStringFromArrayBuffer(value);
+  const result = utils.getIterablePairs(iterable);
 
-//   t.is(result, String.fromCharCode.apply(null, new Uint16Array(value)));
-// });
+  t.deepEqual(result, [{key: 'foo', value: 'bar'}]);
+});
 
-// test.serial('if getStringFromArrayBuffer will return the correct value when arraybuffer does not exist', (t) => {
-//   const {value} = TEST_VALUES.find(({key}) => key === 'arrayBuffer');
+test('if getIterablePairs will return the set pairs', (t) => {
+  const iterable = new Set().add('foo');
 
-//   const existingUint16Array = global.Uint16Array;
+  const result = utils.getIterablePairs(iterable);
 
-//   global.Uint16Array = undefined;
+  t.deepEqual(result, [{key: 'foo'}]);
+});
 
-//   const result = utils.getStringFromArrayBuffer(value);
+test('if getIterablePairs will return the map pairs sorted by their keystring values', (t) => {
+  const iterable = new Map().set('foo', 'bar').set('bar', 'baz');
 
-//   global.Uint16Array = existingUint16Array;
+  const result = utils.getIterablePairs(iterable);
 
-//   t.is(result, '');
-// });
+  t.deepEqual(result, [{key: 'bar', value: 'baz'}, {key: 'foo', value: 'bar'}]);
+});
 
-// test('if createReplacer provides correct values for different object types', (t) => {
-//   TEST_VALUES.forEach(({comparator, expectedResult, key, value}) => {
-//     t[comparator](utils.createReplacer([])(key, value), expectedResult, key);
-//   });
-// });
+test('if getIterablePairs will return the set pairs sorted by their keystring values', (t) => {
+  const iterable = new Set().add('foo').add('bar');
 
-// test('if getStringifiedValue uses JSON.stringify with createReplacer correctly', (t) => {
-//   TEST_VALUES.forEach(({comparator, expectedString, value}) => {
-//     t[comparator](utils.getStringifiedValue(value), expectedString);
-//   });
-// });
+  const result = utils.getIterablePairs(iterable);
 
-// test('if getStringifiedElement will return the string for an empty element', (t) => {
-//   const element = document.createElement('div');
+  t.deepEqual(result, [{key: 'bar'}, {key: 'foo'}]);
+});
 
-//   const result = utils.getStringifiedElement(element);
+test('if getPrefixedValue will get the value prefixed with the tag', (t) => {
+  const tag = 'tag';
+  const value = 'value';
 
-//   t.is(result, `${element.tagName}  `);
-// });
+  const result = utils.getPrefixedValue(tag, value);
 
-// test('if getStringifiedElement will return the string for an element with inner HTML', (t) => {
-//   const element = document.createElement('div');
+  t.is(result, `${tag}|${value}`);
+});
 
-//   element.innerHTML = '<span>contents</span>';
+test('if getSortedObject will get the object sorted by its keys', (t) => {
+  const object = {foo: 'bar', bar: 'baz', baz: 'quz'};
 
-//   const result = utils.getStringifiedElement(element);
+  t.deepEqual(Object.keys(object), ['foo', 'bar', 'baz']);
 
-//   t.is(result, `${element.tagName}  ${element.innerHTML}`);
-// });
+  const result = utils.getSortedObject(object);
 
-// test('if getStringifiedElement will return the string for an element with attributes', (t) => {
-//   const element = document.createElement('div');
+  t.deepEqual(result, object);
+  t.notDeepEqual(Object.keys(object), Object.keys(result));
 
-//   element.className = 'class-name';
+  t.deepEqual(Object.keys(result), ['bar', 'baz', 'foo']);
+});
 
-//   const result = utils.getStringifiedElement(element);
+test.serial('if getStringifiedArrayBufferModern calls Buffer.from when there is support', (t) => {
+  const stringified = 'stringified';
+  const toString = sinon.stub().returns(stringified);
 
-//   t.is(result, `${element.tagName} class="${element.className}", `);
-// });
+  const stub = sinon.stub(Buffer, 'from').returns({toString});
 
-// test('if getStringifiedElement will return the string for an element with attributes and inner HTML', (t) => {
-//   const element = document.createElement('div');
+  const result = utils.getStringifiedArrayBufferModern(ARRAYBUFFER);
 
-//   element.innerHTML = '<span>contents</span>';
-//   element.className = 'class-name';
+  t.true(Buffer.from.calledOnce);
+  t.true(Buffer.from.calledWith(ARRAYBUFFER));
 
-//   const result = utils.getStringifiedElement(element);
+  t.true(toString.calledOnce);
+  t.true(toString.calledWith('utf8'));
 
-//   t.is(result, `${element.tagName} class="${element.className}", ${element.innerHTML}`);
-// });
+  stub.restore();
 
-// test('if getStringifiedValue throws for window object (deeply recursive)', (t) => {
-//   t.throws(() => {
-//     utils.getStringifiedValue(window);
-//   });
-// });
+  t.is(result, stringified);
+});
 
-// test('if getStringifiedValue handles deeply-recursive objects when passed true', (t) => {
-//   try {
-//     utils.getStringifiedValue(window, true);
+test.serial('if getStringifiedArrayBufferFallback creates a new Uint16Array when there is support', (t) => {
+  const stringified = 'stringified';
 
-//     t.pass();
-//   } catch (error) {
-//     t.fail(error);
-//   }
-// });
+  const stub = sinon.stub(String, 'fromCharCode').returns(stringified);
+
+  const result = utils.getStringifiedArrayBufferFallback(ARRAYBUFFER);
+
+  t.true(String.fromCharCode.calledOnce);
+  t.deepEqual(String.fromCharCode.args[0], INTEGER_ARRAY);
+
+  stub.restore();
+
+  t.is(result, stringified);
+});
+
+test('if getStringifiedArrayBufferNoSupport will return an empty string', (t) => {
+  const result = utils.getStringifiedArrayBufferNoSupport(ARRAYBUFFER);
+
+  t.is(result, '');
+});
+
+test('if getStringifiedElement will return the string for an empty element', (t) => {
+  const element = document.createElement('div');
+
+  const result = utils.getStringifiedElement(element);
+
+  t.is(result, element.tagName);
+});
+
+test('if getStringifiedElement will return the string for an element with inner HTML', (t) => {
+  const element = document.createElement('div');
+
+  element.innerHTML = '<span>contents</span>';
+
+  const result = utils.getStringifiedElement(element);
+
+  t.is(result, `${element.tagName} ${element.innerHTML}`);
+});
+
+test('if getStringifiedElement will return the string for an element with attributes', (t) => {
+  const element = document.createElement('div');
+
+  element.className = 'class-name';
+
+  const result = utils.getStringifiedElement(element);
+
+  t.is(result, `${element.tagName} class="${element.className}"`);
+});
+
+test('if getStringifiedElement will return the string for an element with attributes and inner HTML', (t) => {
+  const element = document.createElement('div');
+
+  element.innerHTML = '<span>contents</span>';
+  element.className = 'class-name';
+
+  const result = utils.getStringifiedElement(element);
+
+  t.is(result, `${element.tagName} ${element.innerHTML} class="${element.className}"`);
+});
+
+test('if getNormalizedValue will return the value passed if a string', (t) => {
+  const value = 'string';
+
+  const result = utils.getNormalizedValue(value);
+
+  t.is(result, value);
+});
+
+test('if getNormalizedValue will return the prefixed value passed if a primitive', (t) => {
+  const value = true;
+
+  const result = utils.getNormalizedValue(value);
+
+  t.is(result, utils.getPrefixedValue(typeof value, value));
+});
+
+test('if getNormalizedValue will return the prefixed value passed if null', (t) => {
+  const value = null;
+
+  const result = utils.getNormalizedValue(value);
+
+  t.is(result, utils.getPrefixedValue('null', value));
+});
+
+test('if getNormalizedValue will return the value passed if considered a "self" object', (t) => {
+  const value = ['foo'];
+
+  const result = utils.getNormalizedValue(value);
+
+  t.is(result, value);
+});
+
+test('if getNormalizedValue will return the sorted value passed if an object', (t) => {
+  const value = {foo: 'bar', bar: 'baz'};
+
+  const result = utils.getNormalizedValue(value);
+
+  t.not(result, value);
+  t.deepEqual(result, utils.getSortedObject(value));
+});
+
+test('if getNormalizedValue will return the toString value passed if toString must be called', (t) => {
+  const value = Symbol('value');
+
+  const result = utils.getNormalizedValue(value);
+
+  t.is(result, utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.toString()));
+});
+
+test('if getNormalizedValue will return the pairs value passed if an iterable', (t) => {
+  const value = new Map().set('foo', 'bar').set('bar', 'baz');
+
+  const result = utils.getNormalizedValue(value);
+
+  t.deepEqual(result, utils.getIterablePairs(value));
+});
+
+test('if getNormalizedValue will return the epoch value passed if a date', (t) => {
+  const value = new Date();
+
+  const result = utils.getNormalizedValue(value);
+
+  t.is(result, utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.getTime()));
+});
+
+test('if getNormalizedValue will return the stack value passed if an error', (t) => {
+  const value = new Error('boom');
+
+  const result = utils.getNormalizedValue(value);
+
+  t.is(result, utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.stack));
+});
+
+test('if getNormalizedValue will return the placeholder value if not enumerable', (t) => {
+  const value = new Promise(() => {});
+
+  const result = utils.getNormalizedValue(value);
+
+  t.is(result, utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), 'NOT_ENUMERABLE'));
+});
+
+test('if getNormalizedValue will return the HTML tag with attributes if an HTML element', (t) => {
+  const value = document.createElement('main');
+
+  value.className = 'className';
+  value.id = 'id';
+
+  const result = utils.getNormalizedValue(value);
+
+  t.is(
+    result,
+    utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), utils.getStringifiedElement(value))
+  );
+});
+
+test('if getNormalizedValue will return the joined value if a typed array', (t) => {
+  const value = new Uint16Array([1, 2, 3]);
+
+  const result = utils.getNormalizedValue(value);
+
+  t.is(result, utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.join(',')));
+});
+
+test('if getNormalizedValue will return the stringified buffer value if an array buffer', (t) => {
+  const value = ARRAYBUFFER;
+
+  const result = utils.getNormalizedValue(value);
+
+  t.is(
+    result,
+    utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), utils.getStringifiedArrayBuffer(value))
+  );
+});
+
+test('if getNormalizedValue will return the stringified buffer value if a dataview', (t) => {
+  const value = new DataView(ARRAYBUFFER);
+
+  const result = utils.getNormalizedValue(value);
+
+  t.is(
+    result,
+    utils.getPrefixedValue(
+      Object.prototype.toString.call(value).slice(8, -1),
+      utils.getStringifiedArrayBuffer(value.buffer)
+    )
+  );
+});
+
+test('if getNormalizedValue will return the value itself if not matching', (t) => {
+  class Foo {
+    constructor(value) {
+      this.value = value;
+
+      return this;
+    }
+
+    get [Symbol.toStringTag]() {
+      return 'Foo';
+    }
+  }
+
+  const value = new Foo('bar');
+
+  const result = utils.getNormalizedValue(value);
+
+  t.is(result, value);
+});
+
+test('if replacer provides correct values for different object types', (t) => {
+  TEST_VALUES.forEach(({comparator, expectedResult, key, value}) => {
+    t[comparator](utils.replacer(key, value), expectedResult, key);
+  });
+});
+
+test('if stringify uses JSON.stringify with createReplacer correctly', (t) => {
+  TEST_VALUES.forEach(({comparator, expectedString, value}) => {
+    t[comparator](utils.stringify(value), expectedString);
+  });
+});
+
+test('if stringify handles deeply-recursive objects', (t) => {
+  try {
+    utils.stringify(window);
+
+    t.pass();
+  } catch (error) {
+    t.fail(error);
+  }
+});

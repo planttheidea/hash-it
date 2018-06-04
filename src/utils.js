@@ -148,6 +148,38 @@ export const getSortedObject = (object) => {
 };
 
 /**
+ * @function getStringifiedArrayBufferFallback
+ *
+ * @description
+ * get the string value of the buffer passed based on a Buffer
+ *
+ * @param {ArrayBuffer} buffer the array buffer to convert
+ * @returns {string} the stringified buffer
+ */
+export const getStringifiedArrayBufferFallback = (buffer) => String.fromCharCode.apply(null, new Uint16Array(buffer));
+
+/**
+ * @function getStringifiedArrayBufferModern
+ *
+ * @description
+ * get the string value of the buffer passed based on a Uint16Array
+ *
+ * @param {ArrayBuffer} buffer the array buffer to convert
+ * @returns {string} the stringified buffer
+ */
+export const getStringifiedArrayBufferModern = (buffer) => Buffer.from(buffer).toString('utf8');
+
+/**
+ * @function getStringifiedArrayBufferNoSupport
+ *
+ * @description
+ * return a placeholder when no arraybuffer support exists
+ *
+ * @returns {string} the placeholder
+ */
+export const getStringifiedArrayBufferNoSupport = () => '';
+
+/**
  * @function getStringifiedArrayBuffer
  *
  * @description
@@ -158,10 +190,10 @@ export const getSortedObject = (object) => {
  */
 export const getStringifiedArrayBuffer = (() =>
   HAS_BUFFER_FROM_SUPPORT
-    ? (buffer) => Buffer.from(buffer).toString('utf8')
+    ? getStringifiedArrayBufferModern
     : HAS_UINT16ARRAY_SUPPORT
-      ? (buffer) => String.fromCharCode.apply(null, new Uint16Array(buffer))
-      : () => '')();
+      ? getStringifiedArrayBufferFallback
+      : getStringifiedArrayBufferNoSupport)();
 
 /**
  * @function getStringifiedElement

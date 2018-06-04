@@ -70,10 +70,6 @@ const TEST_VALUES = [
     value: new Map().set('foo', 'bar')
   },
   {
-    key: 'math',
-    value: Math
-  },
-  {
     key: 'null',
     value: null
   },
@@ -220,7 +216,6 @@ test('if isEmpty checks if the object has value', (t) => {
   t.true(hashIt.isEmpty(undefined));
   t.true(hashIt.isEmpty({}));
   t.true(hashIt.isEmpty(''));
-  t.true(hashIt.isEmpty(0));
   t.true(hashIt.isEmpty([]));
   t.true(hashIt.isEmpty(new Map()));
   t.true(hashIt.isEmpty(new Set()));
@@ -229,7 +224,6 @@ test('if isEmpty checks if the object has value', (t) => {
   t.false(hashIt.isEmpty(['foo']));
   t.false(hashIt.isEmpty(new Map().set({}, 'foo')));
   t.false(hashIt.isEmpty(new Set([1, 2])));
-  t.false(hashIt.isEmpty(1));
   t.false(hashIt.isEmpty('foo'));
   t.false(hashIt.isEmpty(true));
 });
