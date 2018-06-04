@@ -67,6 +67,8 @@ const object = {
   uint32Array: new Uint32Array([1, 2, 3]),
   weakMap: new WeakMap().set({}, 7).set({foo: 3}, ['abc']),
   weakSet: new WeakSet().add({}).add({foo: 'bar'}),
+  doc: document,
+  win: window,
 
   ReactStatefulClass: StatefulComponent,
   ReactStatefulElement: <StatefulComponent />,
@@ -140,8 +142,8 @@ const visualValidation = (iterations = 100) => {
   console.log(object.ReactStatefulElement, hashIt(object.ReactStatefulElement));
   console.log(object.ReactStatelessClass, hashIt(object.ReactStatelessClass));
   console.log(object.ReactStatelessElement, hashIt(object.ReactStatelessElement));
-  console.log(document.body, hashIt(document.body));
-  console.log(window, hashIt(window, true));
+  console.log(object.doc.body, hashIt(object.doc.body));
+  console.log(object.win, hashIt(object.win));
 };
 
 const hashOnlyValidation = (iterations = 100) => {
@@ -185,7 +187,7 @@ const hashOnlyValidation = (iterations = 100) => {
   console.log(hashIt(object.ReactStatelessClass));
   console.log(hashIt(object.ReactStatelessElement));
   console.log(hashIt(document.body));
-  // console.log(hashIt(window));
+  console.log(hashIt(window));
 };
 
 // benchmark();

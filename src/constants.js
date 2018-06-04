@@ -1,4 +1,9 @@
 /**
+ * @constant {string} CIRCULAR_VALUE
+ */
+export const CIRCULAR_VALUE = '~';
+
+/**
  * @constant {boolean} HAS_BUFFER_FROM_SUPPORT
  */
 export const HAS_BUFFER_FROM_SUPPORT = typeof Buffer !== 'undefined' && typeof Buffer.from === 'function';

@@ -1,8 +1,10 @@
 // external dependencies
 import fastStringify from 'fast-stringify';
+import {getNewCache} from 'fast-stringify/lib/utils';
 
 // constants
 import {
+  CIRCULAR_VALUE,
   HAS_BUFFER_FROM_SUPPORT,
   HAS_UINT16ARRAY_SUPPORT,
   HTML_ELEMENT_REGEXP,
@@ -25,12 +27,9 @@ const keys = Object.keys;
  * @description
  * get the value used when circular references are found
  *
- * @param {string} key the key in the stringification object
- * @param {any} value the value to stringify
- * @param {number} refCount the circular reference count
  * @returns {string} the value for stringification
  */
-export const getCircularValue = (key, value, refCount) => `${refCount}`;
+export const getCircularValue = () => CIRCULAR_VALUE;
 
 /**
  * @function getIntegerHashValue
@@ -80,7 +79,7 @@ export const sortIterablePair = (pairA, pairB) =>
  * @param {Map|Set} iterable the iterable to get the pairs for
  * @returns {Array<{key: string, value: any}>} the pairs
  */
-export const getIterablePairs = (iterable) => {
+export const getSortedIterablePairs = (iterable) => {
   const pairs = [];
   const isMap = typeof iterable.get === 'function';
 
@@ -226,9 +225,10 @@ export const getStringifiedElement = (element) => {
  * get the value normalized for stringification
  *
  * @param {any} value the value to normalize
+ * @param {WeakMap|Object} sortedCache the cache of sorted objects
  * @returns {any} the normalized value
  */
-export const getNormalizedValue = (value) => {
+export const getNormalizedValue = (value, sortedCache) => {
   const type = typeof value;
 
   if (type === 'string') {
@@ -250,7 +250,13 @@ export const getNormalizedValue = (value) => {
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.OBJECT) {
-    return getSortedObject(value);
+    if (sortedCache.has(value)) {
+      return CIRCULAR_VALUE;
+    }
+
+    sortedCache.add(value);
+
+    return getSortedObject(value, sortedCache);
   }
 
   if (TOSTRING_TAGS[tag]) {
@@ -258,7 +264,13 @@ export const getNormalizedValue = (value) => {
   }
 
   if (ITERABLE_TAGS[tag]) {
-    return getIterablePairs(value);
+    if (sortedCache.has(value)) {
+      return CIRCULAR_VALUE;
+    }
+
+    sortedCache.add(value);
+
+    return getSortedIterablePairs(value);
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.DATE) {
@@ -298,11 +310,10 @@ export const getNormalizedValue = (value) => {
  * @description
  * create the replacer function used for stringification
  *
- * @param {string} key the key for the value in the object
- * @param {any} value the value to normalize
- * @returns {any} the normalized value
+ * @param {WeakSet|Object} sortedCache the cache to use for sorting objects
+ * @returns {function(key: string, value: any)} function getting the normalized value
  */
-export const replacer = (key, value) => getNormalizedValue(value);
+export const createReplacer = (sortedCache) => (key, value) => getNormalizedValue(value, sortedCache);
 
 /**
  * @function stringify
@@ -315,6 +326,6 @@ export const replacer = (key, value) => getNormalizedValue(value);
  */
 export function stringify(value) {
   return typeof value === 'object' && value && !(value instanceof RegExp || value instanceof Date)
-    ? fastStringify(value, replacer, null, getCircularValue)
+    ? fastStringify(value, createReplacer(getNewCache()), null, getCircularValue)
     : getNormalizedValue(value);
 }

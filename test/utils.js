@@ -4,7 +4,7 @@ import sinon from 'sinon';
 
 // src
 import * as utils from 'src/utils';
-import * as constants from 'src/constants';
+import {CIRCULAR_VALUE} from 'src/constants';
 
 const DATE = new Date();
 const ERROR = new Error('boom');
@@ -290,7 +290,7 @@ test('if getCircularValue returns the stringified refCount', (t) => {
 
   const result = utils.getCircularValue(key, value, refCount);
 
-  t.is(result, `${refCount}`);
+  t.is(result, CIRCULAR_VALUE);
 });
 
 test('if getIntegerHashValue returns correct values', (t) => {
@@ -330,34 +330,34 @@ test('if sortIterablePair will return 0 when the first pair keystring is the sam
   t.is(result, 0);
 });
 
-test('if getIterablePairs will return the map pairs', (t) => {
+test('if getSortedIterablePairs will return the map pairs', (t) => {
   const iterable = new Map().set('foo', 'bar');
 
-  const result = utils.getIterablePairs(iterable);
+  const result = utils.getSortedIterablePairs(iterable);
 
   t.deepEqual(result, [{key: 'foo', value: 'bar'}]);
 });
 
-test('if getIterablePairs will return the set pairs', (t) => {
+test('if getSortedIterablePairs will return the set pairs', (t) => {
   const iterable = new Set().add('foo');
 
-  const result = utils.getIterablePairs(iterable);
+  const result = utils.getSortedIterablePairs(iterable);
 
   t.deepEqual(result, [{key: 'foo'}]);
 });
 
-test('if getIterablePairs will return the map pairs sorted by their keystring values', (t) => {
+test('if getSortedIterablePairs will return the map pairs sorted by their keystring values', (t) => {
   const iterable = new Map().set('foo', 'bar').set('bar', 'baz');
 
-  const result = utils.getIterablePairs(iterable);
+  const result = utils.getSortedIterablePairs(iterable);
 
   t.deepEqual(result, [{key: 'bar', value: 'baz'}, {key: 'foo', value: 'bar'}]);
 });
 
-test('if getIterablePairs will return the set pairs sorted by their keystring values', (t) => {
+test('if getSortedIterablePairs will return the set pairs sorted by their keystring values', (t) => {
   const iterable = new Set().add('foo').add('bar');
 
-  const result = utils.getIterablePairs(iterable);
+  const result = utils.getSortedIterablePairs(iterable);
 
   t.deepEqual(result, [{key: 'bar'}, {key: 'foo'}]);
 });
@@ -465,81 +465,114 @@ test('if getStringifiedElement will return the string for an element with attrib
 
 test('if getNormalizedValue will return the value passed if a string', (t) => {
   const value = 'string';
+  const sortedCache = new WeakSet();
 
-  const result = utils.getNormalizedValue(value);
+  const result = utils.getNormalizedValue(value, sortedCache);
 
   t.is(result, value);
 });
 
 test('if getNormalizedValue will return the prefixed value passed if a primitive', (t) => {
   const value = true;
+  const sortedCache = new WeakSet();
 
-  const result = utils.getNormalizedValue(value);
+  const result = utils.getNormalizedValue(value, sortedCache);
 
   t.is(result, utils.getPrefixedValue(typeof value, value));
 });
 
 test('if getNormalizedValue will return the prefixed value passed if null', (t) => {
   const value = null;
+  const sortedCache = new WeakSet();
 
-  const result = utils.getNormalizedValue(value);
+  const result = utils.getNormalizedValue(value, sortedCache);
 
   t.is(result, utils.getPrefixedValue('null', value));
 });
 
 test('if getNormalizedValue will return the value passed if considered a "self" object', (t) => {
   const value = ['foo'];
+  const sortedCache = new WeakSet();
 
-  const result = utils.getNormalizedValue(value);
+  const result = utils.getNormalizedValue(value, sortedCache);
 
   t.is(result, value);
 });
 
 test('if getNormalizedValue will return the sorted value passed if an object', (t) => {
   const value = {foo: 'bar', bar: 'baz'};
+  const sortedCache = new WeakSet();
 
-  const result = utils.getNormalizedValue(value);
+  const result = utils.getNormalizedValue(value, sortedCache);
 
   t.not(result, value);
   t.deepEqual(result, utils.getSortedObject(value));
 });
 
+test('if getNormalizedValue will return the circular value if an object that has already been processed', (t) => {
+  const value = {foo: 'bar', bar: 'baz'};
+  const sortedCache = new WeakSet();
+
+  sortedCache.add(value);
+
+  const result = utils.getNormalizedValue(value, sortedCache);
+
+  t.not(result, value);
+  t.deepEqual(result, CIRCULAR_VALUE);
+});
+
 test('if getNormalizedValue will return the toString value passed if toString must be called', (t) => {
   const value = Symbol('value');
+  const sortedCache = new WeakSet();
 
-  const result = utils.getNormalizedValue(value);
+  const result = utils.getNormalizedValue(value, sortedCache);
 
   t.is(result, utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.toString()));
 });
 
 test('if getNormalizedValue will return the pairs value passed if an iterable', (t) => {
   const value = new Map().set('foo', 'bar').set('bar', 'baz');
+  const sortedCache = new WeakSet();
 
-  const result = utils.getNormalizedValue(value);
+  const result = utils.getNormalizedValue(value, sortedCache);
 
-  t.deepEqual(result, utils.getIterablePairs(value));
+  t.deepEqual(result, utils.getSortedIterablePairs(value));
+});
+
+test('if getNormalizedValue will return the circular value if an iterable that has already been processed', (t) => {
+  const value = new Map().set('foo', 'bar').set('bar', 'baz');
+  const sortedCache = new WeakSet();
+
+  sortedCache.add(value);
+
+  const result = utils.getNormalizedValue(value, sortedCache);
+
+  t.deepEqual(result, CIRCULAR_VALUE);
 });
 
 test('if getNormalizedValue will return the epoch value passed if a date', (t) => {
   const value = new Date();
+  const sortedCache = new WeakSet();
 
-  const result = utils.getNormalizedValue(value);
+  const result = utils.getNormalizedValue(value, sortedCache);
 
   t.is(result, utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.getTime()));
 });
 
 test('if getNormalizedValue will return the stack value passed if an error', (t) => {
   const value = new Error('boom');
+  const sortedCache = new WeakSet();
 
-  const result = utils.getNormalizedValue(value);
+  const result = utils.getNormalizedValue(value, sortedCache);
 
   t.is(result, utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.stack));
 });
 
 test('if getNormalizedValue will return the placeholder value if not enumerable', (t) => {
   const value = new Promise(() => {});
+  const sortedCache = new WeakSet();
 
-  const result = utils.getNormalizedValue(value);
+  const result = utils.getNormalizedValue(value, sortedCache);
 
   t.is(result, utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), 'NOT_ENUMERABLE'));
 });
@@ -550,7 +583,9 @@ test('if getNormalizedValue will return the HTML tag with attributes if an HTML 
   value.className = 'className';
   value.id = 'id';
 
-  const result = utils.getNormalizedValue(value);
+  const sortedCache = new WeakSet();
+
+  const result = utils.getNormalizedValue(value, sortedCache);
 
   t.is(
     result,
@@ -560,16 +595,18 @@ test('if getNormalizedValue will return the HTML tag with attributes if an HTML 
 
 test('if getNormalizedValue will return the joined value if a typed array', (t) => {
   const value = new Uint16Array([1, 2, 3]);
+  const sortedCache = new WeakSet();
 
-  const result = utils.getNormalizedValue(value);
+  const result = utils.getNormalizedValue(value, sortedCache);
 
   t.is(result, utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.join(',')));
 });
 
 test('if getNormalizedValue will return the stringified buffer value if an array buffer', (t) => {
   const value = ARRAYBUFFER;
+  const sortedCache = new WeakSet();
 
-  const result = utils.getNormalizedValue(value);
+  const result = utils.getNormalizedValue(value, sortedCache);
 
   t.is(
     result,
@@ -579,8 +616,9 @@ test('if getNormalizedValue will return the stringified buffer value if an array
 
 test('if getNormalizedValue will return the stringified buffer value if a dataview', (t) => {
   const value = new DataView(ARRAYBUFFER);
+  const sortedCache = new WeakSet();
 
-  const result = utils.getNormalizedValue(value);
+  const result = utils.getNormalizedValue(value, sortedCache);
 
   t.is(
     result,
@@ -605,15 +643,18 @@ test('if getNormalizedValue will return the value itself if not matching', (t) =
   }
 
   const value = new Foo('bar');
+  const sortedCache = new WeakSet();
 
-  const result = utils.getNormalizedValue(value);
+  const result = utils.getNormalizedValue(value, sortedCache);
 
   t.is(result, value);
 });
 
-test('if replacer provides correct values for different object types', (t) => {
+test('if createReplacer provides correct values for different object types', (t) => {
+  const sortedCache = new WeakSet();
+
   TEST_VALUES.forEach(({comparator, expectedResult, key, value}) => {
-    t[comparator](utils.replacer(key, value), expectedResult, key);
+    t[comparator](utils.createReplacer(sortedCache)(key, value), expectedResult, key);
   });
 });
 

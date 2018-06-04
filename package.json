@@ -3,14 +3,28 @@
   "ava": {
     "babel": {
       "babelrc": true,
-      "presets": ["react"]
+      "presets": [
+        "react"
+      ]
     },
     "failFast": true,
-    "files": ["test/*.js"],
-    "require": ["babel-register", "./test/helpers/setup-browser-env.js"],
+    "files": [
+      "test/*.js"
+    ],
+    "require": [
+      "babel-register",
+      "./test/helpers/setup-browser-env.js"
+    ],
     "verbose": true
   },
-  "browserslist": ["defaults", "Explorer >= 9", "Safari >= 6", "Opera >= 15", "iOS >= 8", "Android >= 4"],
+  "browserslist": [
+    "defaults",
+    "Explorer >= 9",
+    "Safari >= 6",
+    "Opera >= 15",
+    "iOS >= 8",
+    "Android >= 4"
+  ],
   "bugs": {
     "url": "https://github.com/planttheidea/hash-it/issues"
   },
@@ -39,7 +53,7 @@
     "html-webpack-plugin": "^3.2.0",
     "in-publish": "2.0.0",
     "node-object-hash": "^1.4.1",
-    "nyc": "^12.0.1",
+    "nyc": "^12.0.2",
     "object-hash": "^1.3.0",
     "optimize-js-plugin": "^0.0.4",
     "react": "^16.4.0",
@@ -51,7 +65,12 @@
     "webpack-dev-server": "3.1.4"
   },
   "homepage": "https://github.com/planttheidea/hash-it#readme",
-  "keywords": ["hash", "hashcode", "object-hash", "unique"],
+  "keywords": [
+    "hash",
+    "hashcode",
+    "object-hash",
+    "unique"
+  ],
   "license": "MIT",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -73,8 +92,7 @@
     "dist": "npm run clean:dist && npm run build && npm run build:minified",
     "lint": "NODE_ENV=test eslint src",
     "prepublish": "if in-publish; then npm run prepublish:compile; fi",
-    "prepublish:compile":
-      "npm run lint && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
+    "prepublish:compile": "npm run lint && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
     "start": "npm run dev",
     "test": "NODE_PATH=. NODE_ENV=test ava",
     "test:coverage": "nyc npm test",
@@ -84,8 +102,7 @@
   },
   "version": "3.1.2",
   "dependencies": {
-    "fast-stringify": "^1.0.0",
-    "json-prune": "^1.1.0",
-    "xxhashjs": "^0.2.1"
+    "fast-stringify": "^1.0.2",
+    "json-prune": "^1.1.0"
   }
 }
