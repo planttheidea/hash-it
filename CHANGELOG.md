@@ -1,5 +1,23 @@
 # hashIt CHANGELOG
 
+## 4.0.0
+
+Rewrite! Lots of changes under-the-hood for a much more consistent hash, and circular object handling out of the box.
+
+#### BREAKING CHANGES
+
+* `0` will no longer return `true` from `hashIt.isEmpty` (`0` is not an empty number)
+
+#### ENHANCEMENTS
+
+* Circular objects are now handled out of the box, thanks to [`fast-stringify`](https://github.com/planttheidea/fast-stringify)
+* Better `ArrayBuffer` support with the use of `Buffer.from` when supported
+
+#### FIXES
+
+* `Object` / `Map` / `Set` no longer returns different hashes based on order of key addition
+* `Error` no longer returns identical hashes for different errors with same message (now uses stack)
+
 ## 3.1.2
 
 * Remove extraneous `toString` call (performance)

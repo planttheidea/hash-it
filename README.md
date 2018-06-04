@@ -20,19 +20,19 @@ Fast and consistent hashCode for any object type
 
 ```javascript
 // ES2015
-import hashIt from 'hash-it';
+import hashIt from "hash-it";
 
 // CommonJS
-const hashIt = require('hash-it').default;
+const hashIt = require("hash-it").default;
 
 // script
 const hashIt = window.hashIt;
 
 // hash any standard object
-console.log(hashIt({foo: 'bar'})); // 2639617176
+console.log(hashIt({ foo: "bar" })); // 2639617176
 
-// or if you know it is a circular object
-console.log(hashIt(window, true)); // 482488043
+// or a circular object
+console.log(hashIt(window)); // 482488043
 ```
 
 ## Overview
@@ -63,9 +63,9 @@ Here is the list of object classes that have been tested and shown to produce un
 * `Array`
 * `ArrayBuffer`
 * `Boolean`
-* `DataView`
-* `Date` (based on `valueOf`)
-* `Error` (based on `message`)
+* `DataView` (based on its `buffer`)
+* `Date` (based on `getTime`)
+* `Error` (based on `stack`)
   * Includes all sub-types (e.g. `TypeError`, `ReferenceError`, etc.)
 * `Float32Array`
 * `Float64Array`
@@ -76,16 +76,15 @@ Here is the list of object classes that have been tested and shown to produce un
 * `Int32Array`
 * `HTMLElement` (based on `tagName`, `attributes`, and `innerHTML`)
   * Includes all sub-types (e.g. `HTMLAnchorElement`, `HTMLDivElement`, etc.)
-* `Map`
-* `Math` (based on `E`, `LN2`, `LN10`, `LOG2E`, `LOG10E`, `PI`, `SQRT1_2`, and `SQRT2`)
+* `Map` (order-agnostic)
 * `Null`
 * `Number`
-* `Object` (can handle circular objects)
+* `Object` (handles circular objects, order-agnostic)
 * `Proxy`
 * `RegExp`
-* `Set`
+* `Set` (order-agnostic)
 * `String`
-* `Symbol`
+* `Symbol` (based on `toString`)
 * `Uint8Array`
 * `Uint8ClampedArray`
 * `Uint16Array`
@@ -105,7 +104,6 @@ Determines if object is empty based on hashCode, with empty defined as:
 
 * Empty array (`[]`)
 * Empty map (`new Map()`)
-* Empty number, or zero (`0`)
 * Empty object (`{}`)
 * Empty set (`new Set()`)
 * Empty string (`''`)
@@ -122,10 +120,10 @@ Compares all objects passed to it to determine if they are equal to one another 
 
 ```javascript
 const foo = {
-  foo: 'bar'
+  foo: "bar"
 };
 const alsoFoo = {
-  foo: 'bar'
+  foo: "bar"
 };
 
 console.log(foo === alsoFoo); // false
