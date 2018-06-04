@@ -8,10 +8,9 @@ import {getIntegerHashValue, stringify} from './utils';
  * hash the value passed to a unique, consistent hash value
  *
  * @param {any} value the value to hash
- * @param {Object} [options={}] the options for derivation
  * @returns {number} the object hash
  */
-export const hashIt = (value, options = {}) => getIntegerHashValue(stringify(value, options));
+export const hashIt = (value) => getIntegerHashValue(stringify(value));
 
 const NULL_HASH = hashIt(null);
 const UNDEFINED_HASH = hashIt(undefined);

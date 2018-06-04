@@ -11,7 +11,6 @@ import {
   OBJECT_CLASS_TYPE_MAP,
   PRIMITIVE_TAGS,
   SELF_TAGS,
-  STRING_TYPEOF,
   TOSTRING_TAGS,
   TYPEDARRAY_TAGS,
   UNPARSEABLE_TAGS
@@ -60,16 +59,28 @@ export const getIntegerHashValue = (string) => {
 };
 
 /**
+ * @function sortIterablePair
+ *
+ * @description
+ * get the sort result based on the two pairs to compare
+ *
+ * @param {Object} pairA the first pair to compare
+ * @param {Object} pairB the second pair to compare
+ * @returns {number} the order number
+ */
+export const sortIterablePair = (pairA, pairB) =>
+  pairA.keyString > pairB.keyString ? 1 : pairA.keyString < pairB.keyString ? -1 : 0;
+
+/**
  * @function getIterablePairs
  *
  * @description
  * get the pairs in the iterable for stringification
  *
  * @param {Map|Set} iterable the iterable to get the pairs for
- * @param {Object} options the options for stringification
  * @returns {Array<{key: string, value: any}>} the pairs
  */
-export const getIterablePairs = (iterable, options) => {
+export const getIterablePairs = (iterable) => {
   const pairs = [];
   const isMap = typeof iterable.get === 'function';
 
@@ -77,22 +88,19 @@ export const getIterablePairs = (iterable, options) => {
     pairs.push(
       isMap
         ? // eslint-disable-next-line no-use-before-define
-        {key, keyString: stringify(key, options), value}
+        {key, keyString: stringify(key), value}
         : // eslint-disable-next-line no-use-before-define
-        {key, keyString: stringify(key, options)}
+        {key, keyString: stringify(key)}
     );
   });
 
-  pairs.sort(
-    options.sortIterableBy ||
-      ((pairA, pairB) => (pairA.keyString > pairB.keyString ? 1 : pairA.keyString < pairB.keyString ? -1 : 0))
-  );
+  pairs.sort(sortIterablePair);
 
-  const finalPairs = new Array(pairs.length);
+  const finalPairs = new Array(iterable.size);
 
   let pair;
 
-  for (let index = 0; finalPairs < iterable.size; index++) {
+  for (let index = 0; index < iterable.size; index++) {
     pair = pairs[index];
 
     finalPairs[index] = isMap ? {key: pair.keyString, value: pair.value} : {key: pair.keyString};
@@ -111,7 +119,7 @@ export const getIterablePairs = (iterable, options) => {
  * @param {any} value the value to stringify
  * @returns {string} the prefixed stringified value
  */
-export const getPrefixedValue = (tag, value) => `${OBJECT_CLASS_MAP[tag] || tag}|${value}`;
+export const getPrefixedValue = (tag, value) => `${tag}|${value}`;
 
 /**
  * @function getSortedObject
@@ -120,14 +128,13 @@ export const getPrefixedValue = (tag, value) => `${OBJECT_CLASS_MAP[tag] || tag}
  * get the object with the keys sorted
  *
  * @param {Object} object the object to sort
- * @param {Object} options the options for stringification
  * @returns {Object} the sorted object
  */
-export const getSortedObject = (object, options) => {
+export const getSortedObject = (object) => {
   const objectKeys = keys(object);
   const newObject = {};
 
-  objectKeys.sort(options.sortObjectBy);
+  objectKeys.sort();
 
   let key;
 
@@ -187,18 +194,21 @@ export const getStringifiedElement = (element) => {
  * get the value normalized for stringification
  *
  * @param {any} value the value to normalize
- * @param {Object} options the options for stringification
  * @returns {any} the normalized value
  */
-export const getNormalizedValue = (value, options) => {
+export const getNormalizedValue = (value) => {
   const type = typeof value;
 
-  if (type === STRING_TYPEOF) {
+  if (type === 'string') {
     return value;
   }
 
-  if (PRIMITIVE_TAGS[type] || value === null) {
-    return getPrefixedValue(type, TOSTRING_TAGS[type] ? value.toString() : value);
+  if (PRIMITIVE_TAGS[type]) {
+    return getPrefixedValue(type, value);
+  }
+
+  if (value === null) {
+    return getPrefixedValue('null', value);
   }
 
   const tag = toString.call(value);
@@ -208,27 +218,27 @@ export const getNormalizedValue = (value, options) => {
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.OBJECT) {
-    return getSortedObject(value, options);
+    return getSortedObject(value);
   }
 
   if (TOSTRING_TAGS[tag]) {
-    return getPrefixedValue(tag, value.toString());
+    return getPrefixedValue(OBJECT_CLASS_MAP[tag], value.toString());
   }
 
   if (ITERABLE_TAGS[tag]) {
-    return getIterablePairs(value, options);
+    return getIterablePairs(value);
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.DATE) {
-    return getPrefixedValue(tag, value.getTime());
+    return getPrefixedValue(OBJECT_CLASS_MAP[tag], value.getTime());
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.ERROR) {
-    return getPrefixedValue(tag, value.stack);
+    return getPrefixedValue(OBJECT_CLASS_MAP[tag], value.stack);
   }
 
   if (UNPARSEABLE_TAGS[tag]) {
-    return getPrefixedValue(tag, 'NOT_ENUMERABLE');
+    return getPrefixedValue(OBJECT_CLASS_MAP[tag], 'NOT_ENUMERABLE');
   }
 
   if (HTML_ELEMENT_REGEXP.test(tag)) {
@@ -236,30 +246,31 @@ export const getNormalizedValue = (value, options) => {
   }
 
   if (TYPEDARRAY_TAGS[tag]) {
-    return getPrefixedValue(tag, value.join(','));
+    return getPrefixedValue(OBJECT_CLASS_MAP[tag], value.join(','));
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.ARRAYBUFFER) {
-    return getPrefixedValue(tag, getStringifiedArrayBuffer(value));
+    return getPrefixedValue(OBJECT_CLASS_MAP[tag], getStringifiedArrayBuffer(value));
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.DATAVIEW) {
-    return getPrefixedValue(tag, getStringifiedArrayBuffer(value.buffer));
+    return getPrefixedValue(OBJECT_CLASS_MAP[tag], getStringifiedArrayBuffer(value.buffer));
   }
 
   return value;
 };
 
 /**
- * @function createReplacer
+ * @function replacer
  *
  * @description
  * create the replacer function used for stringification
  *
- * @param {Object} options the options for stringification
- * @returns {function(string, any): any} the function that replaces the value with the normalized value
+ * @param {string} key the key for the value in the object
+ * @param {any} value the value to normalize
+ * @returns {any} the normalized value
  */
-export const createReplacer = (options) => (key, value) => getNormalizedValue(value, options);
+export const replacer = (key, value) => getNormalizedValue(value);
 
 /**
  * @function stringify
@@ -268,11 +279,10 @@ export const createReplacer = (options) => (key, value) => getNormalizedValue(va
  * stringify the value based on the options passed
  *
  * @param {any} value the value to stringify
- * @param {Object} options the options for stringification
  * @returns {string} the stringified value
  */
-export function stringify(value, options) {
-  return typeof value === 'object'
-    ? fastStringify(value, createReplacer(options), null, getCircularValue)
-    : getNormalizedValue(value, options);
+export function stringify(value) {
+  return typeof value === 'object' && value && !(value instanceof RegExp || value instanceof Date)
+    ? fastStringify(value, replacer, null, getCircularValue)
+    : getNormalizedValue(value);
 }

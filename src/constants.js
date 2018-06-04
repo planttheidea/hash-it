@@ -70,21 +70,16 @@ export const OBJECT_CLASS_TYPE_MAP = Object.keys(OBJECT_CLASS_MAP).reduce((objec
   return objectClassTypes;
 }, {});
 
-export const STRING_TYPEOF = 'string';
-
-export const SYMBOL_TYPEOF = 'symbol';
-
 export const ITERABLE_TAGS = {
   '[object Map]': true,
   '[object Set]': true
 };
 
 export const PRIMITIVE_TAGS = {
-  [STRING_TYPEOF]: true,
-  [SYMBOL_TYPEOF]: true,
   boolean: true,
   function: true,
   number: true,
+  string: true,
   undefined: true
 };
 
@@ -95,7 +90,7 @@ export const SELF_TAGS = {
 
 export const TOSTRING_TAGS = {
   [OBJECT_CLASS_TYPE_MAP.REGEXP]: true,
-  [SYMBOL_TYPEOF]: true
+  [OBJECT_CLASS_TYPE_MAP.SYMBOL]: true
 };
 
 export const TYPEDARRAY_TAGS = {

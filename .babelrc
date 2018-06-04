@@ -1,10 +1,20 @@
 {
   "env": {
     "development": {
+      "plugins": [
+        [
+          "transform-runtime",
+          {
+            "polyfill": false,
+            "regenerator": true
+          }
+        ]
+      ],
       "presets": [
         [
           "env",
           {
+            "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true,
             "modules": false
           }
@@ -17,6 +27,7 @@
         [
           "env",
           {
+            "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true,
             "modules": false
           }
@@ -29,6 +40,7 @@
         [
           "env",
           {
+            "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true
           }
         ],
@@ -40,6 +52,7 @@
         [
           "env",
           {
+            "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true,
             "modules": false
           }
@@ -48,10 +61,20 @@
       ]
     },
     "test": {
+      "plugins": [
+        [
+          "transform-runtime",
+          {
+            "polyfill": false,
+            "regenerator": true
+          }
+        ]
+      ],
       "presets": [
         [
           "env",
           {
+            "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true
           }
         ],
