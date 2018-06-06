@@ -1,6 +1,5 @@
 // external dependencies
 import fastStringify from 'fast-stringify';
-import {getNewCache} from 'fast-stringify/lib/utils';
 
 // constants
 import {
@@ -46,12 +45,11 @@ export const getIntegerHashValue = (string) => {
     return 0;
   }
 
-  const length = string.length;
+  let hash = 5381,
+      index = string.length;
 
-  let hash = 5381;
-
-  for (let index = 0; index < length; index++) {
-    hash = (hash << 5) + hash + charCodeAt.call(string, index);
+  while (index) {
+    hash = (hash << 5) + hash + charCodeAt.call(string, --index);
   }
 
   return hash >>> 0;
@@ -195,27 +193,23 @@ export const getStringifiedArrayBuffer = (() =>
       : getStringifiedArrayBufferNoSupport)();
 
 /**
- * @function getStringifiedElement
+ * @function indexOf
  *
  * @description
- * get the HTML element stringified by its type, attributes, and contents
+ * get the index of the value in the array (faster than native indexOf)
  *
- * @param {HTMLElement} element the element to stringify
- * @returns {string} the stringified elements
+ * @param {Array<any>} array the array to get the index of the value at
+ * @param {any} value the value to match
+ * @returns {number} the index of the value in array
  */
-export const getStringifiedElement = (element) => {
-  const attributes = element.attributes;
-
-  let stringifiedElement = element.innerHTML ? `${element.tagName} ${element.innerHTML}` : element.tagName,
-      attribute;
-
-  for (let index = 0; index < attributes.length; index++) {
-    attribute = attributes[index];
-
-    stringifiedElement += ` ${attribute.name}="${attribute.value}"`;
+export const indexOf = (array, value) => {
+  for (let index = 0; index < array.length; index++) {
+    if (array[index] === value) {
+      return index;
+    }
   }
 
-  return stringifiedElement;
+  return -1;
 };
 
 /**
@@ -250,11 +244,11 @@ export const getNormalizedValue = (value, sortedCache) => {
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.OBJECT) {
-    if (sortedCache.has(value)) {
+    if (~indexOf(sortedCache, value)) {
       return CIRCULAR_VALUE;
     }
 
-    sortedCache.add(value);
+    sortedCache.push(value);
 
     return getSortedObject(value, sortedCache);
   }
@@ -264,11 +258,11 @@ export const getNormalizedValue = (value, sortedCache) => {
   }
 
   if (ITERABLE_TAGS[tag]) {
-    if (sortedCache.has(value)) {
+    if (~indexOf(sortedCache, value)) {
       return CIRCULAR_VALUE;
     }
 
-    sortedCache.add(value);
+    sortedCache.push(value);
 
     return getSortedIterablePairs(value);
   }
@@ -286,7 +280,7 @@ export const getNormalizedValue = (value, sortedCache) => {
   }
 
   if (HTML_ELEMENT_REGEXP.test(tag)) {
-    return getPrefixedValue(tag.slice(8, -1), getStringifiedElement(value));
+    return getPrefixedValue(tag.slice(8, -1), value.outerHTML);
   }
 
   if (TYPEDARRAY_TAGS[tag]) {
@@ -326,6 +320,6 @@ export const createReplacer = (sortedCache) => (key, value) => getNormalizedValu
  */
 export function stringify(value) {
   return typeof value === 'object' && value && !(value instanceof RegExp || value instanceof Date)
-    ? fastStringify(value, createReplacer(getNewCache()), null, getCircularValue)
+    ? fastStringify(value, createReplacer([]), null, getCircularValue)
     : getNormalizedValue(value);
 }

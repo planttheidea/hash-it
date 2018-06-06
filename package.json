@@ -59,9 +59,13 @@
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "rimraf": "^2.6.2",
+    "rollup": "^0.60.0",
+    "rollup-plugin-babel": "^3.0.4",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-uglify": "^4.0.0",
     "sinon": "5.0.10",
-    "webpack": "^4.10.2",
-    "webpack-cli": "^3.0.1",
+    "webpack": "^4.11.0",
+    "webpack-cli": "^3.0.2",
     "webpack-dev-server": "3.1.4"
   },
   "homepage": "https://github.com/planttheidea/hash-it#readme",
@@ -82,14 +86,13 @@
   "scripts": {
     "benchmark": "npm run transpile:lib && node benchmarks/index.js",
     "benchmark:compare": "npm run transpile:lib && node benchmarks/compare.js",
-    "build": "NODE_ENV=development webpack --progress --colors --config=webpack/webpack.config.js",
-    "build:minified": "NODE_ENV=production webpack --progress --colors --config=webpack/webpack.config.minified.js",
+    "build": "NODE_ENV=production rollup -c",
     "clean": "npm run clean:lib && npm run clean:es && npm run clean:dist",
     "clean:dist": "rimraf dist",
     "clean:es": "rimraf es",
     "clean:lib": "rimraf lib",
     "dev": "NODE_ENV=development webpack-dev-server   --colors --progress --config=webpack/webpack.config.dev.js",
-    "dist": "npm run clean:dist && npm run build && npm run build:minified",
+    "dist": "npm run clean:dist && npm run build",
     "lint": "NODE_ENV=test eslint src",
     "prepublish": "if in-publish; then npm run prepublish:compile; fi",
     "prepublish:compile": "npm run lint && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
@@ -102,7 +105,7 @@
   },
   "version": "3.1.2",
   "dependencies": {
-    "fast-stringify": "^1.0.2",
+    "fast-stringify": "^1.0.3",
     "json-prune": "^1.1.0"
   }
 }
