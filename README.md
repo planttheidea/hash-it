@@ -4,17 +4,17 @@ Fast and consistent hashCode for any object type
 
 ## Table of contents
 
-* [Usage](#usage)
-* [Overview](#overview)
-* [Utility functions](#utility-functions)
-  * [isEmpty](#isempty)
-  * [isEqual](#isequal)
-  * [isNull](#isnull)
-  * [isUndefined](#isundefined)
-* [Gotchas](#gotchas)
-* [Browser support](#browser-support)
-* [Node support](#node-support)
-* [Development](#development)
+- [Usage](#usage)
+- [Overview](#overview)
+- [Utility functions](#utility-functions)
+  - [isEmpty](#isempty)
+  - [isEqual](#isequal)
+  - [isNull](#isnull)
+  - [isUndefined](#isundefined)
+- [Gotchas](#gotchas)
+- [Browser support](#browser-support)
+- [Node support](#node-support)
+- [Development](#development)
 
 ## Usage
 
@@ -47,50 +47,55 @@ _With no exceptions?_
 
 Well ... sadly, no, there are a few exceptions.
 
-* `Promise`
-  * There is no way to obtain the values contained within due to its asynchronous nature
-* `Generator` (the result of calling a `GeneratorFunction`)
-  * Like `Promise`, there is no way to obtain the values contained within due to its dynamic iterable nature
-* `WeakMap` / `WeakSet`
+- `Promise`
+  - There is no way to obtain the values contained within due to its asynchronous nature
+- `Generator` (the result of calling a `GeneratorFunction`)
+  - Like `Promise`, there is no way to obtain the values contained within due to its dynamic iterable nature
+- `WeakMap` / `WeakSet`
 
-  * The spec explicitly forbids iteration over them, so the unique values cannot be discovered
+  - The spec explicitly forbids iteration over them, so the unique values cannot be discovered
 
 In each of these cases, no matter what the values of the object, they will always yield the same hash result, which is unique to each object type. If you have any ideas about how these can be uniquely hashed, I welcome them!
 
 Here is the list of object classes that have been tested and shown to produce unique hashCodes:
 
-* `Arguments`
-* `Array`
-* `ArrayBuffer`
-* `Boolean`
-* `DataView` (based on its `buffer`)
-* `Date` (based on `getTime`)
-* `Error` (based on `stack`)
-  * Includes all sub-types (e.g. `TypeError`, `ReferenceError`, etc.)
-* `Float32Array`
-* `Float64Array`
-* `Function` (based on `toString`)
-* `GeneratorFunction` (based on `toString`)
-* `Int8Array`
-* `Int16Array`
-* `Int32Array`
-* `HTMLElement` (based on `tagName`, `attributes`, and `innerHTML`)
-  * Includes all sub-types (e.g. `HTMLAnchorElement`, `HTMLDivElement`, etc.)
-* `Map` (order-agnostic)
-* `Null`
-* `Number`
-* `Object` (handles circular objects, order-agnostic)
-* `Proxy`
-* `RegExp`
-* `Set` (order-agnostic)
-* `String`
-* `Symbol` (based on `toString`)
-* `Uint8Array`
-* `Uint8ClampedArray`
-* `Uint16Array`
-* `Uint32Array`
-* `Undefined`
-* `Window`
+- `Arguments`
+- `Array`
+- `ArrayBuffer`
+- `Boolean`
+- `DataView` (based on its `buffer`)
+- `Date` (based on `getTime`)
+- `DocumentFragment` (based on `outerHTML` of all `children`)
+- `Error` (based on `stack`)
+  - Includes all sub-types (e.g., `TypeError`, `ReferenceError`, etc.)
+- `Event` (based on all properties other than `Event.timeStamp`)
+  - Includes all sub-types (e.g., `MouseEvent`, `KeyboardEvent`, etc.)
+- `Float32Array`
+- `Float64Array`
+- `Function` (based on `toString`)
+- `GeneratorFunction` (based on `toString`)
+- `Int8Array`
+- `Int16Array`
+- `Int32Array`
+- `HTMLElement` (based on `outerHTML`)
+  - Includes all sub-types (e.g., `HTMLAnchorElement`, `HTMLDivElement`, etc.)
+- `Map` (order-agnostic)
+- `Null`
+- `Number`
+- `Object` (handles circular objects, order-agnostic)
+- `Proxy`
+- `RegExp`
+- `Set` (order-agnostic)
+- `String`
+- `SVGElement` (based on `outerHTML`)
+  - Includes all sub-types (e.g., `SVGRectElement`, `SVGPolygonElement`, etc.)
+- `Symbol` (based on `toString`)
+- `Uint8Array`
+- `Uint8ClampedArray`
+- `Uint16Array`
+- `Uint32Array`
+- `Undefined`
+- `Window`
 
 This is basically all I could think of, but if I have missed an object class let me know and I will add it!
 
@@ -102,13 +107,13 @@ This is basically all I could think of, but if I have missed an object class let
 
 Determines if object is empty based on hashCode, with empty defined as:
 
-* Empty array (`[]`)
-* Empty map (`new Map()`)
-* Empty object (`{}`)
-* Empty set (`new Set()`)
-* Empty string (`''`)
-* Undefined (`undefined`)
-* Null (`null`)
+- Empty array (`[]`)
+- Empty map (`new Map()`)
+- Empty object (`{}`)
+- Empty set (`new Set()`)
+- Empty string (`''`)
+- Undefined (`undefined`)
+- Null (`null`)
 
 This differs from the implementation by `lodash`, where a value is considered not empty if an `Array`, `Object`, `Map`, or `Set`. Think of this definition of empty as "having no value(s)".
 
@@ -148,33 +153,33 @@ While the hashes will be consistent when calculated within the same browser envi
 
 ## Browser support
 
-* Chrome (all versions)
-* Firefox (all versions)
-* Edge (all versions)
-* Opera 15+
-* IE 9+
-* Safari 6+
-* iOS 8+
-* Android 4+
+- Chrome (all versions)
+- Firefox (all versions)
+- Edge (all versions)
+- Opera 15+
+- IE 9+
+- Safari 6+
+- iOS 8+
+- Android 4+
 
 ## Node support
 
-* 4+
+- 4+
 
 ## Development
 
 Standard stuff, clone the repo and `npm install` dependencies. The npm scripts available:
 
-* `build` => run webpack to build development `dist` file with NODE_ENV=development
-* `build:minified` => run webpack to build production `dist` file with NODE_ENV=production
-* `dev` => run webpack dev server to run example app / playground
-* `dist` => runs `build` and `build:minified`
-* `lint` => run ESLint against all files in the `src` folder
-* `prepublish` => runs `prepublish:compile` when publishing
-* `prepublish:compile` => run `lint`, `test:coverage`, `transpile:es`, `transpile:lib`, `dist`
-* `test` => run AVA test functions with `NODE_ENV=test`
-* `test:coverage` => run `test` but with `nyc` for coverage checker
-* `test:watch` => run `test`, but with persistent watcher
-* `transpile:lib` => run babel against all files in `src` to create files in `lib`
-* `transpile:es` => run babel against all files in `src` to create files in `es`, preserving ES2015 modules (for
+- `build` => run webpack to build development `dist` file with NODE_ENV=development
+- `build:minified` => run webpack to build production `dist` file with NODE_ENV=production
+- `dev` => run webpack dev server to run example app / playground
+- `dist` => runs `build` and `build:minified`
+- `lint` => run ESLint against all files in the `src` folder
+- `prepublish` => runs `prepublish:compile` when publishing
+- `prepublish:compile` => run `lint`, `test:coverage`, `transpile:es`, `transpile:lib`, `dist`
+- `test` => run AVA test functions with `NODE_ENV=test`
+- `test:coverage` => run `test` but with `nyc` for coverage checker
+- `test:watch` => run `test`, but with persistent watcher
+- `transpile:lib` => run babel against all files in `src` to create files in `lib`
+- `transpile:es` => run babel against all files in `src` to create files in `es`, preserving ES2015 modules (for
   [`pkg.module`](https://github.com/rollup/rollup/wiki/pkg.module))

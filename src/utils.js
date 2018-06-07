@@ -12,6 +12,7 @@ import {
   OBJECT_CLASS_TYPE_MAP,
   PRIMITIVE_TAGS,
   SELF_TAGS,
+  SVG_ELEMENT_REGEXP,
   TOSTRING_TAGS,
   TYPEDARRAY_TAGS,
   UNPARSEABLE_TAGS
@@ -145,6 +146,51 @@ export const getSortedObject = (object) => {
 };
 
 /**
+ * @function getSortedEvent
+ *
+ * @description
+ * get the event object sorted by its properties
+ *
+ * @param {boolean} bubbles does the event bubble up through the DOM
+ * @param {function} alias to stopPropagation
+ * @param {boolean} cancelable is the event cancelable
+ * @param {boolean} composed can the event bubble across the boundary to shadow DOM
+ * @param {HTMLElement} [currentTarget] registered target for the event
+ * @param {boolean} defaultPrevented has preventDefault been called on the event
+ * @param {string} eventPhase the phase of the event flow being processed
+ * @param {boolean} isTrusted was the event initiated by the browser
+ * @param {HTMLElement} [target] the target with which the event was dispatched
+ * @param {number} timeStamp the time at which the event was created
+ * @param {string} type the name of the event
+ * @returns {Object} the event object with all properties sorted
+ */
+export const getSortedEvent = ({
+  bubbles,
+  cancelBubble,
+  cancelable,
+  composed,
+  currentTarget,
+  defaultPrevented,
+  eventPhase,
+  isTrusted,
+  returnValue,
+  target,
+  type
+}) => ({
+  bubbles,
+  cancelBubble,
+  cancelable,
+  composed,
+  currentTarget,
+  defaultPrevented,
+  eventPhase,
+  isTrusted,
+  returnValue,
+  target,
+  type
+});
+
+/**
  * @function getStringifiedArrayBufferFallback
  *
  * @description
@@ -191,6 +237,28 @@ export const getStringifiedArrayBuffer = (() =>
     : HAS_UINT16ARRAY_SUPPORT
       ? getStringifiedArrayBufferFallback
       : getStringifiedArrayBufferNoSupport)();
+
+/**
+ * @function getStringifiedDocumentFragment
+ *
+ * @description
+ * build a string based on all the fragment's children
+ *
+ * @param {DocumentFragment} fragment the fragment to stringify
+ * @returns {string} the stringified fragment
+ */
+export const getStringifiedDocumentFragment = (fragment) => {
+  const children = fragment.children;
+
+  let innerHTML = '';
+
+  for (let index = 0; index < children.length; index++) {
+    // eslint-disable-next-line no-use-before-define
+    innerHTML += children[index].outerHTML;
+  }
+
+  return innerHTML;
+};
 
 /**
  * @function indexOf
@@ -275,12 +343,20 @@ export const getNormalizedValue = (value, sortedCache) => {
     return getPrefixedValue(OBJECT_CLASS_MAP[tag], value.stack);
   }
 
+  if (tag === OBJECT_CLASS_TYPE_MAP.EVENT) {
+    return getSortedEvent(value);
+  }
+
   if (UNPARSEABLE_TAGS[tag]) {
     return getPrefixedValue(OBJECT_CLASS_MAP[tag], 'NOT_ENUMERABLE');
   }
 
-  if (HTML_ELEMENT_REGEXP.test(tag)) {
+  if (HTML_ELEMENT_REGEXP.test(tag) || SVG_ELEMENT_REGEXP.test(tag)) {
     return getPrefixedValue(tag.slice(8, -1), value.outerHTML);
+  }
+
+  if (tag === OBJECT_CLASS_TYPE_MAP.DOCUMENTFRAGMENT) {
+    return getPrefixedValue(OBJECT_CLASS_MAP[tag], getStringifiedDocumentFragment(value));
   }
 
   if (TYPEDARRAY_TAGS[tag]) {

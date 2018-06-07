@@ -9,6 +9,12 @@ document.body.style.color = '#d5d5d5';
 document.body.style.margin = 0;
 document.body.style.padding = 0;
 
+const fragment = document.createDocumentFragment();
+
+fragment.appendChild(document.createElement('div'));
+fragment.appendChild(document.createElement('ul'));
+fragment.appendChild(document.createElement('span'));
+
 class StatefulComponent extends React.Component {
   render() {
     return <div>test</div>;
@@ -46,7 +52,21 @@ const object = {
   },
   arr: ['foo', 'bar'],
   el: document.createElement('div'),
+  fragment,
+  svg: document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
   regexp: /test/,
+  event: (() => {
+    try {
+      return new Event('custom');
+    } catch (error) {
+      const event = document.createEvent('Event');
+
+      event.initEvent('custom', true, true);
+
+      return event;
+    }
+  })(),
+  nodeList: document.querySelectorAll('div'),
 
   // comment out for older browser testing
   symbol: Symbol('test'),
@@ -115,10 +135,14 @@ const visualValidation = (iterations = 100) => {
   console.log(object.obj, hashIt(object.obj));
   console.log(object.arr, hashIt(object.arr));
   console.log(object.el, hashIt(object.el));
+  console.log(object.fragment, hashIt(object.fragment));
+  console.log(object.svg, hashIt(object.svg));
   console.log(object.regexp, hashIt(object.regexp));
-  console.log(object.symbol, hashIt(object.symbol));
+  console.log(object.event, hashIt(object.event));
+  console.log(object.nodeList, hashIt(object.nodeList));
 
   // comment out for older browser testing
+  console.log(object.symbol, hashIt(object.symbol));
   console.log(object.err, hashIt(object.err));
   console.log(object.map, hashIt(object.map));
   console.log(object.set, hashIt(object.set));
@@ -158,11 +182,15 @@ const hashOnlyValidation = (iterations = 100) => {
   console.log(hashIt(object.obj));
   console.log(hashIt(object.arr));
   console.log(hashIt(object.el));
+  console.log(hashIt(object.fragment));
+  console.log(hashIt(object.svg));
   console.log(hashIt(object.math));
   console.log(hashIt(object.regexp));
-  console.log(hashIt(object.symbol));
+  console.log(hashIt(object.event));
+  console.log(hashIt(object.nodeList));
 
   // comment out for older browser testing
+  console.log(hashIt(object.symbol));
   console.log(hashIt(object.err));
   console.log(hashIt(object.map));
   console.log(hashIt(object.set));

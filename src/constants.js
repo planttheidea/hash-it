@@ -19,6 +19,11 @@ export const HAS_UINT16ARRAY_SUPPORT = typeof Uint16Array === 'function';
 export const HTML_ELEMENT_REGEXP = /\[object (HTML(.*)Element)\]/;
 
 /**
+ * @constant {RegExp} SVG_ELEMENT_REGEXP
+ */
+export const SVG_ELEMENT_REGEXP = /\[object (SVG(.*)Element)\]/;
+
+/**
  * @constant {Array<string>} OBJECT_CLASSES
  */
 export const OBJECT_CLASSES = [
@@ -28,7 +33,9 @@ export const OBJECT_CLASSES = [
   'Boolean',
   'DataView',
   'Date',
+  'DocumentFragment',
   'Error',
+  'Event',
   'Float32Array',
   'Float64Array',
   'Function',
