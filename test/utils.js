@@ -1,7 +1,7 @@
 // test
 import test from 'ava';
 import sinon from 'sinon';
-import {ARRAYBUFFER, INTEGER_ARRAY, TEST_VALUES} from 'test-data/values';
+import {ARRAYBUFFER, INTEGER_ARRAY, TEST_VALUES} from 'test/data/values';
 
 // src
 import * as utils from 'src/utils';

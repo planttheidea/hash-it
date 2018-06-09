@@ -3,7 +3,7 @@ import test from 'ava';
 import uuid from 'uuid/v4';
 
 // test data
-import WORDS from 'test-data/words.json';
+import WORDS from 'test/data/words.json';
 
 //src
 import hashIt from 'src/index';

@@ -9,7 +9,8 @@
     },
     "failFast": true,
     "files": [
-      "test/*.js"
+      "test/*.js",
+      "!test/data/*"
     ],
     "require": [
       "babel-register",
@@ -59,14 +60,14 @@
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "rimraf": "^2.6.2",
-    "rollup": "^0.60.0",
+    "rollup": "^0.60.1",
     "rollup-plugin-babel": "^3.0.4",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-uglify": "^4.0.0",
-    "sinon": "5.0.10",
+    "sinon": "5.1.1",
     "uuid": "^3.2.1",
-    "webpack": "^4.11.0",
-    "webpack-cli": "^3.0.2",
+    "webpack": "^4.12.0",
+    "webpack-cli": "^3.0.3",
     "webpack-dev-server": "3.1.4"
   },
   "homepage": "https://github.com/planttheidea/hash-it#readme",
@@ -80,6 +81,12 @@
   "main": "lib/index.js",
   "module": "es/index.js",
   "name": "hash-it",
+  "nyc": {
+    "exclude": [
+      "test/*",
+      "test/data/*"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/planttheidea/hash-it.git"
@@ -106,7 +113,7 @@
   },
   "version": "3.1.2",
   "dependencies": {
-    "fast-stringify": "^1.0.3",
+    "fast-stringify": "^1.0.4",
     "json-prune": "^1.1.0"
   }
 }

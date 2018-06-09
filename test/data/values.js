@@ -1,7 +1,12 @@
 const DATE = new Date();
+const DOCUMENT_FRAGMENT = document.createDocumentFragment();
 const ERROR = new Error('boom');
+const EVENT = new Event('custom');
 const INTEGER_ARRAY = [1, 2, 3];
 const ARRAYBUFFER = new Uint16Array(INTEGER_ARRAY).buffer;
+
+DOCUMENT_FRAGMENT.appendChild(document.createElement('div'));
+
 const TEST_VALUES = [
   {
     comparator: 'deepEqual',
@@ -65,13 +70,44 @@ const TEST_VALUES = [
   },
   {
     comparator: 'deepEqual',
+    expectedResult: {
+      bubbles: EVENT.bubbles,
+      cancelBubble: EVENT.cancelBubble,
+      cancelable: EVENT.cancelable,
+      composed: EVENT.composed,
+      currentTarget: EVENT.currentTarget,
+      defaultPrevented: EVENT.defaultPrevented,
+      eventPhase: EVENT.eventPhase,
+      isTrusted: EVENT.isTrusted,
+      returnValue: EVENT.returnValue,
+      target: EVENT.target,
+      type: EVENT.type
+    },
+    expectedString: JSON.stringify({
+      bubbles: `boolean|${EVENT.bubbles}`,
+      cancelBubble: `boolean|${EVENT.cancelBubble}`,
+      cancelable: `boolean|${EVENT.cancelable}`,
+      composed: `undefined|${EVENT.composed}`,
+      currentTarget: `null|${EVENT.currentTarget}`,
+      defaultPrevented: `boolean|${EVENT.defaultPrevented}`,
+      eventPhase: `number|${EVENT.eventPhase}`,
+      isTrusted: `boolean|${EVENT.isTrusted}`,
+      returnValue: `undefined|${EVENT.returnValue}`,
+      target: `null|${EVENT.target}`,
+      type: EVENT.type
+    }),
+    key: 'event',
+    value: EVENT
+  },
+  {
+    comparator: 'is',
     expectedResult: 'Float32Array|1,2,3',
     expectedString: JSON.stringify('Float32Array|1,2,3'),
     key: 'float32Array',
     value: new Float32Array(INTEGER_ARRAY)
   },
   {
-    comparator: 'deepEqual',
+    comparator: 'is',
     expectedResult: 'Float64Array|1,2,3',
     expectedString: JSON.stringify('Float64Array|1,2,3'),
     key: 'float64Array',
@@ -139,6 +175,20 @@ const TEST_VALUES = [
 
       return div;
     })()
+  },
+  {
+    comparator: 'deepEqual',
+    expectedResult: 'SVGSVGElement|<svg></svg>',
+    expectedString: JSON.stringify('SVGSVGElement|<svg></svg>'),
+    key: 'svgElement',
+    value: (() => document.createElementNS('http://www.w3.org/2000/svg', 'svg'))()
+  },
+  {
+    comparator: 'deepEqual',
+    expectedResult: 'DocumentFragment|<div></div>',
+    expectedString: JSON.stringify('DocumentFragment|<div></div>'),
+    key: 'documentFragment',
+    value: DOCUMENT_FRAGMENT
   },
   {
     comparator: 'deepEqual',
