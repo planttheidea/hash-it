@@ -11,6 +11,7 @@ Rewrite! Lots of changes under-the-hood for a much more consistent hash, and cir
 #### ENHANCEMENTS
 
 - Circular objects are now handled out of the box, thanks to [`fast-stringify`](https://github.com/planttheidea/fast-stringify)
+- Collision rates are near-zero (previously used traditional DJB2, which has small collision rates)
 - Better `ArrayBuffer` support with the use of `Buffer.from` when supported
 - SVG elements, DocumentFragments, and Events are now supported
 

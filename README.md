@@ -37,7 +37,7 @@ console.log(hashIt(window)); // 482488043
 
 ## Overview
 
-`hashIt` has a simple goal: provide a fast and consistent hashCode for any object type that is uniquely based on its values. This has a number of uses such as duplication prevention or fast equality comparisons.
+`hashIt` has a simple goal: provide a fast, consistent, unique hashCode for any object type that is uniquely based on its values. This has a number of uses such as duplication prevention, equality comparisons, blockchain construction, etc.
 
 _Any object type?_
 

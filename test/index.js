@@ -1,5 +1,11 @@
+// test
 import test from 'ava';
+import uuid from 'uuid/v4';
 
+// test data
+import WORDS from 'test-data/words.json';
+
+//src
 import hashIt from 'src/index';
 
 const CONSISTENCY_ITERATIONS = 10000;
@@ -161,6 +167,71 @@ test('if hash is consistent', (t) => {
       t.is(hashIt(value), hashMap[key]);
     });
   }
+});
+
+const COLLISION_TEST_SIZE = WORDS.length;
+
+test(`if hash has no collisions with ${COLLISION_TEST_SIZE.toLocaleString()} integers`, (t) => {
+  const size = COLLISION_TEST_SIZE;
+  const collision = {};
+
+  let count = 0,
+      index = size,
+      hash;
+
+  while (index--) {
+    hash = hashIt(index);
+
+    if (collision[hash]) {
+      count++;
+    }
+
+    collision[hash] = index;
+  }
+
+  t.is(count, 0);
+});
+
+test(`if hash has no collisions with ${COLLISION_TEST_SIZE.toLocaleString()} strings`, (t) => {
+  const size = COLLISION_TEST_SIZE;
+  const collision = {};
+
+  let count = 0,
+      index = size,
+      hash;
+
+  while (index--) {
+    hash = hashIt(WORDS[index]);
+
+    if (collision[hash]) {
+      count++;
+    }
+
+    collision[hash] = index;
+  }
+
+  t.is(count, 0);
+});
+
+test(`if hash has no collisions with ${COLLISION_TEST_SIZE.toLocaleString()} random UUIDs`, (t) => {
+  const size = COLLISION_TEST_SIZE;
+  const collision = {};
+
+  let count = 0,
+      index = size,
+      hash;
+
+  while (index--) {
+    hash = hashIt(uuid());
+
+    if (collision[hash]) {
+      count++;
+    }
+
+    collision[hash] = index;
+  }
+
+  t.is(count, 0);
 });
 
 test('if isEqual checks all objects for value equality based on hash', (t) => {

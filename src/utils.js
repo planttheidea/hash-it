@@ -36,24 +36,26 @@ export const getCircularValue = () => CIRCULAR_VALUE;
  *
  * @description
  * based on string passed, get the integer hash value
- * through bitwise operation (based on spinoff of dbj2)
+ * through bitwise operation (based on spinoff of dbj2
+ * with enhancements for reduced collisions)
  *
  * @param {string} string the string to get the hash value for
  * @returns {number} the hash value
  */
 export const getIntegerHashValue = (string) => {
-  if (!string) {
-    return 0;
+  let index = string.length,
+      hashA = 5381,
+      hashB = 52711,
+      charCode;
+
+  while (index--) {
+    charCode = charCodeAt.call(string, index);
+
+    hashA = (hashA * 33) ^ charCode;
+    hashB = (hashB * 33) ^ charCode;
   }
 
-  let hash = 5381,
-      index = string.length;
-
-  while (index) {
-    hash = (hash << 5) + hash + charCodeAt.call(string, --index);
-  }
-
-  return hash >>> 0;
+  return (hashA >>> 0) * 4096 + (hashB >>> 0);
 };
 
 /**
