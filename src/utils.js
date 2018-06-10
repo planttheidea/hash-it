@@ -22,6 +22,18 @@ const charCodeAt = String.prototype.charCodeAt;
 const keys = Object.keys;
 
 /**
+ * @function getFunctionName
+ *
+ * @description
+ * get the name of the function based on a series of fallback attempts
+ *
+ * @param {function} fn the function to test
+ * @returns {string} the function name
+ */
+export const getFunctionName = (fn) =>
+  fn.name || (fn.toString().match(/^\s*function\s*([^\(]*)/i) || [])[1] || 'anonymous';
+
+/**
  * @function getCircularValue
  *
  * @description
@@ -56,95 +68,6 @@ export const getIntegerHashValue = (string) => {
   }
 
   return (hashA >>> 0) * 4096 + (hashB >>> 0);
-};
-
-/**
- * @function sortIterablePair
- *
- * @description
- * get the sort result based on the two pairs to compare
- *
- * @param {Object} pairA the first pair to compare
- * @param {Object} pairB the second pair to compare
- * @returns {number} the order number
- */
-export const sortIterablePair = (pairA, pairB) =>
-  pairA.keyString > pairB.keyString ? 1 : pairA.keyString < pairB.keyString ? -1 : 0;
-
-/**
- * @function getIterablePairs
- *
- * @description
- * get the pairs in the iterable for stringification
- *
- * @param {Map|Set} iterable the iterable to get the pairs for
- * @returns {Array<{key: string, value: any}>} the pairs
- */
-export const getSortedIterablePairs = (iterable) => {
-  const pairs = [];
-  const isMap = typeof iterable.get === 'function';
-
-  iterable.forEach((value, key) => {
-    pairs.push(
-      isMap
-        ? // eslint-disable-next-line no-use-before-define
-        {key, keyString: stringify(key), value}
-        : // eslint-disable-next-line no-use-before-define
-        {key, keyString: stringify(key)}
-    );
-  });
-
-  pairs.sort(sortIterablePair);
-
-  const finalPairs = new Array(iterable.size);
-
-  let pair;
-
-  for (let index = 0; index < iterable.size; index++) {
-    pair = pairs[index];
-
-    finalPairs[index] = isMap ? {key: pair.keyString, value: pair.value} : {key: pair.keyString};
-  }
-
-  return finalPairs;
-};
-
-/**
- * @function getPrefixedValue
- *
- * @description
- * get the value prefixed by the tag
- *
- * @param {string} tag the object tag
- * @param {any} value the value to stringify
- * @returns {string} the prefixed stringified value
- */
-export const getPrefixedValue = (tag, value) => `${tag}|${value}`;
-
-/**
- * @function getSortedObject
- *
- * @description
- * get the object with the keys sorted
- *
- * @param {Object} object the object to sort
- * @returns {Object} the sorted object
- */
-export const getSortedObject = (object) => {
-  const objectKeys = keys(object);
-  const newObject = {};
-
-  objectKeys.sort();
-
-  let key;
-
-  for (let index = 0; index < objectKeys.length; index++) {
-    key = objectKeys[index];
-
-    newObject[key] = object[key];
-  }
-
-  return newObject;
 };
 
 /**
@@ -191,6 +114,89 @@ export const getSortedEvent = ({
   target,
   type
 });
+
+/**
+ * @function sortIterablePair
+ *
+ * @description
+ * get the sort result based on the two pairs to compare
+ *
+ * @param {Object} pairA the first pair to compare
+ * @param {Object} pairB the second pair to compare
+ * @returns {number} the order number
+ */
+export const sortIterablePair = (pairA, pairB) => (pairA[0] > pairB[0] ? 1 : pairA[0] < pairB[0] ? -1 : 0);
+
+/**
+ * @function getPrefixedValue
+ *
+ * @description
+ * get the value prefixed by the tag
+ *
+ * @param {string} tag the object tag
+ * @param {any} value the value to stringify
+ * @returns {string} the prefixed stringified value
+ */
+export const getPrefixedValue = (tag, value) => `${tag}|${value}`;
+
+/**
+ * @function getIterablePairs
+ *
+ * @description
+ * get the pairs in the iterable for stringification
+ *
+ * @param {Map|Set} iterable the iterable to get the pairs for
+ * @returns {Array<{key: string, value: any}>} the pairs
+ */
+export const getSortedIterablePairs = (iterable) => {
+  const isMap = typeof iterable.get === 'function';
+  const pairs = [];
+
+  iterable.forEach((value, key) => {
+    // eslint-disable-next-line no-use-before-define
+    pairs.push(isMap ? [stringify(key), stringify(value)] : [stringify(value)]);
+  });
+
+  pairs.sort(sortIterablePair);
+
+  const finalPairs = new Array(iterable.size);
+
+  let pair;
+
+  for (let index = 0; index < iterable.size; index++) {
+    pair = pairs[index];
+
+    finalPairs[index] = isMap ? `[${pair[0]},${pair[1]}]` : pair[0];
+  }
+
+  return getPrefixedValue(getFunctionName(iterable.constructor), `[${finalPairs.join(',')}]`);
+};
+
+/**
+ * @function getSortedObject
+ *
+ * @description
+ * get the object with the keys sorted
+ *
+ * @param {Object} object the object to sort
+ * @returns {Object} the sorted object
+ */
+export const getSortedObject = (object) => {
+  const objectKeys = keys(object);
+  const newObject = {};
+
+  objectKeys.sort();
+
+  let key;
+
+  for (let index = 0; index < objectKeys.length; index++) {
+    key = objectKeys[index];
+
+    newObject[key] = object[key];
+  }
+
+  return newObject;
+};
 
 /**
  * @function getStringifiedArrayBufferFallback

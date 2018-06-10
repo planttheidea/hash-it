@@ -213,8 +213,8 @@ const TEST_VALUES = [
   },
   {
     comparator: 'deepEqual',
-    expectedResult: [{key: 'foo', value: 'bar'}],
-    expectedString: '[{"key":"foo","value":"bar"}]',
+    expectedResult: 'Map|[[foo,bar]]',
+    expectedString: JSON.stringify('Map|[[foo,bar]]'),
     key: 'map',
     value: new Map().set('foo', 'bar')
   },
@@ -255,8 +255,8 @@ const TEST_VALUES = [
   },
   {
     comparator: 'deepEqual',
-    expectedResult: [{key: 'foo'}],
-    expectedString: '[{"key":"foo"}]',
+    expectedResult: 'Set|[foo]',
+    expectedString: JSON.stringify('Set|[foo]'),
     key: 'set',
     value: new Set().add('foo')
   },

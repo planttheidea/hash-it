@@ -7,6 +7,25 @@ import {ARRAYBUFFER, INTEGER_ARRAY, TEST_VALUES} from 'test/data/values';
 import * as utils from 'src/utils';
 import {CIRCULAR_VALUE} from 'src/constants';
 
+test('if getFunctionName will return the function when there is a name property', (t) => {
+  function foo() {}
+
+  t.is(utils.getFunctionName(foo), foo.name);
+});
+
+test('if getFunctionName will return the function when there is no name property but has a derivable name', (t) => {
+  function foo() {}
+
+  delete foo.name;
+
+  t.is(foo.name, '');
+  t.is(utils.getFunctionName(foo), 'foo');
+});
+
+test('if getFunctionName will return the default name when there is no name property and no derivable name', (t) => {
+  t.is(utils.getFunctionName(() => {}), 'anonymous');
+});
+
 test('if getCircularValue returns the stringified refCount', (t) => {
   const key = 'key';
   const value = 'value';
@@ -24,8 +43,8 @@ test('if getIntegerHashValue returns correct value', (t) => {
 });
 
 test('if sortIterablePair will return 1 when the first pair keystring is greater than the second', (t) => {
-  const pairA = {keyString: 'foo'};
-  const pairB = {keyString: 'bar'};
+  const pairA = [['foo']];
+  const pairB = [['bar']];
 
   const result = utils.sortIterablePair(pairA, pairB);
 
@@ -33,8 +52,8 @@ test('if sortIterablePair will return 1 when the first pair keystring is greater
 });
 
 test('if sortIterablePair will return -1 when the first pair keystring is less than the second', (t) => {
-  const pairA = {keyString: 'bar'};
-  const pairB = {keyString: 'baz'};
+  const pairA = [['bar']];
+  const pairB = [['baz']];
 
   const result = utils.sortIterablePair(pairA, pairB);
 
@@ -55,7 +74,7 @@ test('if getSortedIterablePairs will return the map pairs', (t) => {
 
   const result = utils.getSortedIterablePairs(iterable);
 
-  t.deepEqual(result, [{key: 'foo', value: 'bar'}]);
+  t.deepEqual(result, `Map|[[${['foo', 'bar'].join(',')}]]`);
 });
 
 test('if getSortedIterablePairs will return the set pairs', (t) => {
@@ -63,7 +82,7 @@ test('if getSortedIterablePairs will return the set pairs', (t) => {
 
   const result = utils.getSortedIterablePairs(iterable);
 
-  t.deepEqual(result, [{key: 'foo'}]);
+  t.deepEqual(result, `Set|[foo]`);
 });
 
 test('if getSortedIterablePairs will return the map pairs sorted by their keystring values', (t) => {
@@ -71,7 +90,7 @@ test('if getSortedIterablePairs will return the map pairs sorted by their keystr
 
   const result = utils.getSortedIterablePairs(iterable);
 
-  t.deepEqual(result, [{key: 'bar', value: 'baz'}, {key: 'foo', value: 'bar'}]);
+  t.deepEqual(result, `Map|[[${['bar', 'baz'].join(',')}],[${['foo', 'bar'].join(',')}]]`);
 });
 
 test('if getSortedIterablePairs will return the set pairs sorted by their keystring values', (t) => {
@@ -79,7 +98,7 @@ test('if getSortedIterablePairs will return the set pairs sorted by their keystr
 
   const result = utils.getSortedIterablePairs(iterable);
 
-  t.deepEqual(result, [{key: 'bar'}, {key: 'foo'}]);
+  t.deepEqual(result, `Set|[bar,foo]`);
 });
 
 test('if getPrefixedValue will get the value prefixed with the tag', (t) => {
