@@ -116,16 +116,28 @@ export const getSortedEvent = ({
 });
 
 /**
- * @function sortIterablePair
+ * @function shouldSort
+ *
+ * @description
+ * get the sort result based on the two values to compare
+ *
+ * @param {string} valueA the first value to compare
+ * @param {string} valueB the second value to compare
+ * @returns {boolean} should the value be sorted
+ */
+export const shouldSort = (valueA, valueB) => valueA > valueB;
+
+/**
+ * @function shouldSortPair
  *
  * @description
  * get the sort result based on the two pairs to compare
  *
  * @param {Object} pairA the first pair to compare
  * @param {Object} pairB the second pair to compare
- * @returns {number} the order number
+ * @returns {boolean} should the value be sorted
  */
-export const sortIterablePair = (pairA, pairB) => (pairA[0] > pairB[0] ? 1 : pairA[0] < pairB[0] ? -1 : 0);
+export const shouldSortPair = (pairA, pairB) => shouldSort(pairA[0], pairB[0]);
 
 /**
  * @function getPrefixedValue
@@ -138,6 +150,32 @@ export const sortIterablePair = (pairA, pairB) => (pairA[0] > pairB[0] ? 1 : pai
  * @returns {string} the prefixed stringified value
  */
 export const getPrefixedValue = (tag, value) => `${tag}|${value}`;
+
+/**
+ * @function sort
+ *
+ * @description
+ * sort the array based on the fn passed
+ *
+ * @param {Array<any>} array the array to sort
+ * @param {function} fn the sorting function
+ * @returns {Array<any>} the sorted array
+ */
+export const sort = (array, fn) => {
+  let subIndex, value;
+
+  for (let index = 0; index < array.length; index++) {
+    value = array[index];
+
+    for (subIndex = index - 1; ~subIndex && fn(array[subIndex], value); subIndex--) {
+      array[subIndex + 1] = array[subIndex];
+    }
+
+    array[subIndex + 1] = value;
+  }
+
+  return array;
+};
 
 /**
  * @function getIterablePairs
@@ -157,7 +195,7 @@ export const getSortedIterablePairs = (iterable) => {
     pairs.push(isMap ? [stringify(key), stringify(value)] : [stringify(value)]);
   });
 
-  pairs.sort(sortIterablePair);
+  sort(pairs, shouldSortPair);
 
   const finalPairs = new Array(iterable.size);
 
@@ -182,10 +220,8 @@ export const getSortedIterablePairs = (iterable) => {
  * @returns {Object} the sorted object
  */
 export const getSortedObject = (object) => {
-  const objectKeys = keys(object);
+  const objectKeys = sort(keys(object), shouldSort);
   const newObject = {};
-
-  objectKeys.sort();
 
   let key;
 

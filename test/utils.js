@@ -42,31 +42,50 @@ test('if getIntegerHashValue returns correct value', (t) => {
   t.is(utils.getIntegerHashValue(string), 794144147649);
 });
 
-test('if sortIterablePair will return 1 when the first pair keystring is greater than the second', (t) => {
-  const pairA = [['foo']];
-  const pairB = [['bar']];
+test('if shouldSort will return true of the first value is greater than the second', (t) => {
+  const first = 'foo';
+  const second = 'bar';
 
-  const result = utils.sortIterablePair(pairA, pairB);
+  const result = utils.shouldSort(first, second);
 
-  t.is(result, 1);
+  t.true(result);
 });
 
-test('if sortIterablePair will return -1 when the first pair keystring is less than the second', (t) => {
-  const pairA = [['bar']];
-  const pairB = [['baz']];
+test('if shouldSort will return false of the first value is not greater than the second', (t) => {
+  const first = 'bar';
+  const second = 'foo';
 
-  const result = utils.sortIterablePair(pairA, pairB);
+  const result = utils.shouldSort(first, second);
 
-  t.is(result, -1);
+  t.false(result);
 });
 
-test('if sortIterablePair will return 0 when the first pair keystring is the same as the second', (t) => {
-  const pairA = {keyString: 'quz'};
-  const pairB = {keyString: 'quz'};
+test('if shouldSortPair will return true of the first index of the first value is greater than the second', (t) => {
+  const first = ['foo'];
+  const second = ['bar'];
 
-  const result = utils.sortIterablePair(pairA, pairB);
+  const result = utils.shouldSortPair(first, second);
 
-  t.is(result, 0);
+  t.true(result);
+});
+
+test('if shouldSortPair will return false of the first index of the first value is not greater than the second', (t) => {
+  const first = ['bar'];
+  const second = ['foo'];
+
+  const result = utils.shouldSortPair(first, second);
+
+  t.false(result);
+});
+
+test('if sort will sort the array passed by the fn passed', (t) => {
+  const array = ['foo', 'bar', 'baz'];
+  const fn = (a, b) => a > b;
+
+  const result = utils.sort(array, fn);
+
+  t.is(array, result);
+  t.deepEqual(array, ['bar', 'baz', 'foo']);
 });
 
 test('if getSortedIterablePairs will return the map pairs', (t) => {
