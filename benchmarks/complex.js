@@ -1,6 +1,6 @@
 'use strict';
 
-const hashIt = require('../lib').default;
+const hash = require('../lib').default;
 const {boolean, infinite, notANumber, nul, number, string, undef} = require('./primitive');
 
 const array = [boolean, infinite, notANumber, nul, number, string, undef];
@@ -35,7 +35,7 @@ exports.hashArray = (cycles) => {
       val;
 
   while (++index < cycles) {
-    val = hashIt(array, true);
+    val = hash(array, true);
   }
 };
 
@@ -44,7 +44,7 @@ exports.hashFunction = (cycles) => {
       val;
 
   while (++index < cycles) {
-    val = hashIt(func, true);
+    val = hash(func, true);
   }
 };
 
@@ -53,7 +53,7 @@ exports.hashMap = (cycles) => {
       val;
 
   while (++index < cycles) {
-    val = hashIt(map, true);
+    val = hash(map, true);
   }
 };
 
@@ -62,7 +62,7 @@ exports.hashObject = (cycles) => {
       val;
 
   while (++index < cycles) {
-    val = hashIt(object, true);
+    val = hash(object, true);
   }
 };
 
@@ -71,7 +71,7 @@ exports.hashCircularObject = (cycles) => {
       val;
 
   while (++index < cycles) {
-    val = hashIt(recursiveObject, true);
+    val = hash(recursiveObject, true);
   }
 };
 
@@ -80,7 +80,7 @@ exports.hashRegExp = (cycles) => {
       val;
 
   while (++index < cycles) {
-    val = hashIt(regex);
+    val = hash(regex);
   }
 };
 
@@ -89,6 +89,6 @@ exports.hashSet = (cycles) => {
       val;
 
   while (++index < cycles) {
-    val = hashIt(set, true);
+    val = hash(set, true);
   }
 };

@@ -60,6 +60,7 @@ Here is the list of object classes that have been tested and shown to produce un
 - `Arguments`
 - `Array`
 - `ArrayBuffer`
+- `AsyncFunction` (based on `toString`)
 - `Boolean`
 - `DataView` (based on its `buffer`)
 - `Date` (based on `getTime`)

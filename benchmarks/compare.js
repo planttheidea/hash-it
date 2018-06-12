@@ -11,7 +11,7 @@ const dataArray = [];
 const objectHash = require('object-hash');
 const nodeObjectHash = require('node-object-hash')();
 const hashObject = require('hash-object');
-const hashIt = require('../lib').default;
+const hash = require('../lib').default;
 
 let dataStairs = {end: 'is near'};
 
@@ -86,8 +86,8 @@ suite
     hashObject(dataArray, hashObjectOpts);
   })
   .add('hash-it', () => {
-    hashIt(dataStairs);
-    hashIt(dataArray);
+    hash(dataStairs);
+    hash(dataArray);
   })
   .add('node-object-hash', () => {
     nodeObjectHash.hash(dataStairs);
