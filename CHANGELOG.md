@@ -10,6 +10,7 @@ Rewrite! Lots of changes under-the-hood for a much more consistent hash, and cir
 - `isNull` and `isUndefined` have been removed
   - Both of these can be built with the new `is` partial-application function (`const isUndefined = hash.is(undefined); const isNull = hash.is(null);`)
 - `hash.isEqual` will no longer throw when less than two objects are passed (error is logged to the console, `false` is returned)
+- `Error` hashes now based on `error.stack` instead of `error.message`
 
 #### ENHANCEMENTS
 
@@ -22,7 +23,6 @@ Rewrite! Lots of changes under-the-hood for a much more consistent hash, and cir
 #### FIXES
 
 - `Object` / `Map` / `Set` no longer returns different hashes based on order of key addition
-- `Error` no longer returns identical hashes for different errors with same message (now uses stack)
 - `hash.isEqual` will no longer fail if nothing is passed
 
 ## 3.1.2
