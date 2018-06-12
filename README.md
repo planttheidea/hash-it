@@ -102,9 +102,16 @@ This is basically all I could think of, but if I have missed an object class let
 
 #### is
 
-`is(object: any): function(otherObject: any): boolean`
+`is(object: any, otherObject: any): boolean`
 
-Creats a function that determines if the object passed is equal to the object the function was based on.
+Compares the two objects to determine equality.
+
+```javascript
+console.log(hash.is(null, 123)); // false
+console.log(hash.is(null, null)); // true
+```
+
+**NOTE**: This can also be used with partial-application to create prepared equality comparators.
 
 ```javascript
 const isNull = hash.is(null);
@@ -113,27 +120,11 @@ console.log(isNull(123)); // false
 console.log(isNull(null)); // true
 ```
 
-#### isEmpty
+#### is.all
 
-`isEmpty(object: any): boolean`
+`is.all(object1: any, object2: any[, object3: any[, ...objectN]]): boolean`
 
-Determines if object is empty based on hashCode, with empty defined as:
-
-- Empty array (`[]`)
-- Empty map (`new Map()`)
-- Empty object (`{}`)
-- Empty set (`new Set()`)
-- Empty string (`''`)
-- Undefined (`undefined`)
-- Null (`null`)
-
-This differs from the implementation by `lodash`, where a value is considered not empty if an `Array`, `Object`, `Map`, or `Set`. Think of this definition of empty as "having no value(s)".
-
-#### isEqual
-
-`isEqual(object1: any, object2: any[, object3: any[, ...objectN]]): boolean`
-
-Compares all objects passed to it to determine if they are equal to one another based on hashCode
+Compares the first object to all other objects passed to determine if all are equal based on hashCode
 
 ```javascript
 const foo = {
@@ -142,9 +133,90 @@ const foo = {
 const alsoFoo = {
   foo: "bar"
 };
+const stillFoo = {
+  foo: "bar"
+};
 
-console.log(foo === alsoFoo); // false
-console.log(hash.isEqual(foo, alsoFoo)); // true
+console.log(hash.is.all(foo, alsoFoo)); // true
+console.log(hash.is.all(foo, alsoFoo, stillFoo)); // true
+```
+
+**NOTE**: This can also be used with partial-application to create prepared equality comparators.
+
+```javascript
+const foo = {
+  foo: "bar"
+};
+const alsoFoo = {
+  foo: "bar"
+};
+const stillFoo = {
+  foo: "bar"
+};
+
+const isAllFoo = hash.is.all(foo);
+
+console.log(isAllFoo(alsoFoo, stillFoo)); // true
+```
+
+#### is.any
+
+`is.any(object1: any, object2: any[, object3: any[, ...objectN]]): boolean`
+
+Compares the first object to all other objects passed to determine if any are equal based on hashCode
+
+```javascript
+const foo = {
+  foo: "bar"
+};
+const alsoFoo = {
+  foo: "bar"
+};
+const nopeBar = {
+  bar: "baz"
+};
+
+console.log(hash.is.any(foo, alsoFoo)); // true
+console.log(hash.is.any(foo, nopeBar)); // false
+console.log(hash.is.any(foo, alsoFoo, nopeBar)); // true
+```
+
+**NOTE**: This can also be used with partial-application to create prepared equality comparators.
+
+```javascript
+const foo = {
+  foo: "bar"
+};
+const alsoFoo = {
+  foo: "bar"
+};
+const nopeBar = {
+  bar: "baz"
+};
+
+const isAnyFoo = hash.is.any(foo);
+
+console.log(isAnyFoo(alsoFoo, nopeBar)); // true
+```
+
+#### is.not
+
+`is.not(object: any, otherObject: any): boolean`
+
+Compares the two objects to determine non-equality.
+
+```javascript
+console.log(hash.is.not(null, 123)); // true
+console.log(hash.is.not(null, null)); // false
+```
+
+**NOTE**: This can also be used with partial-application to create prepared equality comparators.
+
+```javascript
+const isNotNull = hash.is.not(null);
+
+console.log(isNull(123)); // true
+console.log(isNull(null)); // flse
 ```
 
 ## Gotchas

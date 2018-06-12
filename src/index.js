@@ -1,5 +1,5 @@
-// constants
-import {EMPTY_VALUES} from './constants';
+// external dependencies
+import {curry} from 'curriable';
 
 // utils
 import {getIntegerHashValue, stringify} from './utils';
@@ -19,34 +19,23 @@ export const hash = (value) => getIntegerHashValue(stringify(value));
  * @function hash.is
  *
  * @description
- * create a comparator for the first object passed
+ * create a comparator for the first object passed to determine if the second is equal
  *
  * @param {any} object the object to test against
  * @returns {function(any): boolean} the method to test against the object
  */
-hash.is = (object) => {
-  const objectHash = hash(object);
-
-  return (otherObject) => hash(otherObject) === objectHash;
-};
+hash.is = curry((object, otherObject) => hash(object) === hash(otherObject));
 
 /**
- * @function hash.isEqual
+ * @function hash.is.all
  *
  * @description
- * determine if all objects passed are equal in value to one another
+ * determine if all of the objects passed are equal in value to the first
  *
  * @param {...Array<any>} objects the objects to test for equality
  * @returns {boolean} are the objects equal
  */
-hash.isEqual = (...objects) => {
-  if (objects.length < 2) {
-    // eslint-disable-next-line no-console
-    console.error('isEqual requires at least two objects to be passed for comparison.');
-
-    return false;
-  }
-
+hash.is.all = curry((...objects) => {
   const isEqual = hash.is(objects.shift());
 
   for (let index = 0; index < objects.length; index++) {
@@ -56,24 +45,38 @@ hash.isEqual = (...objects) => {
   }
 
   return true;
-};
-
-const EMPTY_HASHES = EMPTY_VALUES.reduce((hashes, value) => {
-  hashes[hash(value)] = true;
-
-  return hashes;
-}, {});
+}, 2);
 
 /**
- * @function hash.isEmpty
+ * @function hash.is.any
  *
  * @description
- * determine if object is empty, meaning it is an array / object / map / set with values populated,
- * or is a string with no length, or is undefined or null
+ * determine if any of the objects passed are equal in value to the first
  *
- * @param {any} object the object to test
- * @returns {boolean} is the object empty
+ * @param {...Array<any>} objects the objects to test for equality
+ * @returns {boolean} are the objects equal
  */
-hash.isEmpty = (object) => !!EMPTY_HASHES[hash(object)];
+hash.is.any = curry((...objects) => {
+  const isEqual = hash.is(objects.shift());
+
+  for (let index = 0; index < objects.length; index++) {
+    if (isEqual(objects[index])) {
+      return true;
+    }
+  }
+
+  return false;
+}, 2);
+
+/**
+ * @function hash.is.not
+ *
+ * @description
+ * create a comparator for the first object passed to determine if the second is not equal
+ *
+ * @param {any} object the object to test against
+ * @returns {function(any): boolean} the method to test against the object
+ */
+hash.is.not = curry((object, otherObject) => hash(object) !== hash(otherObject));
 
 export default hash;

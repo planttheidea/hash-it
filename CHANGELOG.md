@@ -6,10 +6,11 @@ Rewrite! Lots of changes under-the-hood for a much more consistent hash, and cir
 
 #### BREAKING CHANGES
 
-- `0` will no longer return `true` from `hashIt.isEmpty` (`0` is not an empty number)
-- `isNull` and `isUndefined` have been removed
-  - Both of these can be built with the new `is` partial-application function (`const isUndefined = hash.is(undefined); const isNull = hash.is(null);`)
-- `hash.isEqual` will no longer throw when less than two objects are passed (error is logged to the console, `false` is returned)
+- `isEmpty`, `isEqual`,`isNull`, and `isUndefined` have been removed (all can be reproduced with new `is` and `is.all` functions)
+  - `hash.isNull` => `hash.is(null)`
+  - `hash.isUndefined` => `hash.is(undefined)`
+  - `hash.isEqual` => `hash.is.all`
+  - `hash.isEmpty` => `(object) => hash.is.any(object, undefined, null, '', 0, [], {}, new Map(), new Set())`
 - `Error` hashes now based on `error.stack` instead of `error.message`
 
 #### ENHANCEMENTS
@@ -19,6 +20,8 @@ Rewrite! Lots of changes under-the-hood for a much more consistent hash, and cir
 - Better `ArrayBuffer` support with the use of `Buffer.from` when supported
 - SVG elements, DocumentFragments, and Events are now supported
 - `is` partial-application function allows for easy creation of any type of `isEqual` comparison method
+- `is.any` performs the same multiple-object check that `is.all` does, but only checks if one of the other objects is equal
+- `is.not` performs the same comparison that `is` does, but checks for non-equality
 
 #### FIXES
 

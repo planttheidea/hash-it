@@ -118,6 +118,7 @@
   },
   "version": "3.1.2",
   "dependencies": {
+    "curriable": "^1.1.0",
     "fast-stringify": "^1.0.4",
     "json-prune": "^1.1.0"
   }

@@ -2263,6 +2263,10 @@ currently-unhandled@^0.4.1:
   dependencies:
     array-find-index "^1.0.1"
 
+curriable@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/curriable/-/curriable-1.1.0.tgz#51817788748032244e73d24b98128a7b6d9c799d"
+
 cyclist@~0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-0.2.2.tgz#1b33792e11e914a2fd6d6ed6447464444e5fa640"

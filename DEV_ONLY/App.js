@@ -219,10 +219,8 @@ const hashOnlyValidation = (iterations = 100) => {
 
 // benchmark();
 // profile(1000);
-visualValidation();
+// visualValidation();
 // hashOnlyValidation();
-
-console.log(hash({foo: 'bar'}));
 
 const div = document.createElement('div');
 
