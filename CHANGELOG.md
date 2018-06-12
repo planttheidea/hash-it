@@ -1,5 +1,9 @@
 # hashIt CHANGELOG
 
+## 4.0.1
+
+- Remove unused values from publish
+
 ## 4.0.0
 
 Rewrite! Lots of changes under-the-hood for a much more consistent hash, and circular object handling out of the box.
