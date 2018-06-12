@@ -1,4 +1,4 @@
-# hashIt
+# hash-it
 
 Fast and consistent hashCode for any object type
 
@@ -7,10 +7,9 @@ Fast and consistent hashCode for any object type
 - [Usage](#usage)
 - [Overview](#overview)
 - [Utility functions](#utility-functions)
+  - [is](#is)
   - [isEmpty](#isempty)
   - [isEqual](#isequal)
-  - [isNull](#isnull)
-  - [isUndefined](#isundefined)
 - [Gotchas](#gotchas)
 - [Browser support](#browser-support)
 - [Node support](#node-support)
@@ -20,24 +19,24 @@ Fast and consistent hashCode for any object type
 
 ```javascript
 // ES2015
-import hashIt from "hash-it";
+import hash from "hash-it";
 
 // CommonJS
-const hashIt = require("hash-it").default;
+const hash = require("hash-it").default;
 
 // script
-const hashIt = window.hashIt;
+const hash = window.hashIt;
 
 // hash any standard object
-console.log(hashIt({ foo: "bar" })); // 2639617176
+console.log(hash({ foo: "bar" })); // 8999940026732
 
 // or a circular object
-console.log(hashIt(window)); // 482488043
+console.log(hash(window)); // 6514964902729
 ```
 
 ## Overview
 
-`hashIt` has a simple goal: provide a fast, consistent, unique hashCode for any object type that is uniquely based on its values. This has a number of uses such as duplication prevention, equality comparisons, blockchain construction, etc.
+`hash-it` has a simple goal: provide a fast, consistent, unique hashCode for any object type that is uniquely based on its values. This has a number of uses such as duplication prevention, equality comparisons, blockchain construction, etc.
 
 _Any object type?_
 
@@ -52,7 +51,6 @@ Well ... sadly, no, there are a few exceptions.
 - `Generator` (the result of calling a `GeneratorFunction`)
   - Like `Promise`, there is no way to obtain the values contained within due to its dynamic iterable nature
 - `WeakMap` / `WeakSet`
-
   - The spec explicitly forbids iteration over them, so the unique values cannot be discovered
 
 In each of these cases, no matter what the values of the object, they will always yield the same hash result, which is unique to each object type. If you have any ideas about how these can be uniquely hashed, I welcome them!
@@ -101,6 +99,19 @@ This is basically all I could think of, but if I have missed an object class let
 
 ## Utility functions
 
+#### is
+
+`is(object: any): function(otherObject: any): boolean`
+
+Creats a function that determines if the object passed is equal to the object the function was based on.
+
+```javascript
+const isNull = hash.is(null);
+
+console.log(isNull(123)); // false
+console.log(isNull(null)); // true
+```
+
 #### isEmpty
 
 `isEmpty(object: any): boolean`
@@ -132,20 +143,8 @@ const alsoFoo = {
 };
 
 console.log(foo === alsoFoo); // false
-console.log(hashIt.isEqual(foo, alsoFoo)); // true
+console.log(hash.isEqual(foo, alsoFoo)); // true
 ```
-
-#### isNull
-
-`isNull(object: any): boolean`
-
-Determines if object is null based on hashCode
-
-#### isUndefined
-
-`isUndefined(object: any): boolean`
-
-Determines if object is undefined based on hashCode
 
 ## Gotchas
 

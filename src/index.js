@@ -1,8 +1,11 @@
+// constants
+import {EMPTY_VALUES} from './constants';
+
 // utils
 import {getIntegerHashValue, stringify} from './utils';
 
 /**
- * @function hashIt
+ * @function hash
  *
  * @description
  * hash the value passed to a unique, consistent hash value
@@ -10,39 +13,44 @@ import {getIntegerHashValue, stringify} from './utils';
  * @param {any} value the value to hash
  * @returns {number} the object hash
  */
-export const hashIt = (value) => getIntegerHashValue(stringify(value));
+export const hash = (value) => getIntegerHashValue(stringify(value));
 
-const NULL_HASH = hashIt(null);
-const UNDEFINED_HASH = hashIt(undefined);
+/**
+ * @function hash.is
+ *
+ * @description
+ * create a comparator for the first object passed
+ *
+ * @param {any} object the object to test against
+ * @returns {function(any): boolean} the method to test against the object
+ */
+hash.is = (object) => {
+  const objectHash = hash(object);
 
-const EMPTY_HASHES = {
-  [hashIt([])]: true,
-  [hashIt(new Map())]: true,
-  [NULL_HASH]: true,
-  [hashIt({})]: true,
-  [hashIt(new Set())]: true,
-  [hashIt('')]: true,
-  [UNDEFINED_HASH]: true
+  return (otherObject) => hash(otherObject) === objectHash;
 };
 
 /**
- * @function hashIt.isEqual
+ * @function hash.isEqual
  *
  * @description
  * determine if all objects passed are equal in value to one another
  *
- * @param {...Array<*>} objects the objects to test for equality
+ * @param {...Array<any>} objects the objects to test for equality
  * @returns {boolean} are the objects equal
  */
-hashIt.isEqual = (...objects) => {
-  const length = objects.length;
+hash.isEqual = (...objects) => {
+  if (objects.length < 2) {
+    // eslint-disable-next-line no-console
+    console.error('isEqual requires at least two objects to be passed for comparison.');
 
-  if (length === 1) {
-    throw new Error('isEqual requires at least two objects to be passed for comparison.');
+    return false;
   }
 
-  for (let index = 1; index < length; index++) {
-    if (hashIt(objects[index - 1]) !== hashIt(objects[index])) {
+  const isEqual = hash.is(objects.shift());
+
+  for (let index = 0; index < objects.length; index++) {
+    if (!isEqual(objects[index])) {
       return false;
     }
   }
@@ -50,38 +58,22 @@ hashIt.isEqual = (...objects) => {
   return true;
 };
 
+const EMPTY_HASHES = EMPTY_VALUES.reduce((hashes, value) => {
+  hashes[hash(value)] = true;
+
+  return hashes;
+}, {});
+
 /**
- * @function hashIt.isEmpty
+ * @function hash.isEmpty
  *
  * @description
  * determine if object is empty, meaning it is an array / object / map / set with values populated,
  * or is a string with no length, or is undefined or null
  *
- * @param {*} object the object to test
+ * @param {any} object the object to test
  * @returns {boolean} is the object empty
  */
-hashIt.isEmpty = (object) => !!EMPTY_HASHES[hashIt(object)];
+hash.isEmpty = (object) => !!EMPTY_HASHES[hash(object)];
 
-/**
- * @function hashIt.isNull
- *
- * @description
- * determine if object is null
- *
- * @param {*} object the object to test
- * @returns {boolean} is the object null
- */
-hashIt.isNull = (object) => hashIt(object) === NULL_HASH;
-
-/**
- * @function hashIt.isUndefined
- *
- * @description
- * determine if object is undefined
- *
- * @param {*} object the object to test
- * @returns {boolean} is the object undefined
- */
-hashIt.isUndefined = (object) => hashIt(object) === UNDEFINED_HASH;
-
-export default hashIt;
+export default hash;

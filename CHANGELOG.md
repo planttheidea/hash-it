@@ -7,6 +7,9 @@ Rewrite! Lots of changes under-the-hood for a much more consistent hash, and cir
 #### BREAKING CHANGES
 
 - `0` will no longer return `true` from `hashIt.isEmpty` (`0` is not an empty number)
+- `isNull` and `isUndefined` have been removed
+  - Both of these can be built with the new `is` partial-application function (`const isUndefined = hash.is(undefined); const isNull = hash.is(null);`)
+- `hash.isEqual` will no longer throw when less than two objects are passed (error is logged to the console, `false` is returned)
 
 #### ENHANCEMENTS
 
@@ -14,11 +17,13 @@ Rewrite! Lots of changes under-the-hood for a much more consistent hash, and cir
 - Collision rates are near-zero (previously used traditional DJB2, which has small collision rates)
 - Better `ArrayBuffer` support with the use of `Buffer.from` when supported
 - SVG elements, DocumentFragments, and Events are now supported
+- `is` partial-application function allows for easy creation of any type of `isEqual` comparison method
 
 #### FIXES
 
 - `Object` / `Map` / `Set` no longer returns different hashes based on order of key addition
 - `Error` no longer returns identical hashes for different errors with same message (now uses stack)
+- `hash.isEqual` will no longer fail if nothing is passed
 
 ## 3.1.2
 

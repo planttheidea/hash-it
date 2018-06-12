@@ -85,6 +85,11 @@
     "exclude": [
       "test/*",
       "test/data/*"
+    ],
+    "reporter": [
+      "text",
+      "html",
+      "text-summary"
     ]
   },
   "repository": {
