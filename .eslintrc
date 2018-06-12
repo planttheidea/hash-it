@@ -2,6 +2,7 @@
   "extends": "rapid7/browser",
   "globals": {
     "__dirname": true,
+    "Buffer": true,
     "global": true,
     "module": true,
     "process": true,
@@ -12,5 +13,7 @@
     "ecmaVersion": 2017,
     "sourceType": "module"
   },
-  "rules":{}
+  "rules": {
+    "arrow-body-style": [2, "as-needed"]
+  }
 }

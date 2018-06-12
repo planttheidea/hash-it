@@ -7,13 +7,7 @@ const {repeats, test} = require('./test');
 const {hashBoolean, hashInfinity, hashNaN, hashNull, hashNumber, hashString, hashUndefined} = require('./primitive');
 const {hashArray, hashCircularObject, hashFunction, hashMap, hashObject, hashRegExp, hashSet} = require('./complex');
 
-const header = () => {
-  return `Benchmark cycles: ${repeats
-    .map((cycles) => {
-      return cycles.toLocaleString();
-    })
-    .join(' ')}`;
-};
+const header = () => `Benchmark cycles: ${repeats.map((cycles) => cycles.toLocaleString()).join(' ')}`;
 
 let results = [];
 

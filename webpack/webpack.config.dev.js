@@ -41,7 +41,6 @@ module.exports = Object.assign({}, defaultConfig, {
       if (rule.loader === 'babel-loader') {
         return Object.assign({}, rule, {
           options: Object.assign({}, rule.options, {
-            plugins: ['transform-runtime'],
             presets: ['react']
           })
         });

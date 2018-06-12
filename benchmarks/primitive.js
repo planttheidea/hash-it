@@ -1,6 +1,6 @@
 'use strict';
 
-const hashIt = require('../lib').default;
+const hash = require('../lib').default;
 
 const boolean = (exports.boolean = true);
 const infinite = (exports.infinite = Infinity);
@@ -15,7 +15,7 @@ exports.hashBoolean = (cycles) => {
       val;
 
   while (++index < cycles) {
-    val = hashIt(boolean);
+    val = hash(boolean);
   }
 };
 
@@ -24,7 +24,7 @@ exports.hashInfinity = (cycles) => {
       val;
 
   while (++index < cycles) {
-    val = hashIt(infinite);
+    val = hash(infinite);
   }
 };
 
@@ -33,7 +33,7 @@ exports.hashNaN = (cycles) => {
       val;
 
   while (++index < cycles) {
-    val = hashIt(notANumber);
+    val = hash(notANumber);
   }
 };
 
@@ -42,7 +42,7 @@ exports.hashNull = (cycles) => {
       val;
 
   while (++index < cycles) {
-    val = hashIt(nul);
+    val = hash(nul);
   }
 };
 
@@ -51,7 +51,7 @@ exports.hashNumber = (cycles) => {
       val;
 
   while (++index < cycles) {
-    val = hashIt(number);
+    val = hash(number);
   }
 };
 
@@ -60,7 +60,7 @@ exports.hashString = (cycles) => {
       val;
 
   while (++index < cycles) {
-    val = hashIt(string);
+    val = hash(string);
   }
 };
 
@@ -69,6 +69,6 @@ exports.hashUndefined = (cycles) => {
       val;
 
   while (++index < cycles) {
-    val = hashIt(undef);
+    val = hash(undef);
   }
 };

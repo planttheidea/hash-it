@@ -1,6 +1,13 @@
+// test
 import test from 'ava';
+import sinon from 'sinon';
+import uuid from 'uuid/v4';
 
-import hashIt from 'src/index';
+// test data
+import WORDS from 'test/data/words.json';
+
+//src
+import hash from 'src/index';
 
 const CONSISTENCY_ITERATIONS = 10000;
 
@@ -70,10 +77,6 @@ const TEST_VALUES = [
     value: new Map().set('foo', 'bar')
   },
   {
-    key: 'math',
-    value: Math
-  },
-  {
     key: 'null',
     value: null
   },
@@ -137,14 +140,14 @@ const TEST_VALUES = [
 
 test('if hashed values are non-zero', (t) => {
   TEST_VALUES.forEach(({value}) => {
-    t.not(hashIt(value), 0);
+    t.not(hash(value), 0);
   });
 });
 
 let hashMap = {};
 
 TEST_VALUES.forEach(({key, value}) => {
-  hashMap[key] = hashIt(value);
+  hashMap[key] = hash(value);
 });
 
 test('if hash is unique', (t) => {
@@ -162,74 +165,147 @@ test('if hash is consistent', (t) => {
 
   while (++index < CONSISTENCY_ITERATIONS) {
     TEST_VALUES.forEach(({key, value}) => {
-      t.is(hashIt(value), hashMap[key]);
+      t.is(hash(value), hashMap[key]);
     });
   }
 });
 
-test('if isEqual checks all objects for value equality based on hash', (t) => {
+const COLLISION_TEST_SIZE = WORDS.length;
+
+test(`if hash has no collisions with ${COLLISION_TEST_SIZE.toLocaleString()} integers`, (t) => {
+  const size = COLLISION_TEST_SIZE;
+  const collision = {};
+
+  let count = 0,
+      index = size,
+      result;
+
+  while (index--) {
+    result = hash(index);
+
+    if (collision[result]) {
+      count++;
+    }
+
+    collision[result] = index;
+  }
+
+  t.is(count, 0);
+});
+
+test(`if hash has no collisions with ${COLLISION_TEST_SIZE.toLocaleString()} strings`, (t) => {
+  const size = COLLISION_TEST_SIZE;
+  const collision = {};
+
+  let count = 0,
+      index = size,
+      result;
+
+  while (index--) {
+    result = hash(WORDS[index]);
+
+    if (collision[result]) {
+      count++;
+    }
+
+    collision[result] = index;
+  }
+
+  t.is(count, 0);
+});
+
+test(`if hash has no collisions with ${COLLISION_TEST_SIZE.toLocaleString()} random UUIDs`, (t) => {
+  const size = COLLISION_TEST_SIZE;
+  const collision = {};
+
+  let count = 0,
+      index = size,
+      result;
+
+  while (index--) {
+    result = hash(uuid());
+
+    if (collision[result]) {
+      count++;
+    }
+
+    collision[result] = index;
+  }
+
+  t.is(count, 0);
+});
+
+test('if is creates a method to check equality', (t) => {
+  const isUndefined = hash.is(undefined);
+  const isNull = hash.is(null);
+
+  t.true(isUndefined(void 0));
+  t.false(isUndefined(null));
+
+  t.true(isNull(null));
+  t.false(isNull(void 0));
+});
+
+test('if is.all checks all objects for value equality based on hash across all objects', (t) => {
   const equalTest1 = {
     foo: 'bar'
   };
-  const equalTest2 = {
-    ...equalTest1
-  };
-  const equalTest3 = {
-    ...equalTest2
-  };
+  const equalTest2 = {...equalTest1};
+  const equalTest3 = {...equalTest2};
 
   const equalTest4 = {
     foo: 'baz'
   };
 
   t.not(equalTest1, equalTest2);
-  t.true(hashIt.isEqual(equalTest1, equalTest2));
+  t.true(hash.is.all(equalTest1, equalTest2));
 
   t.not(equalTest1, equalTest3);
-  t.true(hashIt.isEqual(equalTest1, equalTest3));
-  t.true(hashIt.isEqual(equalTest2, equalTest3));
+  t.true(hash.is.all(equalTest1, equalTest3));
+  t.true(hash.is.all(equalTest2, equalTest3));
+
+  t.not(equalTest1, equalTest4);
+  t.false(hash.is.all(equalTest1, equalTest4));
+
+  t.true(hash.is.all(equalTest1, equalTest2, equalTest3));
+  t.false(hash.is.all(equalTest1, equalTest2, equalTest4));
+  t.false(hash.is.all(equalTest2, equalTest3, equalTest4));
+});
+
+test('if is.any checks any objects for value equality against the first based on hash across all objects', (t) => {
+  const equalTest1 = {
+    foo: 'bar'
+  };
+  const equalTest2 = {...equalTest1};
+  const equalTest3 = {...equalTest2};
+
+  const equalTest4 = {
+    foo: 'baz'
+  };
+
+  t.not(equalTest1, equalTest2);
+  t.true(hash.is.any(equalTest1, equalTest2));
 
   t.not(equalTest1, equalTest3);
-  t.false(hashIt.isEqual(equalTest1, equalTest4));
+  t.true(hash.is.any(equalTest1, equalTest3));
+  t.true(hash.is.any(equalTest2, equalTest3));
 
-  t.true(hashIt.isEqual(equalTest1, equalTest2, equalTest3));
-  t.false(hashIt.isEqual(equalTest1, equalTest2, equalTest4));
-  t.false(hashIt.isEqual(equalTest2, equalTest3, equalTest4));
+  t.not(equalTest1, equalTest4);
+  t.false(hash.is.any(equalTest1, equalTest4));
+
+  t.true(hash.is.any(equalTest1, equalTest2, equalTest3));
+  t.true(hash.is.any(equalTest1, equalTest2, equalTest4));
+  t.true(hash.is.any(equalTest2, equalTest3, equalTest4));
+  t.false(hash.is.any(equalTest4, equalTest1, equalTest2));
 });
 
-test('if isEqual throws when only one argument is passed', (t) => {
-  t.throws(() => {
-    hashIt.isEqual({
-      foo: 'bar'
-    });
-  });
-});
+test('if is.not creates a method to check non-equality', (t) => {
+  const isNotUndefined = hash.is.not(undefined);
+  const isNotNull = hash.is.not(null);
 
-test('if isUndefined checks if the object is undefined', (t) => {
-  t.true(hashIt.isUndefined(undefined));
-  t.false(hashIt.isUndefined('undefined'));
-});
+  t.false(isNotUndefined(void 0));
+  t.true(isNotUndefined(null));
 
-test('if isNull checks if the object is null', (t) => {
-  t.true(hashIt.isNull(null));
-  t.false(hashIt.isNull('null'));
-});
-
-test('if isEmpty checks if the object has value', (t) => {
-  t.true(hashIt.isEmpty(null));
-  t.true(hashIt.isEmpty(undefined));
-  t.true(hashIt.isEmpty({}));
-  t.true(hashIt.isEmpty(''));
-  t.true(hashIt.isEmpty(0));
-  t.true(hashIt.isEmpty([]));
-  t.true(hashIt.isEmpty(new Map()));
-  t.true(hashIt.isEmpty(new Set()));
-
-  t.false(hashIt.isEmpty({foo: 'bar'}));
-  t.false(hashIt.isEmpty(['foo']));
-  t.false(hashIt.isEmpty(new Map().set({}, 'foo')));
-  t.false(hashIt.isEmpty(new Set([1, 2])));
-  t.false(hashIt.isEmpty(1));
-  t.false(hashIt.isEmpty('foo'));
-  t.false(hashIt.isEmpty(true));
+  t.false(isNotNull(null));
+  t.true(isNotNull(void 0));
 });

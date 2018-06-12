@@ -1,104 +1,82 @@
-import {getIntegerHashValue, getStringifiedValue} from './utils';
+// external dependencies
+import {curry} from 'curriable';
+
+// utils
+import {getIntegerHashValue, stringify} from './utils';
 
 /**
- * @function hashIt
+ * @function hash
  *
  * @description
- * return the unique integer hash value for the object
+ * hash the value passed to a unique, consistent hash value
  *
- * @param {*} object the object to hash
- * @param {boolean} [isCircular] is the object a circular object
- * @returns {number}
+ * @param {any} value the value to hash
+ * @returns {number} the object hash
  */
-const hashIt = (object, isCircular) => {
-  const stringifiedValue = getStringifiedValue(object, isCircular);
-
-  return getIntegerHashValue(stringifiedValue);
-};
-
-const UNDEFINED_HASH = hashIt(undefined);
-const NULL_HASH = hashIt(null);
-const EMPTY_ARRAY_HASH = hashIt([]);
-const EMPTY_MAP_HASH = hashIt(new Map());
-const EMPTY_NUMBER_HASH = hashIt(0);
-const EMPTY_OBJECT_HASH = hashIt({});
-const EMPTY_SET_HASH = hashIt(new Set());
-const EMPTY_STRING_HASH = hashIt('');
-
-const EMPTY_HASHES = {
-  [EMPTY_ARRAY_HASH]: true,
-  [EMPTY_MAP_HASH]: true,
-  [EMPTY_NUMBER_HASH]: true,
-  [EMPTY_OBJECT_HASH]: true,
-  [EMPTY_SET_HASH]: true,
-  [EMPTY_STRING_HASH]: true,
-  [NULL_HASH]: true,
-  [UNDEFINED_HASH]: true
-};
+export const hash = (value) => getIntegerHashValue(stringify(value));
 
 /**
- * @function hashIt.isEqual
+ * @function hash.is
  *
  * @description
- * determine if all objects passed are equal in value to one another
+ * create a comparator for the first object passed to determine if the second is equal
  *
- * @param {...Array<*>} objects the objects to test for equality
+ * @param {any} object the object to test against
+ * @returns {function(any): boolean} the method to test against the object
+ */
+hash.is = curry((object, otherObject) => hash(object) === hash(otherObject));
+
+/**
+ * @function hash.is.all
+ *
+ * @description
+ * determine if all of the objects passed are equal in value to the first
+ *
+ * @param {...Array<any>} objects the objects to test for equality
  * @returns {boolean} are the objects equal
  */
-hashIt.isEqual = (...objects) => {
-  const length = objects.length;
+hash.is.all = curry((...objects) => {
+  const isEqual = hash.is(objects.shift());
 
-  if (length === 1) {
-    throw new Error('isEqual requires at least two objects to be passed for comparison.');
-  }
-
-  for (let index = 1; index < length; index++) {
-    if (hashIt(objects[index - 1]) !== hashIt(objects[index])) {
+  for (let index = 0; index < objects.length; index++) {
+    if (!isEqual(objects[index])) {
       return false;
     }
   }
 
   return true;
-};
+}, 2);
 
 /**
- * @function hashIt.isEmpty
+ * @function hash.is.any
  *
  * @description
- * determine if object is empty, meaning it is an array / object / map / set with values populated,
- * or is a string with no length, or is undefined or null
+ * determine if any of the objects passed are equal in value to the first
  *
- * @param {*} object the object to test
- * @returns {boolean} is the object empty
+ * @param {...Array<any>} objects the objects to test for equality
+ * @returns {boolean} are the objects equal
  */
-hashIt.isEmpty = (object) => {
-  return !!EMPTY_HASHES[hashIt(object)];
-};
+hash.is.any = curry((...objects) => {
+  const isEqual = hash.is(objects.shift());
+
+  for (let index = 0; index < objects.length; index++) {
+    if (isEqual(objects[index])) {
+      return true;
+    }
+  }
+
+  return false;
+}, 2);
 
 /**
- * @function hashIt.isNull
+ * @function hash.is.not
  *
  * @description
- * determine if object is null
+ * create a comparator for the first object passed to determine if the second is not equal
  *
- * @param {*} object the object to test
- * @returns {boolean} is the object null
+ * @param {any} object the object to test against
+ * @returns {function(any): boolean} the method to test against the object
  */
-hashIt.isNull = (object) => {
-  return hashIt(object) === NULL_HASH;
-};
+hash.is.not = curry((object, otherObject) => hash(object) !== hash(otherObject));
 
-/**
- * @function hashIt.isUndefined
- *
- * @description
- * determine if object is undefined
- *
- * @param {*} object the object to test
- * @returns {boolean} is the object undefined
- */
-hashIt.isUndefined = (object) => {
-  return hashIt(object) === UNDEFINED_HASH;
-};
-
-export default hashIt;
+export default hash;

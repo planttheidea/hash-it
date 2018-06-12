@@ -1,15 +1,14 @@
 'use strict';
 
 const REPEATS = [1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000];
-const TOTAL = REPEATS.reduce((sum, cycles) => {
-  return sum + cycles;
-}, 0);
+const TOTAL = REPEATS.reduce((sum, cycles) => sum + cycles, 0);
 
 exports.test = (name, benchmark) => {
   let totalTime = 0,
-      startTime, testTime;
+      startTime,
+      testTime;
 
-  let displayText = `\n${name}:\n${REPEATS.map(cycles => {
+  let displayText = `\n${name}:\n${REPEATS.map((cycles) => {
     startTime = Date.now();
 
     benchmark(cycles);

@@ -1,43 +1,42 @@
-# hashIt
+# hash-it
 
 Fast and consistent hashCode for any object type
 
 ## Table of contents
 
-* [Usage](#usage)
-* [Overview](#overview)
-* [Utility functions](#utility-functions)
-  * [isEmpty](#isempty)
-  * [isEqual](#isequal)
-  * [isNull](#isnull)
-  * [isUndefined](#isundefined)
-* [Gotchas](#gotchas)
-* [Browser support](#browser-support)
-* [Node support](#node-support)
-* [Development](#development)
+- [Usage](#usage)
+- [Overview](#overview)
+- [Utility functions](#utility-functions)
+  - [is](#is)
+  - [isEmpty](#isempty)
+  - [isEqual](#isequal)
+- [Gotchas](#gotchas)
+- [Browser support](#browser-support)
+- [Node support](#node-support)
+- [Development](#development)
 
 ## Usage
 
 ```javascript
 // ES2015
-import hashIt from 'hash-it';
+import hash from "hash-it";
 
 // CommonJS
-const hashIt = require('hash-it').default;
+const hash = require("hash-it").default;
 
 // script
-const hashIt = window.hashIt;
+const hash = window.hashIt;
 
 // hash any standard object
-console.log(hashIt({foo: 'bar'})); // 2639617176
+console.log(hash({ foo: "bar" })); // 8999940026732
 
-// or if you know it is a circular object
-console.log(hashIt(window, true)); // 482488043
+// or a circular object
+console.log(hash(window)); // 6514964902729
 ```
 
 ## Overview
 
-`hashIt` has a simple goal: provide a fast and consistent hashCode for any object type that is uniquely based on its values. This has a number of uses such as duplication prevention or fast equality comparisons.
+`hash-it` has a simple goal: provide a fast, consistent, unique hashCode for any object type that is uniquely based on its values. This has a number of uses such as duplication prevention, equality comparisons, blockchain construction, etc.
 
 _Any object type?_
 
@@ -47,102 +46,178 @@ _With no exceptions?_
 
 Well ... sadly, no, there are a few exceptions.
 
-* `Promise`
-  * There is no way to obtain the values contained within due to its asynchronous nature
-* `Generator` (the result of calling a `GeneratorFunction`)
-  * Like `Promise`, there is no way to obtain the values contained within due to its dynamic iterable nature
-* `WeakMap` / `WeakSet`
-
-  * The spec explicitly forbids iteration over them, so the unique values cannot be discovered
+- `Promise`
+  - There is no way to obtain the values contained within due to its asynchronous nature
+- `Generator` (the result of calling a `GeneratorFunction`)
+  - Like `Promise`, there is no way to obtain the values contained within due to its dynamic iterable nature
+- `WeakMap` / `WeakSet`
+  - The spec explicitly forbids iteration over them, so the unique values cannot be discovered
 
 In each of these cases, no matter what the values of the object, they will always yield the same hash result, which is unique to each object type. If you have any ideas about how these can be uniquely hashed, I welcome them!
 
 Here is the list of object classes that have been tested and shown to produce unique hashCodes:
 
-* `Arguments`
-* `Array`
-* `ArrayBuffer`
-* `Boolean`
-* `DataView`
-* `Date` (based on `valueOf`)
-* `Error` (based on `message`)
-  * Includes all sub-types (e.g. `TypeError`, `ReferenceError`, etc.)
-* `Float32Array`
-* `Float64Array`
-* `Function` (based on `toString`)
-* `GeneratorFunction` (based on `toString`)
-* `Int8Array`
-* `Int16Array`
-* `Int32Array`
-* `HTMLElement` (based on `tagName`, `attributes`, and `innerHTML`)
-  * Includes all sub-types (e.g. `HTMLAnchorElement`, `HTMLDivElement`, etc.)
-* `Map`
-* `Math` (based on `E`, `LN2`, `LN10`, `LOG2E`, `LOG10E`, `PI`, `SQRT1_2`, and `SQRT2`)
-* `Null`
-* `Number`
-* `Object` (can handle circular objects)
-* `Proxy`
-* `RegExp`
-* `Set`
-* `String`
-* `Symbol`
-* `Uint8Array`
-* `Uint8ClampedArray`
-* `Uint16Array`
-* `Uint32Array`
-* `Undefined`
-* `Window`
+- `Arguments`
+- `Array`
+- `ArrayBuffer`
+- `AsyncFunction` (based on `toString`)
+- `Boolean`
+- `DataView` (based on its `buffer`)
+- `Date` (based on `getTime`)
+- `DocumentFragment` (based on `outerHTML` of all `children`)
+- `Error` (based on `stack`)
+  - Includes all sub-types (e.g., `TypeError`, `ReferenceError`, etc.)
+- `Event` (based on all properties other than `Event.timeStamp`)
+  - Includes all sub-types (e.g., `MouseEvent`, `KeyboardEvent`, etc.)
+- `Float32Array`
+- `Float64Array`
+- `Function` (based on `toString`)
+- `GeneratorFunction` (based on `toString`)
+- `Int8Array`
+- `Int16Array`
+- `Int32Array`
+- `HTMLElement` (based on `outerHTML`)
+  - Includes all sub-types (e.g., `HTMLAnchorElement`, `HTMLDivElement`, etc.)
+- `Map` (order-agnostic)
+- `Null`
+- `Number`
+- `Object` (handles circular objects, order-agnostic)
+- `Proxy`
+- `RegExp`
+- `Set` (order-agnostic)
+- `String`
+- `SVGElement` (based on `outerHTML`)
+  - Includes all sub-types (e.g., `SVGRectElement`, `SVGPolygonElement`, etc.)
+- `Symbol` (based on `toString`)
+- `Uint8Array`
+- `Uint8ClampedArray`
+- `Uint16Array`
+- `Uint32Array`
+- `Undefined`
+- `Window`
 
 This is basically all I could think of, but if I have missed an object class let me know and I will add it!
 
 ## Utility functions
 
-#### isEmpty
+#### is
 
-`isEmpty(object: any): boolean`
+`is(object: any, otherObject: any): boolean`
 
-Determines if object is empty based on hashCode, with empty defined as:
+Compares the two objects to determine equality.
 
-* Empty array (`[]`)
-* Empty map (`new Map()`)
-* Empty number, or zero (`0`)
-* Empty object (`{}`)
-* Empty set (`new Set()`)
-* Empty string (`''`)
-* Undefined (`undefined`)
-* Null (`null`)
+```javascript
+console.log(hash.is(null, 123)); // false
+console.log(hash.is(null, null)); // true
+```
 
-This differs from the implementation by `lodash`, where a value is considered not empty if an `Array`, `Object`, `Map`, or `Set`. Think of this definition of empty as "having no value(s)".
+**NOTE**: This can also be used with partial-application to create prepared equality comparators.
 
-#### isEqual
+```javascript
+const isNull = hash.is(null);
 
-`isEqual(object1: any, object2: any[, object3: any[, ...objectN]]): boolean`
+console.log(isNull(123)); // false
+console.log(isNull(null)); // true
+```
 
-Compares all objects passed to it to determine if they are equal to one another based on hashCode
+#### is.all
+
+`is.all(object1: any, object2: any[, object3: any[, ...objectN]]): boolean`
+
+Compares the first object to all other objects passed to determine if all are equal based on hashCode
 
 ```javascript
 const foo = {
-  foo: 'bar'
+  foo: "bar"
 };
 const alsoFoo = {
-  foo: 'bar'
+  foo: "bar"
+};
+const stillFoo = {
+  foo: "bar"
 };
 
-console.log(foo === alsoFoo); // false
-console.log(hashIt.isEqual(foo, alsoFoo)); // true
+console.log(hash.is.all(foo, alsoFoo)); // true
+console.log(hash.is.all(foo, alsoFoo, stillFoo)); // true
 ```
 
-#### isNull
+**NOTE**: This can also be used with partial-application to create prepared equality comparators.
 
-`isNull(object: any): boolean`
+```javascript
+const foo = {
+  foo: "bar"
+};
+const alsoFoo = {
+  foo: "bar"
+};
+const stillFoo = {
+  foo: "bar"
+};
 
-Determines if object is null based on hashCode
+const isAllFoo = hash.is.all(foo);
 
-#### isUndefined
+console.log(isAllFoo(alsoFoo, stillFoo)); // true
+```
 
-`isUndefined(object: any): boolean`
+#### is.any
 
-Determines if object is undefined based on hashCode
+`is.any(object1: any, object2: any[, object3: any[, ...objectN]]): boolean`
+
+Compares the first object to all other objects passed to determine if any are equal based on hashCode
+
+```javascript
+const foo = {
+  foo: "bar"
+};
+const alsoFoo = {
+  foo: "bar"
+};
+const nopeBar = {
+  bar: "baz"
+};
+
+console.log(hash.is.any(foo, alsoFoo)); // true
+console.log(hash.is.any(foo, nopeBar)); // false
+console.log(hash.is.any(foo, alsoFoo, nopeBar)); // true
+```
+
+**NOTE**: This can also be used with partial-application to create prepared equality comparators.
+
+```javascript
+const foo = {
+  foo: "bar"
+};
+const alsoFoo = {
+  foo: "bar"
+};
+const nopeBar = {
+  bar: "baz"
+};
+
+const isAnyFoo = hash.is.any(foo);
+
+console.log(isAnyFoo(alsoFoo, nopeBar)); // true
+```
+
+#### is.not
+
+`is.not(object: any, otherObject: any): boolean`
+
+Compares the two objects to determine non-equality.
+
+```javascript
+console.log(hash.is.not(null, 123)); // true
+console.log(hash.is.not(null, null)); // false
+```
+
+**NOTE**: This can also be used with partial-application to create prepared equality comparators.
+
+```javascript
+const isNotNull = hash.is.not(null);
+
+console.log(isNull(123)); // true
+console.log(isNull(null)); // flse
+```
 
 ## Gotchas
 
@@ -150,33 +225,33 @@ While the hashes will be consistent when calculated within the same browser envi
 
 ## Browser support
 
-* Chrome (all versions)
-* Firefox (all versions)
-* Edge (all versions)
-* Opera 15+
-* IE 9+
-* Safari 6+
-* iOS 8+
-* Android 4+
+- Chrome (all versions)
+- Firefox (all versions)
+- Edge (all versions)
+- Opera 15+
+- IE 9+
+- Safari 6+
+- iOS 8+
+- Android 4+
 
 ## Node support
 
-* 4+
+- 4+
 
 ## Development
 
 Standard stuff, clone the repo and `npm install` dependencies. The npm scripts available:
 
-* `build` => run webpack to build development `dist` file with NODE_ENV=development
-* `build:minified` => run webpack to build production `dist` file with NODE_ENV=production
-* `dev` => run webpack dev server to run example app / playground
-* `dist` => runs `build` and `build:minified`
-* `lint` => run ESLint against all files in the `src` folder
-* `prepublish` => runs `prepublish:compile` when publishing
-* `prepublish:compile` => run `lint`, `test:coverage`, `transpile:es`, `transpile:lib`, `dist`
-* `test` => run AVA test functions with `NODE_ENV=test`
-* `test:coverage` => run `test` but with `nyc` for coverage checker
-* `test:watch` => run `test`, but with persistent watcher
-* `transpile:lib` => run babel against all files in `src` to create files in `lib`
-* `transpile:es` => run babel against all files in `src` to create files in `es`, preserving ES2015 modules (for
+- `build` => run webpack to build development `dist` file with NODE_ENV=development
+- `build:minified` => run webpack to build production `dist` file with NODE_ENV=production
+- `dev` => run webpack dev server to run example app / playground
+- `dist` => runs `build` and `build:minified`
+- `lint` => run ESLint against all files in the `src` folder
+- `prepublish` => runs `prepublish:compile` when publishing
+- `prepublish:compile` => run `lint`, `test:coverage`, `transpile:es`, `transpile:lib`, `dist`
+- `test` => run AVA test functions with `NODE_ENV=test`
+- `test:coverage` => run `test` but with `nyc` for coverage checker
+- `test:watch` => run `test`, but with persistent watcher
+- `transpile:lib` => run babel against all files in `src` to create files in `lib`
+- `transpile:es` => run babel against all files in `src` to create files in `es`, preserving ES2015 modules (for
   [`pkg.module`](https://github.com/rollup/rollup/wiki/pkg.module))
