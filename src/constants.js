@@ -4,13 +4,6 @@
 export const CIRCULAR_VALUE = '~';
 
 /**
- * @constant {Array<any>} EMPTY_VALUES
- */
-export const EMPTY_VALUES = [void 0, null, '', [], {}]
-  .concat(typeof Map === 'function' ? [new Map()] : [])
-  .concat(typeof Set === 'function' ? [new Set()] : []);
-
-/**
  * @constant {boolean} HAS_BUFFER_FROM_SUPPORT
  */
 export const HAS_BUFFER_FROM_SUPPORT = typeof Buffer !== 'undefined' && typeof Buffer.from === 'function';
