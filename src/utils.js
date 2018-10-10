@@ -19,6 +19,7 @@ import {
 } from './constants';
 
 const charCodeAt = String.prototype.charCodeAt;
+const toString = Object.prototype.toString;
 const keys = Object.keys;
 
 /**
