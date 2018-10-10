@@ -61,7 +61,7 @@ export const OBJECT_CLASSES = [
   'Undefined',
   'WeakMap',
   'WeakSet',
-  'Window'
+  'Window',
 ];
 
 /**
@@ -84,7 +84,7 @@ export const OBJECT_CLASS_TYPE_MAP = Object.keys(OBJECT_CLASS_MAP).reduce((objec
 
 export const ITERABLE_TAGS = {
   '[object Map]': true,
-  '[object Set]': true
+  '[object Set]': true,
 };
 
 export const PRIMITIVE_TAGS = {
@@ -92,17 +92,17 @@ export const PRIMITIVE_TAGS = {
   function: true,
   number: true,
   string: true,
-  undefined: true
+  undefined: true,
 };
 
 export const SELF_TAGS = {
   [OBJECT_CLASS_TYPE_MAP.ARGUMENTS]: true,
-  [OBJECT_CLASS_TYPE_MAP.ARRAY]: true
+  [OBJECT_CLASS_TYPE_MAP.ARRAY]: true,
 };
 
 export const TOSTRING_TAGS = {
   [OBJECT_CLASS_TYPE_MAP.REGEXP]: true,
-  [OBJECT_CLASS_TYPE_MAP.SYMBOL]: true
+  [OBJECT_CLASS_TYPE_MAP.SYMBOL]: true,
 };
 
 export const TYPEDARRAY_TAGS = {
@@ -114,12 +114,12 @@ export const TYPEDARRAY_TAGS = {
   [OBJECT_CLASS_TYPE_MAP.UINT8ARRAY]: true,
   [OBJECT_CLASS_TYPE_MAP.UINT8CLAMPEDARRAY]: true,
   [OBJECT_CLASS_TYPE_MAP.UINT16ARRAY]: true,
-  [OBJECT_CLASS_TYPE_MAP.UINT32ARRAY]: true
+  [OBJECT_CLASS_TYPE_MAP.UINT32ARRAY]: true,
 };
 
 export const UNPARSEABLE_TAGS = {
   [OBJECT_CLASS_TYPE_MAP.GENERATOR]: true,
   [OBJECT_CLASS_TYPE_MAP.PROMISE]: true,
   [OBJECT_CLASS_TYPE_MAP.WEAKMAP]: true,
-  [OBJECT_CLASS_TYPE_MAP.WEAKSET]: true
+  [OBJECT_CLASS_TYPE_MAP.WEAKSET]: true,
 };

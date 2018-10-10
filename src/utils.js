@@ -15,7 +15,7 @@ import {
   SVG_ELEMENT_REGEXP,
   TOSTRING_TAGS,
   TYPEDARRAY_TAGS,
-  UNPARSEABLE_TAGS
+  UNPARSEABLE_TAGS,
 } from './constants';
 
 const charCodeAt = String.prototype.charCodeAt;
@@ -101,7 +101,7 @@ export const getSortedEvent = ({
   isTrusted,
   returnValue,
   target,
-  type
+  type,
 }) => ({
   bubbles,
   cancelBubble,
@@ -113,7 +113,7 @@ export const getSortedEvent = ({
   isTrusted,
   returnValue,
   target,
-  type
+  type,
 });
 
 /**

@@ -2,7 +2,10 @@
 import {curry} from 'curriable';
 
 // utils
-import {getIntegerHashValue, stringify} from './utils';
+import {
+  getIntegerHashValue,
+  stringify,
+} from './utils';
 
 /**
  * @function hash

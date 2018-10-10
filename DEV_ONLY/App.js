@@ -23,11 +23,11 @@ class StatefulComponent extends React.Component {
 const StatelessComponent = () => <div>test</div>;
 
 const a = {
-  foo: 'bar'
+  foo: 'bar',
 };
 
 const b = {
-  a
+  a,
 };
 
 a.b = b;
@@ -47,7 +47,7 @@ const object = {
   undef: undefined,
   nil: null,
   obj: {
-    foo: 'bar'
+    foo: 'bar',
   },
   arr: ['foo', 'bar'],
   el: document.createElement('div'),
@@ -92,7 +92,7 @@ const object = {
   ReactStatefulClass: StatefulComponent,
   ReactStatefulElement: <StatefulComponent />,
   ReactStatelessClass: StatelessComponent,
-  ReactStatelessElement: <StatelessComponent />
+  ReactStatelessElement: <StatelessComponent />,
 };
 
 const profile = (iterations = 100) => {
@@ -219,7 +219,7 @@ const hashOnlyValidation = (iterations = 100) => {
 
 // benchmark();
 // profile(1000);
-// visualValidation();
+visualValidation();
 // hashOnlyValidation();
 
 const div = document.createElement('div');
