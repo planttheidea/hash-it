@@ -2,7 +2,7 @@
 
 ## 4.0.2
 
-- Fix #38 - IE11 not allowing global `toString` to be used, instead using `Object.prototype.toString` (thanks [@JorgenEvens](https://github.com/JorgenEvens))
+- Fix [#18](https://github.com/planttheidea/hash-it/pull/18) - IE11 not allowing global `toString` to be used, instead using `Object.prototype.toString` (thanks [@JorgenEvens](https://github.com/JorgenEvens))
 
 ## 4.0.1
 
