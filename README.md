@@ -216,8 +216,8 @@ console.log(hash.is.not(null, null)); // false
 ```javascript
 const isNotNull = hash.is.not(null);
 
-console.log(isNull(123)); // true
-console.log(isNull(null)); // flse
+console.log(isNotNull(123)); // true
+console.log(isNotNull(null)); // flse
 ```
 
 ## Gotchas
