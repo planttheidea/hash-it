@@ -1,7 +1,11 @@
 // test
 import test from 'ava';
 import sinon from 'sinon';
-import {ARRAYBUFFER, INTEGER_ARRAY, TEST_VALUES} from 'test/data/values';
+import {
+  ARRAYBUFFER,
+  INTEGER_ARRAY,
+  TEST_VALUES,
+} from 'test/data/values';
 
 // src
 import * as utils from 'src/utils';
@@ -130,7 +134,13 @@ test('if getPrefixedValue will get the value prefixed with the tag', (t) => {
 });
 
 test('if getSortedObject will get the object sorted by its keys', (t) => {
-  const object = {foo: 'bar', bar: 'baz', baz: 'quz'};
+  /* eslint-disable */
+  const object = {
+    foo: 'bar',
+    bar: 'baz',
+    baz: 'quz',
+  };
+  /* eslint-enable */
 
   t.deepEqual(Object.keys(object), ['foo', 'bar', 'baz']);
 
@@ -237,7 +247,10 @@ test('if getNormalizedValue will return the value passed if considered a "self" 
 });
 
 test('if getNormalizedValue will return the sorted value passed if an object', (t) => {
-  const value = {foo: 'bar', bar: 'baz'};
+  const value = {
+    bar: 'baz',
+    foo: 'bar',
+  };
   const sortedCache = [];
 
   const result = utils.getNormalizedValue(value, sortedCache);
@@ -247,7 +260,10 @@ test('if getNormalizedValue will return the sorted value passed if an object', (
 });
 
 test('if getNormalizedValue will return the circular value if an object that has already been processed', (t) => {
-  const value = {foo: 'bar', bar: 'baz'};
+  const value = {
+    bar: 'baz',
+    foo: 'bar',
+  };
   const sortedCache = [];
 
   sortedCache.push(value);
