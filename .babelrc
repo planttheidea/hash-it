@@ -3,82 +3,82 @@
     "development": {
       "plugins": [
         [
-          "transform-runtime",
+          "@babel/plugin-transform-runtime",
           {
-            "polyfill": false,
-            "regenerator": true
+            "corejs": false,
+            "helpers": false,
+            "regenerator": true,
+            "useESModules": true
           }
-        ]
+        ],
+        "@babel/plugin-proposal-class-properties"
       ],
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
-            "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true,
             "modules": false
           }
-        ],
-        "stage-2"
+        ]
       ]
     },
     "es": {
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
-            "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true,
             "modules": false
           }
-        ],
-        "stage-2"
-      ]
+        ]
+      ],
+      "plugins": ["@babel/plugin-proposal-class-properties"]
     },
     "lib": {
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
-            "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true
           }
-        ],
-        "stage-2"
-      ]
+        ]
+      ],
+      "plugins": ["@babel/plugin-proposal-class-properties"]
     },
     "production": {
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
-            "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true,
             "modules": false
           }
-        ],
-        "stage-2"
-      ]
+        ]
+      ],
+      "plugins": ["@babel/plugin-proposal-class-properties"]
     },
     "test": {
       "plugins": [
         [
-          "transform-runtime",
+          "@babel/plugin-transform-runtime",
           {
-            "polyfill": false,
-            "regenerator": true
+            "corejs": false,
+            "helpers": false,
+            "regenerator": true,
+            "useESModules": true
           }
-        ]
+        ],
+        "@babel/plugin-proposal-class-properties"
       ],
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
-            "exclude": ["transform-es2015-typeof-symbol"],
             "loose": true
           }
         ],
-        "stage-2"
+        "@babel/preset-react"
       ]
     }
   }

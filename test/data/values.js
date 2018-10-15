@@ -13,14 +13,14 @@ const TEST_VALUES = [
     expectedResult: {},
     expectedString: '{}',
     key: '',
-    value: {}
+    value: {},
   },
   {
     comparator: 'deepEqual',
     expectedResult: ['foo', 'bar'],
     expectedString: '["foo","bar"]',
     key: 'array',
-    value: ['foo', 'bar']
+    value: ['foo', 'bar'],
   },
   {
     comparator: 'deepEqual',
@@ -31,42 +31,42 @@ const TEST_VALUES = [
     key: 'arguments',
     value: (function() {
       return arguments;
-    }('foo', 'bar'))
+    }('foo', 'bar')),
   },
   {
     comparator: 'deepEqual',
     expectedResult: `ArrayBuffer|${Buffer.from(ARRAYBUFFER).toString('utf8')}`,
     expectedString: JSON.stringify(`ArrayBuffer|${Buffer.from(ARRAYBUFFER).toString('utf8')}`),
     key: 'arrayBuffer',
-    value: ARRAYBUFFER
+    value: ARRAYBUFFER,
   },
   {
     comparator: 'is',
     expectedResult: 'boolean|true',
     expectedString: 'boolean|true',
     key: 'boolean',
-    value: true
+    value: true,
   },
   {
     comparator: 'deepEqual',
     expectedResult: `DataView|${Buffer.from(new DataView(new ArrayBuffer(2)).buffer).toString('utf8')}`,
     expectedString: JSON.stringify(`DataView|${Buffer.from(new DataView(new ArrayBuffer(2)).buffer).toString('utf8')}`),
     key: 'dataView',
-    value: new DataView(new ArrayBuffer(2))
+    value: new DataView(new ArrayBuffer(2)),
   },
   {
     comparator: 'is',
     expectedResult: `Date|${DATE.valueOf()}`,
     expectedString: `Date|${DATE.valueOf()}`,
     key: 'date',
-    value: DATE
+    value: DATE,
   },
   {
     comparator: 'is',
     expectedResult: `Error|${ERROR.stack}`,
     expectedString: JSON.stringify(`Error|${ERROR.stack}`),
     key: 'error',
-    value: ERROR
+    value: ERROR,
   },
   {
     comparator: 'deepEqual',
@@ -81,7 +81,7 @@ const TEST_VALUES = [
       isTrusted: EVENT.isTrusted,
       returnValue: EVENT.returnValue,
       target: EVENT.target,
-      type: EVENT.type
+      type: EVENT.type,
     },
     expectedString: JSON.stringify({
       bubbles: `boolean|${EVENT.bubbles}`,
@@ -94,31 +94,31 @@ const TEST_VALUES = [
       isTrusted: `boolean|${EVENT.isTrusted}`,
       returnValue: `undefined|${EVENT.returnValue}`,
       target: `null|${EVENT.target}`,
-      type: EVENT.type
+      type: EVENT.type,
     }),
     key: 'event',
-    value: EVENT
+    value: EVENT,
   },
   {
     comparator: 'is',
     expectedResult: 'Float32Array|1,2,3',
     expectedString: JSON.stringify('Float32Array|1,2,3'),
     key: 'float32Array',
-    value: new Float32Array(INTEGER_ARRAY)
+    value: new Float32Array(INTEGER_ARRAY),
   },
   {
     comparator: 'is',
     expectedResult: 'Float64Array|1,2,3',
     expectedString: JSON.stringify('Float64Array|1,2,3'),
     key: 'float64Array',
-    value: new Float64Array(INTEGER_ARRAY)
+    value: new Float64Array(INTEGER_ARRAY),
   },
   {
     comparator: 'is',
     expectedResult: 'function|function value() {}',
     expectedString: 'function|function value() {}',
     key: 'function',
-    value() {}
+    value() {},
   },
   {
     comparator: 'is',
@@ -133,34 +133,34 @@ const TEST_VALUES = [
       }
 
       return gen();
-    })()
+    })(),
   },
   {
     comparator: 'is',
     expectedResult: `function|function value() {
-    return _regenerator2.default.wrap(function value$(_context2) {
+    return _regenerator.default.wrap(function value$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-          case 'end':
+          case "end":
             return _context2.stop();
         }
       }
     }, value, this);
   }`,
     expectedString: `function|function value() {
-    return _regenerator2.default.wrap(function value$(_context2) {
+    return _regenerator.default.wrap(function value$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-          case 'end':
+          case "end":
             return _context2.stop();
         }
       }
     }, value, this);
   }`,
     key: 'generatorFunction',
-    * value() {}
+    * value() {},
   },
   {
     comparator: 'deepEqual',
@@ -174,155 +174,155 @@ const TEST_VALUES = [
       div.className = 'class';
 
       return div;
-    })()
+    })(),
   },
   {
     comparator: 'deepEqual',
     expectedResult: 'SVGSVGElement|<svg></svg>',
     expectedString: JSON.stringify('SVGSVGElement|<svg></svg>'),
     key: 'svgElement',
-    value: (() => document.createElementNS('http://www.w3.org/2000/svg', 'svg'))()
+    value: (() => document.createElementNS('http://www.w3.org/2000/svg', 'svg'))(),
   },
   {
     comparator: 'deepEqual',
     expectedResult: 'DocumentFragment|<div></div>',
     expectedString: JSON.stringify('DocumentFragment|<div></div>'),
     key: 'documentFragment',
-    value: DOCUMENT_FRAGMENT
+    value: DOCUMENT_FRAGMENT,
   },
   {
     comparator: 'deepEqual',
     expectedResult: 'Int8Array|1,2,3',
     expectedString: JSON.stringify('Int8Array|1,2,3'),
     key: 'int8Array',
-    value: new Int8Array(INTEGER_ARRAY)
+    value: new Int8Array(INTEGER_ARRAY),
   },
   {
     comparator: 'deepEqual',
     expectedResult: 'Int16Array|1,2,3',
     expectedString: JSON.stringify('Int16Array|1,2,3'),
     key: 'int16Array',
-    value: new Int16Array(INTEGER_ARRAY)
+    value: new Int16Array(INTEGER_ARRAY),
   },
   {
     comparator: 'deepEqual',
     expectedResult: 'Int32Array|1,2,3',
     expectedString: JSON.stringify('Int32Array|1,2,3'),
     key: 'int32Array',
-    value: new Int32Array(INTEGER_ARRAY)
+    value: new Int32Array(INTEGER_ARRAY),
   },
   {
     comparator: 'deepEqual',
     expectedResult: 'Map|[[foo,bar]]',
     expectedString: JSON.stringify('Map|[[foo,bar]]'),
     key: 'map',
-    value: new Map().set('foo', 'bar')
+    value: new Map().set('foo', 'bar'),
   },
   {
     comparator: 'is',
     expectedResult: 'null|null',
     expectedString: 'null|null',
     key: 'null',
-    value: null
+    value: null,
   },
   {
     comparator: 'is',
     expectedResult: 'number|12',
     expectedString: 'number|12',
     key: 'number',
-    value: 12
+    value: 12,
   },
   {
     comparator: 'deepEqual',
     expectedResult: {foo: 'bar'},
     expectedString: '{"foo":"bar"}',
     key: 'object',
-    value: {foo: 'bar'}
+    value: {foo: 'bar'},
   },
   {
     comparator: 'is',
     expectedResult: 'Promise|NOT_ENUMERABLE',
     expectedString: JSON.stringify('Promise|NOT_ENUMERABLE'),
     key: 'promise',
-    value: Promise.resolve(1)
+    value: Promise.resolve(1),
   },
   {
     comparator: 'is',
     expectedResult: 'RegExp|/foo/',
     expectedString: 'RegExp|/foo/',
     key: 'regexp',
-    value: /foo/
+    value: /foo/,
   },
   {
     comparator: 'deepEqual',
     expectedResult: 'Set|[foo]',
     expectedString: JSON.stringify('Set|[foo]'),
     key: 'set',
-    value: new Set().add('foo')
+    value: new Set().add('foo'),
   },
   {
     comparator: 'is',
     expectedResult: 'foo',
     expectedString: 'foo',
     key: 'string',
-    value: 'foo'
+    value: 'foo',
   },
   {
     comparator: 'is',
     expectedResult: 'Symbol|Symbol(foo)',
     expectedString: 'Symbol|Symbol(foo)',
     key: 'symbol',
-    value: Symbol('foo')
+    value: Symbol('foo'),
   },
   {
     comparator: 'deepEqual',
     expectedResult: 'Uint8Array|1,2,3',
     expectedString: JSON.stringify('Uint8Array|1,2,3'),
     key: 'uint8Array',
-    value: new Uint8Array(INTEGER_ARRAY)
+    value: new Uint8Array(INTEGER_ARRAY),
   },
   {
     comparator: 'deepEqual',
     expectedResult: 'Uint8ClampedArray|1,2,3',
     expectedString: JSON.stringify('Uint8ClampedArray|1,2,3'),
     key: 'uint8ClampedArray',
-    value: new Uint8ClampedArray(INTEGER_ARRAY)
+    value: new Uint8ClampedArray(INTEGER_ARRAY),
   },
   {
     comparator: 'deepEqual',
     expectedResult: 'Uint16Array|1,2,3',
     expectedString: JSON.stringify('Uint16Array|1,2,3'),
     key: 'uint16Array',
-    value: new Uint16Array(INTEGER_ARRAY)
+    value: new Uint16Array(INTEGER_ARRAY),
   },
   {
     comparator: 'deepEqual',
     expectedResult: 'Uint32Array|1,2,3',
     expectedString: JSON.stringify('Uint32Array|1,2,3'),
     key: 'uint32Array',
-    value: new Uint32Array(INTEGER_ARRAY)
+    value: new Uint32Array(INTEGER_ARRAY),
   },
   {
     comparator: 'is',
     expectedResult: 'undefined|undefined',
     expectedString: 'undefined|undefined',
     key: 'undefined',
-    value: undefined
+    value: undefined,
   },
   {
     comparator: 'is',
     expectedResult: 'WeakMap|NOT_ENUMERABLE',
     expectedString: JSON.stringify('WeakMap|NOT_ENUMERABLE'),
     key: 'weakMap',
-    value: new WeakMap().set({}, 'foo')
+    value: new WeakMap().set({}, 'foo'),
   },
   {
     comparator: 'is',
     expectedResult: 'WeakSet|NOT_ENUMERABLE',
     expectedString: JSON.stringify('WeakSet|NOT_ENUMERABLE'),
     key: 'weakSet',
-    value: new WeakSet().add({})
-  }
+    value: new WeakSet().add({}),
+  },
 ];
 
 module.exports = {
@@ -330,5 +330,5 @@ module.exports = {
   DATE,
   ERROR,
   INTEGER_ARRAY,
-  TEST_VALUES
+  TEST_VALUES,
 };
