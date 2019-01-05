@@ -10,30 +10,8 @@
             "regenerator": true,
             "useESModules": true
           }
-        ],
-        "@babel/plugin-proposal-class-properties"
-      ],
-      "presets": [
-        [
-          "@babel/preset-env",
-          {
-            "loose": true,
-            "modules": false
-          }
         ]
       ]
-    },
-    "es": {
-      "presets": [
-        [
-          "@babel/preset-env",
-          {
-            "loose": true,
-            "modules": false
-          }
-        ]
-      ],
-      "plugins": ["@babel/plugin-proposal-class-properties"]
     },
     "lib": {
       "presets": [
@@ -43,20 +21,7 @@
             "loose": true
           }
         ]
-      ],
-      "plugins": ["@babel/plugin-proposal-class-properties"]
-    },
-    "production": {
-      "presets": [
-        [
-          "@babel/preset-env",
-          {
-            "loose": true,
-            "modules": false
-          }
-        ]
-      ],
-      "plugins": ["@babel/plugin-proposal-class-properties"]
+      ]
     },
     "test": {
       "plugins": [
@@ -68,8 +33,7 @@
             "regenerator": true,
             "useESModules": true
           }
-        ],
-        "@babel/plugin-proposal-class-properties"
+        ]
       ],
       "presets": [
         [
@@ -81,5 +45,15 @@
         "@babel/preset-react"
       ]
     }
-  }
+  },
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "loose": true,
+        "modules": false
+      }
+    ]
+  ],
+  "plugins": ["@babel/plugin-proposal-class-properties"]
 }
