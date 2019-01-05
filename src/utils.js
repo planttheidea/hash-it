@@ -276,12 +276,17 @@ export const getStringifiedArrayBufferNoSupport = () => '';
  * @param {ArrayBuffer} buffer the array buffer to convert
  * @returns {string} the stringified buffer
  */
-export const getStringifiedArrayBuffer = (() =>
-  HAS_BUFFER_FROM_SUPPORT
-    ? getStringifiedArrayBufferModern
-    : HAS_UINT16ARRAY_SUPPORT
-      ? getStringifiedArrayBufferFallback
-      : getStringifiedArrayBufferNoSupport)();
+export const getStringifiedArrayBuffer = (() => {
+  if (HAS_BUFFER_FROM_SUPPORT) {
+    return getStringifiedArrayBufferModern;
+  }
+
+  if (HAS_UINT16ARRAY_SUPPORT) {
+    return getStringifiedArrayBufferFallback;
+  }
+
+  return getStringifiedArrayBufferNoSupport;
+})();
 
 /**
  * @function getStringifiedDocumentFragment
@@ -298,7 +303,6 @@ export const getStringifiedDocumentFragment = (fragment) => {
   let innerHTML = '';
 
   for (let index = 0; index < children.length; index++) {
-    // eslint-disable-next-line no-use-before-define
     innerHTML += children[index].outerHTML;
   }
 
@@ -333,24 +337,27 @@ export const indexOf = (array, value) => {
  *
  * @param {any} value the value to normalize
  * @param {WeakMap|Object} sortedCache the cache of sorted objects
+ * @param {string} [passedTag] the previously-calculated tag
  * @returns {any} the normalized value
  */
-export const getNormalizedValue = (value, sortedCache) => {
-  const type = typeof value;
+export const getNormalizedValue = (value, sortedCache, passedTag) => {
+  if (passedTag === void 0) {
+    const type = typeof value;
 
-  if (type === 'string') {
-    return value;
+    if (type === 'string') {
+      return value;
+    }
+
+    if (PRIMITIVE_TAGS[type]) {
+      return getPrefixedValue(type, value);
+    }
+
+    if (value === null) {
+      return getPrefixedValue('null', value);
+    }
   }
 
-  if (PRIMITIVE_TAGS[type]) {
-    return getPrefixedValue(type, value);
-  }
-
-  if (value === null) {
-    return getPrefixedValue('null', value);
-  }
-
-  const tag = toString.call(value);
+  const tag = passedTag || toString.call(value);
 
   if (SELF_TAGS[tag]) {
     return value;
@@ -440,7 +447,13 @@ export const createReplacer = (sortedCache) => (key, value) => getNormalizedValu
  * @returns {string} the stringified value
  */
 export function stringify(value) {
-  return typeof value === 'object' && value && !(value instanceof RegExp || value instanceof Date)
-    ? fastStringify(value, createReplacer([]), null, getCircularValue)
-    : getNormalizedValue(value);
+  if (!value || typeof value !== 'object') {
+    return getNormalizedValue(value);
+  }
+
+  const tag = toString.call(value);
+
+  return tag === OBJECT_CLASS_TYPE_MAP.DATE || tag === OBJECT_CLASS_TYPE_MAP.REGEXP
+    ? getNormalizedValue(value, void 0, tag)
+    : fastStringify(value, createReplacer([]), null, getCircularValue);
 }

@@ -33,27 +33,17 @@ const b = {
 a.b = b;
 
 const object = {
-  string: 'foo',
-  num: 12,
-  bool: true,
-  func() {
-    alert('y');
-  },
-  * generator() {
-    let value = yield 1;
-
-    yield value + 2;
-  },
-  undef: undefined,
-  nil: null,
-  obj: {
-    foo: 'bar',
-  },
+  ReactStatefulClass: StatefulComponent,
+  ReactStatefulElement: <StatefulComponent />,
+  ReactStatelessClass: StatelessComponent,
+  ReactStatelessElement: <StatelessComponent />,
   arr: ['foo', 'bar'],
+  arrayBuffer: new Uint16Array([1, 2, 3]).buffer,
+  bool: true,
+  dataView: new DataView(new ArrayBuffer(2)),
+  doc: document,
   el: document.createElement('div'),
-  fragment,
-  svg: document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
-  regexp: /test/,
+  err: new Error('Stuff'),
   event: (() => {
     try {
       return new Event('custom');
@@ -65,34 +55,41 @@ const object = {
       return event;
     }
   })(),
-  nodeList: document.querySelectorAll('div'),
-
-  // comment out for older browser testing
-  symbol: Symbol('test'),
-  arrayBuffer: new Uint16Array([1, 2, 3]).buffer,
-  dataView: new DataView(new ArrayBuffer(2)),
-  err: new Error('Stuff'),
   float32Array: new Float32Array([1, 2, 3]),
   float64Array: new Float64Array([1, 2, 3]),
+  fragment,
+  func() {
+    alert('y');
+  },
+  * generator() {
+    let value = yield 1;
+
+    yield value + 2;
+  },
   int8Array: new Int8Array([1, 2, 3]),
   int16Array: new Int16Array([1, 2, 3]),
   int32Array: new Int32Array([1, 2, 3]),
   map: new Map().set(true, 7).set({foo: 3}, ['abc']),
+  nil: null,
+  nodeList: document.querySelectorAll('div'),
+  num: 12,
+  obj: {
+    foo: 'bar',
+  },
   promise: Promise.resolve(1),
+  regexp: /test/,
   set: new Set().add('foo').add(2),
+  string: 'foo',
+  svg: document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
+  symbol: Symbol('test'),
   uint8Array: new Uint8Array([1, 2, 3]),
   uint8ClampedArray: new Uint8ClampedArray([1, 2, 3]),
   uint16Array: new Uint16Array([1, 2, 3]),
   uint32Array: new Uint32Array([1, 2, 3]),
+  undef: undefined,
   weakMap: new WeakMap().set({}, 7).set({foo: 3}, ['abc']),
   weakSet: new WeakSet().add({}).add({foo: 'bar'}),
-  doc: document,
   win: window,
-
-  ReactStatefulClass: StatefulComponent,
-  ReactStatefulElement: <StatefulComponent />,
-  ReactStatelessClass: StatelessComponent,
-  ReactStatelessElement: <StatelessComponent />,
 };
 
 const profile = (iterations = 100) => {
@@ -118,9 +115,7 @@ const profile = (iterations = 100) => {
   console.log('Check the Profiles tab in DevTools to see the output.');
 };
 
-const benchmark = () => {
-  require('../benchmarks/index');
-};
+const benchmark = () => require('../benchmarks/index');
 
 const visualValidation = (iterations = 100) => {
   console.log(object, hash(object));

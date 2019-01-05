@@ -1,5 +1,10 @@
 # hashIt CHANGELOG
 
+## 4.0.4
+
+- Improve speed of complex objects (Objects, Arrays, Maps, Sets)
+- Fix security issue with old version of `webpack-dev-server`
+
 ## 4.0.3
 
 - Upgrade to use babel 7 for builds
