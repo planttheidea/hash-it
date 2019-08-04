@@ -1,4 +1,5 @@
 import browserEnv from 'browser-env';
 
-browserEnv();
-
+browserEnv({
+  url: 'http://www.example.com',
+});

@@ -87,12 +87,12 @@ const TEST_VALUES = [
       bubbles: `boolean|${EVENT.bubbles}`,
       cancelBubble: `boolean|${EVENT.cancelBubble}`,
       cancelable: `boolean|${EVENT.cancelable}`,
-      composed: `undefined|${EVENT.composed}`,
+      composed: `boolean|${EVENT.composed}`,
       currentTarget: `null|${EVENT.currentTarget}`,
       defaultPrevented: `boolean|${EVENT.defaultPrevented}`,
       eventPhase: `number|${EVENT.eventPhase}`,
       isTrusted: `boolean|${EVENT.isTrusted}`,
-      returnValue: `undefined|${EVENT.returnValue}`,
+      returnValue: `boolean|${EVENT.returnValue}`,
       target: `null|${EVENT.target}`,
       type: EVENT.type,
     }),
@@ -146,7 +146,7 @@ const TEST_VALUES = [
             return _context2.stop();
         }
       }
-    }, value, this);
+    }, value);
   }`,
     expectedString: `function|function value() {
     return _regenerator.default.wrap(function value$(_context2) {
@@ -157,7 +157,7 @@ const TEST_VALUES = [
             return _context2.stop();
         }
       }
-    }, value, this);
+    }, value);
   }`,
     key: 'generatorFunction',
     * value() {},
