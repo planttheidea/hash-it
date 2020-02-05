@@ -1,7 +1,21 @@
 // external dependencies
 import fastStringify from 'fast-stringify';
 // constants
-import { CIRCULAR_VALUE, HAS_BUFFER_FROM_SUPPORT, HAS_UINT16ARRAY_SUPPORT, HTML_ELEMENT_REGEXP, ITERABLE_TAGS, OBJECT_CLASS_MAP, OBJECT_CLASS_TYPE_MAP, PRIMITIVE_TAGS, SELF_TAGS, SVG_ELEMENT_REGEXP, TOSTRING_TAGS, TYPEDARRAY_TAGS, UNPARSEABLE_TAGS } from './constants';
+import {
+  CIRCULAR_VALUE,
+  HAS_BUFFER_FROM_SUPPORT,
+  HAS_UINT16ARRAY_SUPPORT,
+  HTML_ELEMENT_REGEXP,
+  ITERABLE_TAGS,
+  OBJECT_CLASS_MAP,
+  OBJECT_CLASS_TYPE_MAP,
+  PRIMITIVE_TAGS,
+  SELF_TAGS,
+  SVG_ELEMENT_REGEXP,
+  TOSTRING_TAGS,
+  TYPEDARRAY_TAGS,
+  UNPARSEABLE_TAGS,
+} from './constants';
 
 const SEPARATOR = '|';
 
@@ -44,9 +58,9 @@ export const getCircularValue = () => CIRCULAR_VALUE;
  */
 export const getIntegerHashValue = (string) => {
   let index = string.length,
-      hashA = 5381,
-      hashB = 52711,
-      charCode;
+    hashA = 5381,
+    hashB = 52711,
+    charCode;
 
   while (index--) {
     charCode = charCodeAt.call(string, index);
@@ -173,17 +187,21 @@ export const getSortedIterablePairs = (iterable) => {
 
   sort(pairs, shouldSortPair);
 
-  const finalPairs = new Array(iterable.size);
+  const length = iterable.size;
+  const lastIndex = length - 1;
+
+  let final = '[';
 
   let pair;
 
-  for (let index = 0; index < iterable.size; index++) {
+  for (let index = 0; index < length; index++) {
     pair = pairs[index];
 
-    finalPairs[index] = isMap ? `[${pair[0]},${pair[1]}]` : pair[0];
+    final += isMap ? '[' + pair[0] + ',' + pair[1] + ']' : pair[0];
+    final += index === lastIndex ? ']' : ',';
   }
 
-  return getFunctionName(iterable.constructor) + '|[' + finalPairs.join(',') + ']';
+  return getFunctionName(iterable.constructor) + SEPARATOR + final;
 };
 
 /**
