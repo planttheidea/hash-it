@@ -10,6 +10,7 @@
   },
   "parser": "babel-eslint",
   "rules": {
+    "indent": 0,
     "object-curly-newline": 0,
     "object-curly-spacing": 0,
     "prefer-template": 0,

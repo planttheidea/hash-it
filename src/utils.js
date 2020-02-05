@@ -425,8 +425,14 @@ export const getNormalizedValue = (value, sortedCache, passedTag) => {
  * @param {WeakSet|Object} sortedCache the cache to use for sorting objects
  * @returns {function(key: string, value: any)} function getting the normalized value
  */
-export const createReplacer = (sortedCache) => (key, value) =>
-  getNormalizedValue(value, sortedCache);
+export const createReplacer = (sortedCache) =>
+  function(key, value) {
+    if (key && this[key] instanceof Date) {
+      return getNormalizedValue(this[key], sortedCache, OBJECT_CLASS_TYPE_MAP.DATE);
+    }
+
+    return getNormalizedValue(value, sortedCache);
+  };
 
 /**
  * @function stringify
