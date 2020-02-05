@@ -1,15 +1,13 @@
 // test
 import test from 'ava';
 import sinon from 'sinon';
-import {
-  ARRAYBUFFER,
-  INTEGER_ARRAY,
-  TEST_VALUES,
-} from 'test/data/values';
-
+import { CIRCULAR_VALUE } from 'src/constants';
 // src
 import * as utils from 'src/utils';
-import {CIRCULAR_VALUE} from 'src/constants';
+import { ARRAYBUFFER, INTEGER_ARRAY, TEST_VALUES } from './data/values';
+
+
+const getPrefixedValue = (prefix, value) => `${prefix}|${value}`;
 
 test('if getFunctionName will return the function when there is a name property', (t) => {
   function foo() {}
@@ -97,7 +95,10 @@ test('if getSortedIterablePairs will return the map pairs', (t) => {
 
   const result = utils.getSortedIterablePairs(iterable);
 
-  t.deepEqual(result, `Map|[[${['foo', 'bar'].join(',')}]]`);
+  t.deepEqual(result, `Map|[[${[
+    getPrefixedValue('string', 'foo'),
+    getPrefixedValue('string', 'bar'),
+  ].join(',')}]]`);
 });
 
 test('if getSortedIterablePairs will return the set pairs', (t) => {
@@ -105,7 +106,7 @@ test('if getSortedIterablePairs will return the set pairs', (t) => {
 
   const result = utils.getSortedIterablePairs(iterable);
 
-  t.deepEqual(result, `Set|[foo]`);
+  t.deepEqual(result, `Set|[${getPrefixedValue('string', 'foo')}]`);
 });
 
 test('if getSortedIterablePairs will return the map pairs sorted by their keystring values', (t) => {
@@ -113,7 +114,13 @@ test('if getSortedIterablePairs will return the map pairs sorted by their keystr
 
   const result = utils.getSortedIterablePairs(iterable);
 
-  t.deepEqual(result, `Map|[[${['bar', 'baz'].join(',')}],[${['foo', 'bar'].join(',')}]]`);
+  t.deepEqual(result, `Map|[[${[
+    getPrefixedValue('string', 'bar'), 
+    getPrefixedValue('string', 'baz'),
+  ].join(',')}],[${[
+    getPrefixedValue('string', 'foo'), 
+    getPrefixedValue('string', 'bar'),
+  ].join(',')}]]`);
 });
 
 test('if getSortedIterablePairs will return the set pairs sorted by their keystring values', (t) => {
@@ -121,16 +128,10 @@ test('if getSortedIterablePairs will return the set pairs sorted by their keystr
 
   const result = utils.getSortedIterablePairs(iterable);
 
-  t.deepEqual(result, `Set|[bar,foo]`);
-});
-
-test('if getPrefixedValue will get the value prefixed with the tag', (t) => {
-  const tag = 'tag';
-  const value = 'value';
-
-  const result = utils.getPrefixedValue(tag, value);
-
-  t.is(result, `${tag}|${value}`);
+  t.deepEqual(result, `Set|[${[
+    getPrefixedValue('string', 'bar'),
+    getPrefixedValue('string', 'foo'),
+  ].join(',')}]`);
 });
 
 test('if getSortedObject will get the object sorted by its keys', (t) => {
@@ -216,7 +217,7 @@ test('if getNormalizedValue will return the value passed if a string', (t) => {
 
   const result = utils.getNormalizedValue(value, sortedCache);
 
-  t.is(result, value);
+  t.is(result, getPrefixedValue('string', value));
 });
 
 test('if getNormalizedValue will return the prefixed value passed if a primitive', (t) => {
@@ -225,7 +226,7 @@ test('if getNormalizedValue will return the prefixed value passed if a primitive
 
   const result = utils.getNormalizedValue(value, sortedCache);
 
-  t.is(result, utils.getPrefixedValue(typeof value, value));
+  t.is(result, getPrefixedValue(typeof value, value));
 });
 
 test('if getNormalizedValue will return the prefixed value passed if null', (t) => {
@@ -234,7 +235,7 @@ test('if getNormalizedValue will return the prefixed value passed if null', (t) 
 
   const result = utils.getNormalizedValue(value, sortedCache);
 
-  t.is(result, utils.getPrefixedValue('null', value));
+  t.is(result, getPrefixedValue('null', value));
 });
 
 test('if getNormalizedValue will return the value passed if considered a "self" object', (t) => {
@@ -280,7 +281,7 @@ test('if getNormalizedValue will return the toString value passed if toString mu
 
   const result = utils.getNormalizedValue(value, sortedCache);
 
-  t.is(result, utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.toString()));
+  t.is(result, getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.toString()));
 });
 
 test('if getNormalizedValue will return the pairs value passed if an iterable', (t) => {
@@ -309,7 +310,7 @@ test('if getNormalizedValue will return the epoch value passed if a date', (t) =
 
   const result = utils.getNormalizedValue(value, sortedCache);
 
-  t.is(result, utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.getTime()));
+  t.is(result, getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.getTime()));
 });
 
 test('if getNormalizedValue will return the stack value passed if an error', (t) => {
@@ -318,7 +319,7 @@ test('if getNormalizedValue will return the stack value passed if an error', (t)
 
   const result = utils.getNormalizedValue(value, sortedCache);
 
-  t.is(result, utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.stack));
+  t.is(result, getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.stack));
 });
 
 test('if getNormalizedValue will return the placeholder value if not enumerable', (t) => {
@@ -327,7 +328,7 @@ test('if getNormalizedValue will return the placeholder value if not enumerable'
 
   const result = utils.getNormalizedValue(value, sortedCache);
 
-  t.is(result, utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), 'NOT_ENUMERABLE'));
+  t.is(result, getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), 'NOT_ENUMERABLE'));
 });
 
 test('if getNormalizedValue will return the HTML tag with attributes if an HTML element', (t) => {
@@ -340,7 +341,7 @@ test('if getNormalizedValue will return the HTML tag with attributes if an HTML 
 
   const result = utils.getNormalizedValue(value, sortedCache);
 
-  t.is(result, utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.outerHTML));
+  t.is(result, getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.outerHTML));
 });
 
 test('if getNormalizedValue will return the joined value if a typed array', (t) => {
@@ -349,7 +350,7 @@ test('if getNormalizedValue will return the joined value if a typed array', (t) 
 
   const result = utils.getNormalizedValue(value, sortedCache);
 
-  t.is(result, utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.join(',')));
+  t.is(result, getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), value.join(',')));
 });
 
 test('if getNormalizedValue will return the stringified buffer value if an array buffer', (t) => {
@@ -360,7 +361,7 @@ test('if getNormalizedValue will return the stringified buffer value if an array
 
   t.is(
     result,
-    utils.getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), utils.getStringifiedArrayBuffer(value))
+    getPrefixedValue(Object.prototype.toString.call(value).slice(8, -1), utils.getStringifiedArrayBuffer(value))
   );
 });
 
@@ -372,7 +373,7 @@ test('if getNormalizedValue will return the stringified buffer value if a datavi
 
   t.is(
     result,
-    utils.getPrefixedValue(
+    getPrefixedValue(
       Object.prototype.toString.call(value).slice(8, -1),
       utils.getStringifiedArrayBuffer(value.buffer)
     )

@@ -9,5 +9,10 @@
     "require": true
   },
   "parser": "babel-eslint",
-  "rules": {}
+  "rules": {
+    "object-curly-newline": 0,
+    "object-curly-spacing": 0,
+    "prefer-template": 0,
+    "rapid7/named-import-newline": 0
+  }
 }

@@ -1,3 +1,5 @@
+/* eslint-disable prefer-rest-params, import/no-commonjs */
+
 const DATE = new Date();
 const DOCUMENT_FRAGMENT = document.createDocumentFragment();
 const ERROR = new Error('boom');
@@ -18,7 +20,7 @@ const TEST_VALUES = [
   {
     comparator: 'deepEqual',
     expectedResult: ['foo', 'bar'],
-    expectedString: '["foo","bar"]',
+    expectedString: '["string|foo","string|bar"]',
     key: 'array',
     value: ['foo', 'bar'],
   },
@@ -27,7 +29,7 @@ const TEST_VALUES = [
     expectedResult: (function() {
       return arguments;
     }('foo', 'bar')),
-    expectedString: '{"0":"foo","1":"bar"}',
+    expectedString: '{"0":"string|foo","1":"string|bar"}',
     key: 'arguments',
     value: (function() {
       return arguments;
@@ -49,8 +51,12 @@ const TEST_VALUES = [
   },
   {
     comparator: 'deepEqual',
-    expectedResult: `DataView|${Buffer.from(new DataView(new ArrayBuffer(2)).buffer).toString('utf8')}`,
-    expectedString: JSON.stringify(`DataView|${Buffer.from(new DataView(new ArrayBuffer(2)).buffer).toString('utf8')}`),
+    expectedResult: `DataView|${Buffer.from(new DataView(new ArrayBuffer(2)).buffer).toString(
+      'utf8'
+    )}`,
+    expectedString: JSON.stringify(
+      `DataView|${Buffer.from(new DataView(new ArrayBuffer(2)).buffer).toString('utf8')}`
+    ),
     key: 'dataView',
     value: new DataView(new ArrayBuffer(2)),
   },
@@ -94,7 +100,7 @@ const TEST_VALUES = [
       isTrusted: `boolean|${EVENT.isTrusted}`,
       returnValue: `boolean|${EVENT.returnValue}`,
       target: `null|${EVENT.target}`,
-      type: EVENT.type,
+      type: 'string|' + EVENT.type,
     }),
     key: 'event',
     value: EVENT,
@@ -213,8 +219,8 @@ const TEST_VALUES = [
   },
   {
     comparator: 'deepEqual',
-    expectedResult: 'Map|[[foo,bar]]',
-    expectedString: JSON.stringify('Map|[[foo,bar]]'),
+    expectedResult: 'Map|[[string|foo,string|bar]]',
+    expectedString: JSON.stringify('Map|[[string|foo,string|bar]]'),
     key: 'map',
     value: new Map().set('foo', 'bar'),
   },
@@ -234,10 +240,10 @@ const TEST_VALUES = [
   },
   {
     comparator: 'deepEqual',
-    expectedResult: {foo: 'bar'},
-    expectedString: '{"foo":"bar"}',
+    expectedResult: { foo: 'bar' },
+    expectedString: '{"foo":"string|bar"}',
     key: 'object',
-    value: {foo: 'bar'},
+    value: { foo: 'bar' },
   },
   {
     comparator: 'is',
@@ -255,15 +261,15 @@ const TEST_VALUES = [
   },
   {
     comparator: 'deepEqual',
-    expectedResult: 'Set|[foo]',
-    expectedString: JSON.stringify('Set|[foo]'),
+    expectedResult: 'Set|[string|foo]',
+    expectedString: JSON.stringify('Set|[string|foo]'),
     key: 'set',
     value: new Set().add('foo'),
   },
   {
     comparator: 'is',
-    expectedResult: 'foo',
-    expectedString: 'foo',
+    expectedResult: 'string|foo',
+    expectedString: 'string|foo',
     key: 'string',
     value: 'foo',
   },

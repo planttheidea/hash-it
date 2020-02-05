@@ -1,22 +1,10 @@
 // external dependencies
 import fastStringify from 'fast-stringify';
-
 // constants
-import {
-  CIRCULAR_VALUE,
-  HAS_BUFFER_FROM_SUPPORT,
-  HAS_UINT16ARRAY_SUPPORT,
-  HTML_ELEMENT_REGEXP,
-  ITERABLE_TAGS,
-  OBJECT_CLASS_MAP,
-  OBJECT_CLASS_TYPE_MAP,
-  PRIMITIVE_TAGS,
-  SELF_TAGS,
-  SVG_ELEMENT_REGEXP,
-  TOSTRING_TAGS,
-  TYPEDARRAY_TAGS,
-  UNPARSEABLE_TAGS,
-} from './constants';
+import { CIRCULAR_VALUE, HAS_BUFFER_FROM_SUPPORT, HAS_UINT16ARRAY_SUPPORT, HTML_ELEMENT_REGEXP, ITERABLE_TAGS, OBJECT_CLASS_MAP, OBJECT_CLASS_TYPE_MAP, PRIMITIVE_TAGS, SELF_TAGS, SVG_ELEMENT_REGEXP, TOSTRING_TAGS, TYPEDARRAY_TAGS, UNPARSEABLE_TAGS } from './constants';
+
+
+const SEPARATOR = '|';
 
 const charCodeAt = String.prototype.charCodeAt;
 const toString = Object.prototype.toString;
@@ -141,18 +129,6 @@ export const shouldSort = (valueA, valueB) => valueA > valueB;
 export const shouldSortPair = (pairA, pairB) => shouldSort(pairA[0], pairB[0]);
 
 /**
- * @function getPrefixedValue
- *
- * @description
- * get the value prefixed by the tag
- *
- * @param {string} tag the object tag
- * @param {any} value the value to stringify
- * @returns {string} the prefixed stringified value
- */
-export const getPrefixedValue = (tag, value) => `${tag}|${value}`;
-
-/**
  * @function sort
  *
  * @description
@@ -208,7 +184,7 @@ export const getSortedIterablePairs = (iterable) => {
     finalPairs[index] = isMap ? `[${pair[0]},${pair[1]}]` : pair[0];
   }
 
-  return getPrefixedValue(getFunctionName(iterable.constructor), `[${finalPairs.join(',')}]`);
+  return getFunctionName(iterable.constructor) + '|[' + finalPairs.join(',') + ']';
 };
 
 /**
@@ -344,16 +320,12 @@ export const getNormalizedValue = (value, sortedCache, passedTag) => {
   if (passedTag === void 0) {
     const type = typeof value;
 
-    if (type === 'string') {
-      return value;
-    }
-
-    if (PRIMITIVE_TAGS[type]) {
-      return getPrefixedValue(type, value);
+    if (type === 'string' || PRIMITIVE_TAGS[type]) {
+      return type + SEPARATOR + value;
     }
 
     if (value === null) {
-      return getPrefixedValue('null', value);
+      return 'null' + SEPARATOR + value;
     }
   }
 
@@ -374,7 +346,7 @@ export const getNormalizedValue = (value, sortedCache, passedTag) => {
   }
 
   if (TOSTRING_TAGS[tag]) {
-    return getPrefixedValue(OBJECT_CLASS_MAP[tag], value.toString());
+    return OBJECT_CLASS_MAP[tag] + SEPARATOR + value.toString();
   }
 
   if (ITERABLE_TAGS[tag]) {
@@ -388,11 +360,11 @@ export const getNormalizedValue = (value, sortedCache, passedTag) => {
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.DATE) {
-    return getPrefixedValue(OBJECT_CLASS_MAP[tag], value.getTime());
+    return OBJECT_CLASS_MAP[tag] + SEPARATOR + value.getTime();
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.ERROR) {
-    return getPrefixedValue(OBJECT_CLASS_MAP[tag], value.stack);
+    return OBJECT_CLASS_MAP[tag] + SEPARATOR + value.stack;
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.EVENT) {
@@ -400,27 +372,27 @@ export const getNormalizedValue = (value, sortedCache, passedTag) => {
   }
 
   if (UNPARSEABLE_TAGS[tag]) {
-    return getPrefixedValue(OBJECT_CLASS_MAP[tag], 'NOT_ENUMERABLE');
+    return OBJECT_CLASS_MAP[tag] + SEPARATOR + 'NOT_ENUMERABLE';
   }
 
   if (HTML_ELEMENT_REGEXP.test(tag) || SVG_ELEMENT_REGEXP.test(tag)) {
-    return getPrefixedValue(tag.slice(8, -1), value.outerHTML);
+    return tag.slice(8, -1) + SEPARATOR + value.outerHTML;
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.DOCUMENTFRAGMENT) {
-    return getPrefixedValue(OBJECT_CLASS_MAP[tag], getStringifiedDocumentFragment(value));
+    return OBJECT_CLASS_MAP[tag] + SEPARATOR + getStringifiedDocumentFragment(value);
   }
 
   if (TYPEDARRAY_TAGS[tag]) {
-    return getPrefixedValue(OBJECT_CLASS_MAP[tag], value.join(','));
+    return OBJECT_CLASS_MAP[tag] + SEPARATOR + value.join(',');
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.ARRAYBUFFER) {
-    return getPrefixedValue(OBJECT_CLASS_MAP[tag], getStringifiedArrayBuffer(value));
+    return OBJECT_CLASS_MAP[tag] + SEPARATOR + getStringifiedArrayBuffer(value);
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.DATAVIEW) {
-    return getPrefixedValue(OBJECT_CLASS_MAP[tag], getStringifiedArrayBuffer(value.buffer));
+    return OBJECT_CLASS_MAP[tag] + SEPARATOR + getStringifiedArrayBuffer(value.buffer);
   }
 
   return value;
