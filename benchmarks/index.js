@@ -1,13 +1,31 @@
+/* eslint-disable no-console, import/no-commonjs */
+
 'use strict';
 
-/* eslint no-console: 0 */
 const fs = require('fs');
-const {repeats, test} = require('./test');
+const { repeats, test } = require('./test');
 
-const {hashBoolean, hashInfinity, hashNaN, hashNull, hashNumber, hashString, hashUndefined} = require('./primitive');
-const {hashArray, hashCircularObject, hashFunction, hashMap, hashObject, hashRegExp, hashSet} = require('./complex');
+const {
+  hashBoolean,
+  hashInfinity,
+  hashNaN,
+  hashNull,
+  hashNumber,
+  hashString,
+  hashUndefined,
+} = require('./primitive');
+const {
+  hashArray,
+  hashCircularObject,
+  hashFunction,
+  hashMap,
+  hashObject,
+  hashRegExp,
+  hashSet,
+} = require('./complex');
 
-const header = () => `Benchmark cycles: ${repeats.map((cycles) => cycles.toLocaleString()).join(' ')}`;
+const header = () =>
+  `Benchmark cycles: ${repeats.map((cycles) => cycles.toLocaleString()).join(' ')}`;
 
 let results = [];
 
@@ -40,6 +58,7 @@ logAndSave(test('RegExp', hashRegExp));
 
 console.log('');
 console.log('Nested value objects:');
+console.log('');
 
 // complex tests
 logAndSave(test('Array', hashArray));

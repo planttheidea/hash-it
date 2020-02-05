@@ -1,7 +1,7 @@
 import React from 'react';
-import {render} from 'react-dom';
-
+import { render } from 'react-dom';
 import hash from '../src';
+
 
 document.body.style.backgroundColor = '#1d1d1d';
 document.body.style.color = '#d5d5d5';

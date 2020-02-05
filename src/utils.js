@@ -3,7 +3,6 @@ import fastStringify from 'fast-stringify';
 // constants
 import { CIRCULAR_VALUE, HAS_BUFFER_FROM_SUPPORT, HAS_UINT16ARRAY_SUPPORT, HTML_ELEMENT_REGEXP, ITERABLE_TAGS, OBJECT_CLASS_MAP, OBJECT_CLASS_TYPE_MAP, PRIMITIVE_TAGS, SELF_TAGS, SVG_ELEMENT_REGEXP, TOSTRING_TAGS, TYPEDARRAY_TAGS, UNPARSEABLE_TAGS } from './constants';
 
-
 const SEPARATOR = '|';
 
 const charCodeAt = String.prototype.charCodeAt;
@@ -220,7 +219,8 @@ export const getSortedObject = (object) => {
  * @param {ArrayBuffer} buffer the array buffer to convert
  * @returns {string} the stringified buffer
  */
-export const getStringifiedArrayBufferFallback = (buffer) => String.fromCharCode.apply(null, new Uint16Array(buffer));
+export const getStringifiedArrayBufferFallback = (buffer) =>
+  String.fromCharCode.apply(null, new Uint16Array(buffer));
 
 /**
  * @function getStringifiedArrayBufferModern
@@ -407,7 +407,8 @@ export const getNormalizedValue = (value, sortedCache, passedTag) => {
  * @param {WeakSet|Object} sortedCache the cache to use for sorting objects
  * @returns {function(key: string, value: any)} function getting the normalized value
  */
-export const createReplacer = (sortedCache) => (key, value) => getNormalizedValue(value, sortedCache);
+export const createReplacer = (sortedCache) => (key, value) =>
+  getNormalizedValue(value, sortedCache);
 
 /**
  * @function stringify
