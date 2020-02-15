@@ -1,5 +1,4 @@
 // external dependencies
-import fastStringify from 'fast-stringify';
 // constants
 import {
   CIRCULAR_VALUE,
@@ -34,16 +33,6 @@ const keys = Object.keys;
  */
 export const getFunctionName = (fn) =>
   fn.name || (fn.toString().match(/^\s*function\s*([^\(]*)/i) || [])[1] || 'anonymous';
-
-/**
- * @function getCircularValue
- *
- * @description
- * get the value used when circular references are found
- *
- * @returns {string} the value for stringification
- */
-export const getCircularValue = () => CIRCULAR_VALUE;
 
 /**
  * @function getIntegerHashValue
@@ -425,14 +414,44 @@ export const getNormalizedValue = (value, sortedCache, passedTag) => {
  * @param {WeakSet|Object} sortedCache the cache to use for sorting objects
  * @returns {function(key: string, value: any)} function getting the normalized value
  */
-export const createReplacer = (sortedCache) =>
-  function(key, value) {
+export const createReplacer = (sortedCache) => {
+  const cache = [];
+  const keys = [];
+
+  return function(key, value) {
+    if (typeof value === 'object') {
+      if (cache.length) {
+        const thisCutoff = cache.indexOf(this) + 1;
+
+        if (thisCutoff === 0) {
+          cache.push(this);
+        } else {
+          cache.splice(thisCutoff);
+          keys.splice(thisCutoff);
+        }
+
+        keys.push(key);
+
+        const valueCutoff = cache.indexOf(value) + 1;
+
+        if (valueCutoff !== 0) {
+          const ref = keys.slice(0, valueCutoff).join('.') || '.';
+
+          return `[~${ref}]`;
+        }
+      } else {
+        cache[0] = value;
+        keys[0] = key;
+      }
+    }
+
     if (key && this[key] instanceof Date) {
       return getNormalizedValue(this[key], sortedCache, OBJECT_CLASS_TYPE_MAP.DATE);
     }
 
     return getNormalizedValue(value, sortedCache);
   };
+};
 
 /**
  * @function stringify
@@ -452,5 +471,5 @@ export function stringify(value) {
 
   return tag === OBJECT_CLASS_TYPE_MAP.DATE || tag === OBJECT_CLASS_TYPE_MAP.REGEXP
     ? getNormalizedValue(value, void 0, tag)
-    : fastStringify(value, createReplacer([]), null, getCircularValue);
+    : JSON.stringify(value, createReplacer([]));
 }

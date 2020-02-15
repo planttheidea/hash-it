@@ -28,16 +28,6 @@ test('if getFunctionName will return the default name when there is no name prop
   t.is(utils.getFunctionName(() => {}), 'anonymous');
 });
 
-test('if getCircularValue returns the stringified refCount', (t) => {
-  const key = 'key';
-  const value = 'value';
-  const refCount = 123;
-
-  const result = utils.getCircularValue(key, value, refCount);
-
-  t.is(result, CIRCULAR_VALUE);
-});
-
 test('if getIntegerHashValue returns correct value', (t) => {
   const string = 'foo';
 
@@ -404,8 +394,10 @@ test('if getNormalizedValue will return the value itself if not matching', (t) =
 test('if createReplacer provides correct values for different object types', (t) => {
   const sortedCache = [];
 
+  const replacer = utils.createReplacer(sortedCache).bind(TEST_VALUES);
+
   TEST_VALUES.forEach(({comparator, expectedResult, key, value}) => {
-    t[comparator](utils.createReplacer(sortedCache)(key, value), expectedResult, key);
+    t[comparator](replacer(key, value), expectedResult, key);
   });
 });
 
