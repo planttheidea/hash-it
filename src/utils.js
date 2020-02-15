@@ -30,8 +30,9 @@ const keys = Object.keys;
  * @param {function} fn the function to test
  * @returns {string} the function name
  */
-export const getFunctionName = (fn) =>
-  fn.name || (fn.toString().match(/^\s*function\s*([^\(]*)/i) || [])[1] || 'anonymous';
+export function getFunctionName(fn) {
+  return fn.name || (fn.toString().match(/^\s*function\s*([^\(]*)/i) || [])[1] || 'anonymous';
+}
 
 /**
  * @function getIntegerHashValue
@@ -44,7 +45,7 @@ export const getFunctionName = (fn) =>
  * @param {string} string the string to get the hash value for
  * @returns {number} the hash value
  */
-export const getIntegerHashValue = (string) => {
+export function getIntegerHashValue(string) {
   let index = string.length,
     hashA = 5381,
     hashB = 52711,
@@ -58,7 +59,7 @@ export const getIntegerHashValue = (string) => {
   }
 
   return (hashA >>> 0) * 4096 + (hashB >>> 0);
-};
+}
 
 /**
  * @function getSortedEvent
@@ -79,31 +80,21 @@ export const getIntegerHashValue = (string) => {
  * @param {string} type the name of the event
  * @returns {Object} the event object with all properties sorted
  */
-export const getSortedEvent = ({
-  bubbles,
-  cancelBubble,
-  cancelable,
-  composed,
-  currentTarget,
-  defaultPrevented,
-  eventPhase,
-  isTrusted,
-  returnValue,
-  target,
-  type,
-}) => ({
-  bubbles,
-  cancelBubble,
-  cancelable,
-  composed,
-  currentTarget,
-  defaultPrevented,
-  eventPhase,
-  isTrusted,
-  returnValue,
-  target,
-  type,
-});
+export function getSortedEvent(event) {
+  return {
+    bubbles: event.bubbles,
+    cancelBubble: event.cancelBubble,
+    cancelable: event.cancelable,
+    composed: event.composed,
+    currentTarget: event.currentTarget,
+    defaultPrevented: event.defaultPrevented,
+    eventPhase: event.eventPhase,
+    isTrusted: event.isTrusted,
+    returnValue: event.returnValue,
+    target: event.target,
+    type: event.type,
+  };
+}
 
 /**
  * @function shouldSort
@@ -115,7 +106,9 @@ export const getSortedEvent = ({
  * @param {string} valueB the second value to compare
  * @returns {boolean} should the value be sorted
  */
-export const shouldSort = (valueA, valueB) => valueA > valueB;
+export function shouldSort(valueA, valueB) {
+  return valueA > valueB;
+}
 
 /**
  * @function shouldSortPair
@@ -127,7 +120,9 @@ export const shouldSort = (valueA, valueB) => valueA > valueB;
  * @param {Object} pairB the second pair to compare
  * @returns {boolean} should the value be sorted
  */
-export const shouldSortPair = (pairA, pairB) => shouldSort(pairA[0], pairB[0]);
+export function shouldSortPair(pairA, pairB) {
+  return shouldSort(pairA[0], pairB[0]);
+}
 
 /**
  * @function sort
@@ -139,7 +134,7 @@ export const shouldSortPair = (pairA, pairB) => shouldSort(pairA[0], pairB[0]);
  * @param {function} fn the sorting function
  * @returns {Array<any>} the sorted array
  */
-export const sort = (array, fn) => {
+export function sort(array, fn) {
   let subIndex, value;
 
   for (let index = 0; index < array.length; index++) {
@@ -153,7 +148,7 @@ export const sort = (array, fn) => {
   }
 
   return array;
-};
+}
 
 /**
  * @function getIterablePairs
@@ -164,18 +159,21 @@ export const sort = (array, fn) => {
  * @param {Map|Set} iterable the iterable to get the pairs for
  * @returns {Array<{key: string, value: any}>} the pairs
  */
-export const getSortedIterablePairs = (iterable, cache, keys) => {
+export function getSortedIterablePairs(iterable, cache, keys) {
   const isMap = typeof iterable.get === 'function';
   const pairs = [];
 
-  iterable.forEach((value, key) => {
-    // eslint-disable-next-line no-use-before-define
-    pairs.push(
-      isMap
-        ? [stringify(key, cache, keys), stringify(value, cache, keys)]
-        : [stringify(value, cache, keys)]
-    );
-  });
+  if (isMap) {
+    iterable.forEach((value, key) => {
+      // eslint-disable-next-line no-use-before-define
+      pairs.push([stringify(key, cache, keys), stringify(value, cache, keys)]);
+    });
+  } else {
+    iterable.forEach((value) => {
+      // eslint-disable-next-line no-use-before-define
+      pairs.push([stringify(value, cache, keys)]);
+    });
+  }
 
   sort(pairs, shouldSortPair);
 
@@ -194,7 +192,7 @@ export const getSortedIterablePairs = (iterable, cache, keys) => {
   }
 
   return getFunctionName(iterable.constructor) + SEPARATOR + final;
-};
+}
 
 /**
  * @function getSortedObject
@@ -205,7 +203,7 @@ export const getSortedIterablePairs = (iterable, cache, keys) => {
  * @param {Object} object the object to sort
  * @returns {Object} the sorted object
  */
-export const getSortedObject = (object) => {
+export function getSortedObject(object) {
   const objectKeys = sort(keys(object), shouldSort);
   const newObject = {};
 
@@ -218,7 +216,7 @@ export const getSortedObject = (object) => {
   }
 
   return newObject;
-};
+}
 
 /**
  * @function getStringifiedArrayBufferFallback
@@ -229,8 +227,9 @@ export const getSortedObject = (object) => {
  * @param {ArrayBuffer} buffer the array buffer to convert
  * @returns {string} the stringified buffer
  */
-export const getStringifiedArrayBufferFallback = (buffer) =>
-  String.fromCharCode.apply(null, new Uint16Array(buffer));
+export function getStringifiedArrayBufferFallback(buffer) {
+  return String.fromCharCode.apply(null, new Uint16Array(buffer));
+}
 
 /**
  * @function getStringifiedArrayBufferModern
@@ -241,7 +240,9 @@ export const getStringifiedArrayBufferFallback = (buffer) =>
  * @param {ArrayBuffer} buffer the array buffer to convert
  * @returns {string} the stringified buffer
  */
-export const getStringifiedArrayBufferModern = (buffer) => Buffer.from(buffer).toString('utf8');
+export function getStringifiedArrayBufferModern(buffer) {
+  return Buffer.from(buffer).toString('utf8');
+}
 
 /**
  * @function getStringifiedArrayBufferNoSupport
@@ -251,7 +252,9 @@ export const getStringifiedArrayBufferModern = (buffer) => Buffer.from(buffer).t
  *
  * @returns {string} the placeholder
  */
-export const getStringifiedArrayBufferNoSupport = () => '';
+export function getStringifiedArrayBufferNoSupport() {
+  return '';
+}
 
 /**
  * @function getStringifiedArrayBuffer
@@ -283,7 +286,7 @@ export const getStringifiedArrayBuffer = (() => {
  * @param {DocumentFragment} fragment the fragment to stringify
  * @returns {string} the stringified fragment
  */
-export const getStringifiedDocumentFragment = (fragment) => {
+export function getStringifiedDocumentFragment(fragment) {
   const children = fragment.children;
 
   let innerHTML = '';
@@ -293,7 +296,7 @@ export const getStringifiedDocumentFragment = (fragment) => {
   }
 
   return innerHTML;
-};
+}
 
 /**
  * @function indexOf
@@ -305,7 +308,7 @@ export const getStringifiedDocumentFragment = (fragment) => {
  * @param {any} value the value to match
  * @returns {number} the index of the value in array
  */
-export const indexOf = (array, value) => {
+export function indexOf(array, value) {
   for (let index = 0; index < array.length; index++) {
     if (array[index] === value) {
       return index;
@@ -313,7 +316,7 @@ export const indexOf = (array, value) => {
   }
 
   return -1;
-};
+}
 
 /**
  * @function getNormalizedValue
@@ -326,7 +329,7 @@ export const indexOf = (array, value) => {
  * @param {string} [passedTag] the previously-calculated tag
  * @returns {any} the normalized value
  */
-export const getNormalizedValue = (value, cache, keys, passedTag) => {
+export function getNormalizedValue(value, cache, keys, passedTag) {
   if (passedTag === void 0) {
     const type = typeof value;
 
@@ -394,7 +397,7 @@ export const getNormalizedValue = (value, cache, keys, passedTag) => {
   }
 
   return value;
-};
+}
 
 /**
  * @function replacer
@@ -405,8 +408,8 @@ export const getNormalizedValue = (value, cache, keys, passedTag) => {
  * @param {WeakSet|Object} sortedCache the cache to use for sorting objects
  * @returns {function(key: string, value: any)} function getting the normalized value
  */
-export const createReplacer = (cache = [], keys = []) =>
-  function(key, value) {
+export function createReplacer(cache = [], keys = []) {
+  return function(key, value) {
     if (typeof value === 'object') {
       if (cache.length) {
         const thisCutoff = cache.indexOf(this) + 1;
@@ -441,6 +444,7 @@ export const createReplacer = (cache = [], keys = []) =>
 
     return getNormalizedValue(value, cache, keys);
   };
+}
 
 /**
  * @function stringify
