@@ -177,7 +177,7 @@ export function getSortedIterablePairs(iterable, cache, keys) {
 
   sort(pairs, shouldSortPair);
 
-  const length = iterable.size;
+  const { length } = pairs;
   const lastIndex = length - 1;
 
   let final = '[';
@@ -299,23 +299,24 @@ export function getStringifiedDocumentFragment(fragment) {
 }
 
 /**
- * @function indexOf
+ * @function getCutoffIndex
  *
  * @description
- * get the index of the value in the array (faster than native indexOf)
+ * get the index after that of the value match in the array (faster than
+ * native indexOf) to determine the cutoff index for the `splice()` call.
  *
  * @param {Array<any>} array the array to get the index of the value at
  * @param {any} value the value to match
- * @returns {number} the index of the value in array
+ * @returns {number} the index after the value match in the array
  */
-export function indexOf(array, value) {
+export function getCutoffIndex(array, value) {
   for (let index = 0; index < array.length; index++) {
     if (array[index] === value) {
-      return index;
+      return index + 1;
     }
   }
 
-  return -1;
+  return 0;
 }
 
 /**
@@ -412,7 +413,7 @@ export function createReplacer(cache = [], keys = []) {
   return function(key, value) {
     if (typeof value === 'object') {
       if (cache.length) {
-        const thisCutoff = cache.indexOf(this) + 1;
+        const thisCutoff = getCutoffIndex(cache, this);
 
         if (thisCutoff === 0) {
           cache.push(this);
@@ -423,7 +424,7 @@ export function createReplacer(cache = [], keys = []) {
 
         keys.push(key);
 
-        const valueCutoff = cache.indexOf(value) + 1;
+        const valueCutoff = getCutoffIndex(cache, value);
 
         if (valueCutoff !== 0) {
           const ref = keys.slice(0, valueCutoff).join('.') || '.';

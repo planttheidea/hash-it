@@ -187,22 +187,26 @@ test('if getStringifiedArrayBufferNoSupport will return an empty string', (t) =>
   t.is(result, '');
 });
 
-test('if indexOf will return the index of the matching value in the array', (t) => {
+test('if getCutoffIndex will return the index after the matching value in the array', (t) => {
   const array = [1, 2, 3, 4, 5, 6, 7, 8];
   const value = 4;
+  const indexOfValue = array.indexOf(value);
 
-  const result = utils.indexOf(array, value);
+  const result = utils.getCutoffIndex(array, value);
 
-  t.is(result, 3);
+  t.not(indexOfValue, -1);
+  t.is(result, indexOfValue + 1);
 });
 
-test('if indexOf will return -1 if the value does not exist in the array', (t) => {
+test('if getCutoffIndex will return 0 if the value does not exist in the array', (t) => {
   const array = [1, 2, 3, 4, 5, 6, 7, 8];
   const value = 40;
+  const indexOfValue = array.indexOf(value);
 
-  const result = utils.indexOf(array, value);
+  const result = utils.getCutoffIndex(array, value);
 
-  t.is(result, -1);
+  t.is(indexOfValue, -1);
+  t.is(result, indexOfValue + 1);
 });
 
 test('if getNormalizedValue will return the value passed if a string', (t) => {
