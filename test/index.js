@@ -1,13 +1,10 @@
 // test
 import test from 'ava';
-import sinon from 'sinon';
-import uuid from 'uuid/v4';
-
-// test data
-import WORDS from 'test/data/words.json';
-
 //src
 import hash from 'src/index';
+// test data
+import WORDS from 'test/data/words.json';
+import uuid from 'uuid/v4';
 
 const CONSISTENCY_ITERATIONS = 10000;
 
@@ -18,141 +15,141 @@ const TEST_VALUES = [
     key: 'arguments',
     value: (function() {
       return arguments;
-    }('foo', 'bar'))
+    })('foo', 'bar'),
   },
   {
     key: 'array',
-    value: ['foo', 'bar']
+    value: ['foo', 'bar'],
   },
   {
     key: 'arrayBuffer',
-    value: new Uint16Array(INTEGER_ARRAY).buffer
+    value: new Uint16Array(INTEGER_ARRAY).buffer,
   },
   {
     key: 'boolean',
-    value: true
+    value: true,
   },
   {
     key: 'dataView',
-    value: new DataView(new ArrayBuffer(2))
+    value: new DataView(new ArrayBuffer(2)),
   },
   {
     key: 'date',
-    value: DATE
+    value: DATE,
   },
   {
     key: 'error',
-    value: new Error('test')
+    value: new Error('test'),
   },
   {
     key: 'float32Array',
-    value: new Float32Array(INTEGER_ARRAY)
+    value: new Float32Array(INTEGER_ARRAY),
   },
   {
     key: 'float64Array',
-    value: new Float64Array(INTEGER_ARRAY)
+    value: new Float64Array(INTEGER_ARRAY),
   },
   {
     key: 'function',
-    value() {}
+    value() {},
   },
   {
     key: 'generator',
-    * value() {}
+    *value() {},
   },
   {
     key: 'int8Array',
-    value: new Int8Array(INTEGER_ARRAY)
+    value: new Int8Array(INTEGER_ARRAY),
   },
   {
     key: 'int16Array',
-    value: new Int16Array(INTEGER_ARRAY)
+    value: new Int16Array(INTEGER_ARRAY),
   },
   {
     key: 'int32Array',
-    value: new Int32Array(INTEGER_ARRAY)
+    value: new Int32Array(INTEGER_ARRAY),
   },
   {
     key: 'map',
-    value: new Map().set('foo', 'bar')
+    value: new Map().set('foo', 'bar'),
   },
   {
     key: 'null',
-    value: null
+    value: null,
   },
   {
     key: 'number',
-    value: 12
+    value: 12,
   },
   {
     key: 'object',
-    value: {foo: 'bar'}
+    value: { foo: 'bar' },
   },
   {
     key: 'promise',
-    value: Promise.resolve(1)
+    value: Promise.resolve(1),
   },
   {
     key: 'regexp',
-    value: /foo/
+    value: /foo/,
   },
   {
     key: 'set',
-    value: new Set().add('foo')
+    value: new Set().add('foo'),
   },
   {
     key: 'string',
-    value: 'foo'
+    value: 'foo',
   },
   {
     key: 'symbol',
-    value: Symbol('foo')
+    value: Symbol('foo'),
   },
   {
     key: 'uint8Array',
-    value: new Uint8Array(INTEGER_ARRAY)
+    value: new Uint8Array(INTEGER_ARRAY),
   },
   {
     key: 'uint8ClampedArray',
-    value: new Uint8ClampedArray(INTEGER_ARRAY)
+    value: new Uint8ClampedArray(INTEGER_ARRAY),
   },
   {
     key: 'uint16Array',
-    value: new Uint16Array(INTEGER_ARRAY)
+    value: new Uint16Array(INTEGER_ARRAY),
   },
   {
     key: 'uint32Array',
-    value: new Uint32Array(INTEGER_ARRAY)
+    value: new Uint32Array(INTEGER_ARRAY),
   },
   {
     key: 'undefined',
-    value: undefined
+    value: undefined,
   },
   {
     key: 'weakMap',
-    value: new WeakMap().set({}, 'foo')
+    value: new WeakMap().set({}, 'foo'),
   },
   {
     key: 'weakSet',
-    value: new WeakSet().add({})
-  }
+    value: new WeakSet().add({}),
+  },
 ];
 
 test('if hashed values are non-zero', (t) => {
-  TEST_VALUES.forEach(({value}) => {
+  TEST_VALUES.forEach(({ value }) => {
     t.not(hash(value), 0);
   });
 });
 
 let hashMap = {};
 
-TEST_VALUES.forEach(({key, value}) => {
+TEST_VALUES.forEach(({ key, value }) => {
   hashMap[key] = hash(value);
 });
 
 test('if hash is unique', (t) => {
-  TEST_VALUES.forEach(({value}, index) => {
-    TEST_VALUES.forEach(({value: otherValue}, otherIndex) => {
+  TEST_VALUES.forEach(({ value }, index) => {
+    TEST_VALUES.forEach(({ value: otherValue }, otherIndex) => {
       if (index !== otherIndex) {
         t.not(value, otherValue);
       }
@@ -164,7 +161,7 @@ test('if hash is consistent', (t) => {
   let index = -1;
 
   while (++index < CONSISTENCY_ITERATIONS) {
-    TEST_VALUES.forEach(({key, value}) => {
+    TEST_VALUES.forEach(({ key, value }) => {
       t.is(hash(value), hashMap[key]);
     });
   }
@@ -177,8 +174,8 @@ test(`if hash has no collisions with ${COLLISION_TEST_SIZE.toLocaleString()} int
   const collision = {};
 
   let count = 0,
-      index = size,
-      result;
+    index = size,
+    result;
 
   while (index--) {
     result = hash(index);
@@ -198,8 +195,8 @@ test(`if hash has no collisions with ${COLLISION_TEST_SIZE.toLocaleString()} str
   const collision = {};
 
   let count = 0,
-      index = size,
-      result;
+    index = size,
+    result;
 
   while (index--) {
     result = hash(WORDS[index]);
@@ -219,8 +216,8 @@ test(`if hash has no collisions with ${COLLISION_TEST_SIZE.toLocaleString()} ran
   const collision = {};
 
   let count = 0,
-      index = size,
-      result;
+    index = size,
+    result;
 
   while (index--) {
     result = hash(uuid());
@@ -248,13 +245,13 @@ test('if is creates a method to check equality', (t) => {
 
 test('if is.all checks all objects for value equality based on hash across all objects', (t) => {
   const equalTest1 = {
-    foo: 'bar'
+    foo: 'bar',
   };
-  const equalTest2 = {...equalTest1};
-  const equalTest3 = {...equalTest2};
+  const equalTest2 = { ...equalTest1 };
+  const equalTest3 = { ...equalTest2 };
 
   const equalTest4 = {
-    foo: 'baz'
+    foo: 'baz',
   };
 
   t.not(equalTest1, equalTest2);
@@ -274,13 +271,13 @@ test('if is.all checks all objects for value equality based on hash across all o
 
 test('if is.any checks any objects for value equality against the first based on hash across all objects', (t) => {
   const equalTest1 = {
-    foo: 'bar'
+    foo: 'bar',
   };
-  const equalTest2 = {...equalTest1};
-  const equalTest3 = {...equalTest2};
+  const equalTest2 = { ...equalTest1 };
+  const equalTest3 = { ...equalTest2 };
 
   const equalTest4 = {
-    foo: 'baz'
+    foo: 'baz',
   };
 
   t.not(equalTest1, equalTest2);
@@ -308,4 +305,36 @@ test('if is.not creates a method to check non-equality', (t) => {
 
   t.false(isNotNull(null));
   t.true(isNotNull(void 0));
+});
+
+test('if simple string faking will produce false positives', (t) => {
+  t.false(hash.is(42, 'number|42'));
+  t.false(hash.is(null, 'null|null'));
+});
+
+test('if dates are handled correctly regardless of nesting', (t) => {
+  t.true(hash.is(new Date(1970, 0, 1), new Date(1970, 0, 1)));
+  t.false(hash.is(new Date(1970, 0, 1), 'Date|0'));
+  t.false(hash.is(new Date(1970, 0, 1), '1970-01-01T00:00:00.000Z'));
+
+  t.true(hash.is({ date: new Date(1970, 0, 1) }, { date: new Date(1970, 0, 1) }));
+  t.false(hash.is({ date: new Date(1970, 0, 1) }, { date: '1970-01-01T00:00:00.000Z' }));
+});
+
+test('if recursive values are seen differently', (t) => {
+  const obj = {};
+
+  obj.self = obj;
+
+  t.true(hash.is(obj, obj));
+  t.false(hash.is(obj, { self: '~' }));
+
+  const arr1 = [obj, obj, obj];
+  const arr2 = [obj, obj];
+
+  arr2.push(arr2);
+
+  t.true(hash.is(arr1, [obj, obj, obj]));
+  t.false(hash.is(arr1, '[{"self":"~"},"~","~"]'));
+  t.false(hash.is(arr1, arr2));
 });
