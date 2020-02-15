@@ -1,7 +1,6 @@
 // external dependencies
 // constants
 import {
-  CIRCULAR_VALUE,
   HAS_BUFFER_FROM_SUPPORT,
   HAS_UINT16ARRAY_SUPPORT,
   HTML_ELEMENT_REGEXP,
@@ -165,13 +164,17 @@ export const sort = (array, fn) => {
  * @param {Map|Set} iterable the iterable to get the pairs for
  * @returns {Array<{key: string, value: any}>} the pairs
  */
-export const getSortedIterablePairs = (iterable) => {
+export const getSortedIterablePairs = (iterable, cache, keys) => {
   const isMap = typeof iterable.get === 'function';
   const pairs = [];
 
   iterable.forEach((value, key) => {
     // eslint-disable-next-line no-use-before-define
-    pairs.push(isMap ? [stringify(key), stringify(value)] : [stringify(value)]);
+    pairs.push(
+      isMap
+        ? [stringify(key, cache, keys), stringify(value, cache, keys)]
+        : [stringify(value, cache, keys)]
+    );
   });
 
   sort(pairs, shouldSortPair);
@@ -323,7 +326,7 @@ export const indexOf = (array, value) => {
  * @param {string} [passedTag] the previously-calculated tag
  * @returns {any} the normalized value
  */
-export const getNormalizedValue = (value, sortedCache, passedTag) => {
+export const getNormalizedValue = (value, cache, keys, passedTag) => {
   if (passedTag === void 0) {
     const type = typeof value;
 
@@ -343,13 +346,7 @@ export const getNormalizedValue = (value, sortedCache, passedTag) => {
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.OBJECT) {
-    if (~indexOf(sortedCache, value)) {
-      return CIRCULAR_VALUE;
-    }
-
-    sortedCache.push(value);
-
-    return getSortedObject(value, sortedCache);
+    return getSortedObject(value);
   }
 
   if (TOSTRING_TAGS[tag]) {
@@ -357,13 +354,7 @@ export const getNormalizedValue = (value, sortedCache, passedTag) => {
   }
 
   if (ITERABLE_TAGS[tag]) {
-    if (~indexOf(sortedCache, value)) {
-      return CIRCULAR_VALUE;
-    }
-
-    sortedCache.push(value);
-
-    return getSortedIterablePairs(value);
+    return getSortedIterablePairs(value, cache, keys);
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.DATE) {
@@ -414,11 +405,8 @@ export const getNormalizedValue = (value, sortedCache, passedTag) => {
  * @param {WeakSet|Object} sortedCache the cache to use for sorting objects
  * @returns {function(key: string, value: any)} function getting the normalized value
  */
-export const createReplacer = (sortedCache) => {
-  const cache = [];
-  const keys = [];
-
-  return function(key, value) {
+export const createReplacer = (cache = [], keys = []) =>
+  function(key, value) {
     if (typeof value === 'object') {
       if (cache.length) {
         const thisCutoff = cache.indexOf(this) + 1;
@@ -439,6 +427,8 @@ export const createReplacer = (sortedCache) => {
 
           return `[~${ref}]`;
         }
+
+        cache.push(value);
       } else {
         cache[0] = value;
         keys[0] = key;
@@ -446,12 +436,11 @@ export const createReplacer = (sortedCache) => {
     }
 
     if (key && this[key] instanceof Date) {
-      return getNormalizedValue(this[key], sortedCache, OBJECT_CLASS_TYPE_MAP.DATE);
+      return getNormalizedValue(this[key], cache, keys, OBJECT_CLASS_TYPE_MAP.DATE, cache, keys);
     }
 
-    return getNormalizedValue(value, sortedCache);
+    return getNormalizedValue(value, cache, keys);
   };
-};
 
 /**
  * @function stringify
@@ -462,14 +451,16 @@ export const createReplacer = (sortedCache) => {
  * @param {any} value the value to stringify
  * @returns {string} the stringified value
  */
-export function stringify(value) {
+export function stringify(value, cache, keys) {
   if (!value || typeof value !== 'object') {
-    return getNormalizedValue(value);
+    return getNormalizedValue(value, cache, keys);
   }
 
   const tag = toString.call(value);
 
-  return tag === OBJECT_CLASS_TYPE_MAP.DATE || tag === OBJECT_CLASS_TYPE_MAP.REGEXP
-    ? getNormalizedValue(value, void 0, tag)
-    : JSON.stringify(value, createReplacer([]));
+  if (tag === OBJECT_CLASS_TYPE_MAP.DATE || tag === OBJECT_CLASS_TYPE_MAP.REGEXP) {
+    return getNormalizedValue(value, cache, keys, tag);
+  }
+
+  return JSON.stringify(value, createReplacer(cache, keys));
 }
