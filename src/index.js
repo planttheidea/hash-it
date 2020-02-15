@@ -1,11 +1,7 @@
 // external dependencies
-import {curry} from 'curriable';
-
+import { curry } from 'curriable';
 // utils
-import {
-  getIntegerHashValue,
-  stringify,
-} from './utils';
+import { getIntegerHashValue, stringify } from './utils';
 
 /**
  * @function hash
@@ -16,7 +12,9 @@ import {
  * @param {any} value the value to hash
  * @returns {number} the object hash
  */
-export const hash = (value) => getIntegerHashValue(stringify(value));
+export function hash(value) {
+  return getIntegerHashValue(stringify(value));
+}
 
 /**
  * @function hash.is
