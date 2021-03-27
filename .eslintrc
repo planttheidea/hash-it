@@ -10,10 +10,12 @@
   },
   "parser": "babel-eslint",
   "rules": {
+    "comma-dangle": 0,
     "indent": 0,
     "object-curly-newline": 0,
     "object-curly-spacing": 0,
-    "prefer-template": 0,
-    "rapid7/named-import-newline": 0
+    "prefer-rest-params": 0,
+    "rapid7/named-import-newline": 0,
+    "space-before-function-paren": 0
   }
 }

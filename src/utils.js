@@ -198,7 +198,7 @@ export function getSortedIterable(iterable, cache, keys) {
     }`;
   }
 
-  return final + ']';
+  return `${final}]`;
 }
 
 /**

@@ -36,11 +36,11 @@ hash.is = curry((object, otherObject) => hash(object) === hash(otherObject));
  * @param {...Array<any>} objects the objects to test for equality
  * @returns {boolean} are the objects equal
  */
-hash.is.all = curry((...objects) => {
-  const isEqual = hash.is(objects.shift());
+hash.is.all = curry(function (objectBasis) {
+  const isEqual = hash.is(objectBasis);
 
-  for (let index = 0; index < objects.length; index++) {
-    if (!isEqual(objects[index])) {
+  for (let index = 1; index < arguments.length; ++index) {
+    if (!isEqual(arguments[index])) {
       return false;
     }
   }
@@ -57,11 +57,11 @@ hash.is.all = curry((...objects) => {
  * @param {...Array<any>} objects the objects to test for equality
  * @returns {boolean} are the objects equal
  */
-hash.is.any = curry((...objects) => {
-  const isEqual = hash.is(objects.shift());
+hash.is.any = curry(function (objectBasis) {
+  const isEqual = hash.is(objectBasis);
 
-  for (let index = 0; index < objects.length; index++) {
-    if (isEqual(objects[index])) {
+  for (let index = 1; index < arguments.length; index++) {
+    if (isEqual(arguments[index])) {
       return true;
     }
   }
@@ -78,6 +78,8 @@ hash.is.any = curry((...objects) => {
  * @param {any} object the object to test against
  * @returns {function(any): boolean} the method to test against the object
  */
-hash.is.not = curry((object, otherObject) => hash(object) !== hash(otherObject));
+hash.is.not = curry(
+  (object, otherObject) => hash(object) !== hash(otherObject),
+);
 
 export default hash;

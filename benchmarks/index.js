@@ -25,7 +25,9 @@ const {
 } = require('./complex');
 
 const header = () =>
-  `Benchmark cycles: ${repeats.map((cycles) => cycles.toLocaleString()).join(' ')}`;
+  `Benchmark cycles: ${repeats
+    .map((cycles) => cycles.toLocaleString())
+    .join(' ')}`;
 
 let results = [];
 
@@ -71,7 +73,7 @@ console.log('');
 
 // write to file
 if (fs && fs.writeFileSync) {
-  fs.writeFileSync('results_next.csv', results.join('\n'), 'utf8');
+  // fs.writeFileSync('results_next.csv', results.join('\n'), 'utf8');
   console.log('Benchmarks done! Results saved to results.csv');
 } else {
   console.log('Benchmarks done!');
