@@ -33,9 +33,9 @@ const keys = Object.keys;
  */
 export function getFunctionName(fn) {
   return (
-    fn.name
-    || (fn.toString().match(FUNCTION_NAME_REGEX) || [])[1]
-    || 'anonymous'
+    fn.name ||
+    (fn.toString().match(FUNCTION_NAME_REGEX) || [])[1] ||
+    'anonymous'
   );
 }
 
@@ -142,13 +142,13 @@ export function shouldSortPair(pairA, pairB) {
 export function sort(array, fn) {
   let subIndex, value;
 
-  for (let index = 0; index < array.length; index++) {
+  for (let index = 0; index < array.length; ++index) {
     value = array[index];
 
     for (
       subIndex = index - 1;
       ~subIndex && fn(array[subIndex], value);
-      subIndex--
+      --subIndex
     ) {
       array[subIndex + 1] = array[subIndex];
     }
@@ -194,7 +194,7 @@ export function getSortedIterablePairs(iterable, cache, keys) {
 
   let final = getFunctionName(iterable.constructor) + SEPARATOR + '[';
 
-  for (let index = 0, length = entries.length, entry; index < length; index++) {
+  for (let index = 0, length = entries.length, entry; index < length; ++index) {
     entry = entries[index];
 
     final += `${index ? ',' : ''}${
@@ -220,7 +220,7 @@ export function getSortedObject(object) {
 
   let key;
 
-  for (let index = 0; index < objectKeys.length; index++) {
+  for (let index = 0; index < objectKeys.length; ++index) {
     key = objectKeys[index];
 
     newObject[key] = object[key];
@@ -302,7 +302,7 @@ export function getStringifiedDocumentFragment(fragment) {
 
   let innerHTML = '';
 
-  for (let index = 0; index < children.length; index++) {
+  for (let index = 0; index < children.length; ++index) {
     innerHTML += children[index].outerHTML;
   }
 
@@ -321,7 +321,7 @@ export function getStringifiedDocumentFragment(fragment) {
  * @returns {number} the index after the value match in the array
  */
 export function getCutoffIndex(array, value) {
-  for (let index = 0; index < array.length; index++) {
+  for (let index = 0; index < array.length; ++index) {
     if (array[index] === value) {
       return index + 1;
     }
@@ -427,7 +427,7 @@ export function getNormalizedValue(value, cache, keys, passedTag) {
  * @returns {function(key: string, value: any)} function getting the normalized value
  */
 export function createReplacer(cache = [], keys = []) {
-  return function(key, value) {
+  return function (key, value) {
     if (typeof value === 'object') {
       if (cache.length) {
         const thisCutoff = getCutoffIndex(cache, this);
@@ -463,7 +463,7 @@ export function createReplacer(cache = [], keys = []) {
         keys,
         OBJECT_CLASS_TYPE_MAP.DATE,
         cache,
-        keys
+        keys,
       );
     }
 
@@ -488,8 +488,8 @@ export function stringify(value, cache, keys) {
   const tag = toString.call(value);
 
   if (
-    tag === OBJECT_CLASS_TYPE_MAP.DATE
-    || tag === OBJECT_CLASS_TYPE_MAP.REGEXP
+    tag === OBJECT_CLASS_TYPE_MAP.DATE ||
+    tag === OBJECT_CLASS_TYPE_MAP.REGEXP
   ) {
     return getNormalizedValue(value, cache, keys, tag);
   }
