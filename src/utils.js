@@ -122,7 +122,7 @@ export function shouldSort(valueA, valueB) {
  * @returns {boolean} should the value be sorted
  */
 export function shouldSortPair(pairA, pairB) {
-  return shouldSort(pairA[0], pairB[0]);
+  return pairA[0] > pairB[0];
 }
 
 /**
