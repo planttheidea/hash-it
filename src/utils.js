@@ -13,7 +13,7 @@ import {
   UNPARSEABLE_TAGS,
 } from './constants';
 
-const FUNCTION_NAME_REGEX = /^\s*function\s*([^\(]*)/i;
+const FUNCTION_NAME_REGEX = /^\s*function\s*([^(]*)/i;
 
 const toString = Object.prototype.toString;
 const keys = Object.keys;
@@ -29,9 +29,9 @@ const keys = Object.keys;
  */
 export function getFunctionName(fn) {
   return (
-    fn.name
-    || (fn.toString().match(FUNCTION_NAME_REGEX) || [])[1]
-    || 'anonymous'
+    fn.name ||
+    (fn.toString().match(FUNCTION_NAME_REGEX) || [])[1] ||
+    'anonymous'
   );
 }
 
@@ -402,7 +402,7 @@ export function getNormalizedValue(value, cache, keys, passedTag) {
 
   if (tag === OBJECT_CLASS_TYPE_MAP.DATAVIEW) {
     return `${OBJECT_CLASS_MAP[tag]}|${getStringifiedArrayBuffer(
-      value.buffer
+      value.buffer,
     )}`;
   }
 
@@ -419,7 +419,7 @@ export function getNormalizedValue(value, cache, keys, passedTag) {
  * @returns {function(key: string, value: any)} function getting the normalized value
  */
 export function createReplacer(cache = [], keys = []) {
-  return function(key, value) {
+  return function (key, value) {
     if (typeof value === 'object') {
       if (cache.length) {
         const thisCutoff = getCutoffIndex(cache, this);
@@ -453,7 +453,7 @@ export function createReplacer(cache = [], keys = []) {
         keys,
         OBJECT_CLASS_TYPE_MAP.DATE,
         cache,
-        keys
+        keys,
       );
     }
 
@@ -478,8 +478,8 @@ export function stringify(value, cache, keys) {
   const tag = toString.call(value);
 
   if (
-    tag === OBJECT_CLASS_TYPE_MAP.DATE
-    || tag === OBJECT_CLASS_TYPE_MAP.REGEXP
+    tag === OBJECT_CLASS_TYPE_MAP.DATE ||
+    tag === OBJECT_CLASS_TYPE_MAP.REGEXP
   ) {
     return getNormalizedValue(value, cache, keys, tag);
   }
