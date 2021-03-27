@@ -164,7 +164,7 @@ export function sort(array, fn) {
  * @param {Map|Set} iterable the iterable to get the pairs for
  * @returns {Array<{key: string, value: any}>} the pairs
  */
-export function getSortedIterablePairs(iterable, cache, keys) {
+export function getSortedIterable(iterable, cache, keys) {
   const isMap = typeof iterable.get === 'function';
   const entries = [];
 
@@ -365,7 +365,7 @@ export function getNormalizedValue(value, cache, keys, passedTag) {
   }
 
   if (ITERABLE_TAGS[tag]) {
-    return getSortedIterablePairs(value, cache, keys);
+    return getSortedIterable(value, cache, keys);
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.DATE) {
