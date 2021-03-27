@@ -1,5 +1,3 @@
-// external dependencies
-// constants
 import {
   HAS_BUFFER_FROM_SUPPORT,
   HAS_UINT16ARRAY_SUPPORT,
@@ -15,9 +13,8 @@ import {
   UNPARSEABLE_TAGS,
 } from './constants';
 
-const SEPARATOR = '|';
+const FUNCTION_NAME_REGEX = /^\s*function\s*([^(]*)/i;
 
-const charCodeAt = String.prototype.charCodeAt;
 const toString = Object.prototype.toString;
 const keys = Object.keys;
 
@@ -31,7 +28,11 @@ const keys = Object.keys;
  * @returns {string} the function name
  */
 export function getFunctionName(fn) {
-  return fn.name || (fn.toString().match(/^\s*function\s*([^\(]*)/i) || [])[1] || 'anonymous';
+  return (
+    fn.name ||
+    (fn.toString().match(FUNCTION_NAME_REGEX) || [])[1] ||
+    'anonymous'
+  );
 }
 
 /**
@@ -52,7 +53,7 @@ export function getIntegerHashValue(string) {
     charCode;
 
   while (index--) {
-    charCode = charCodeAt.call(string, index);
+    charCode = string.charCodeAt(index);
 
     hashA = (hashA * 33) ^ charCode;
     hashB = (hashB * 33) ^ charCode;
@@ -121,7 +122,7 @@ export function shouldSort(valueA, valueB) {
  * @returns {boolean} should the value be sorted
  */
 export function shouldSortPair(pairA, pairB) {
-  return shouldSort(pairA[0], pairB[0]);
+  return pairA[0] > pairB[0];
 }
 
 /**
@@ -137,10 +138,14 @@ export function shouldSortPair(pairA, pairB) {
 export function sort(array, fn) {
   let subIndex, value;
 
-  for (let index = 0; index < array.length; index++) {
+  for (let index = 0; index < array.length; ++index) {
     value = array[index];
 
-    for (subIndex = index - 1; ~subIndex && fn(array[subIndex], value); subIndex--) {
+    for (
+      subIndex = index - 1;
+      ~subIndex && fn(array[subIndex], value);
+      --subIndex
+    ) {
       array[subIndex + 1] = array[subIndex];
     }
 
@@ -159,39 +164,41 @@ export function sort(array, fn) {
  * @param {Map|Set} iterable the iterable to get the pairs for
  * @returns {Array<{key: string, value: any}>} the pairs
  */
-export function getSortedIterablePairs(iterable, cache, keys) {
+export function getSortedIterable(iterable, cache, keys) {
   const isMap = typeof iterable.get === 'function';
-  const pairs = [];
+  const entries = [];
 
   if (isMap) {
     iterable.forEach((value, key) => {
-      // eslint-disable-next-line no-use-before-define
-      pairs.push([stringify(key, cache, keys), stringify(value, cache, keys)]);
+      entries.push([
+        // eslint-disable-next-line no-use-before-define
+        stringify(key, cache, keys),
+        // eslint-disable-next-line no-use-before-define
+        stringify(value, cache, keys),
+      ]);
     });
+
+    sort(entries, shouldSortPair);
   } else {
     iterable.forEach((value) => {
       // eslint-disable-next-line no-use-before-define
-      pairs.push([stringify(value, cache, keys)]);
+      entries.push(stringify(value, cache, keys));
     });
+
+    sort(entries, shouldSort);
   }
 
-  sort(pairs, shouldSortPair);
+  let final = `${getFunctionName(iterable.constructor)}|[`;
 
-  const { length } = pairs;
-  const lastIndex = length - 1;
+  for (let index = 0, length = entries.length, entry; index < length; ++index) {
+    entry = entries[index];
 
-  let final = '[';
-
-  let pair;
-
-  for (let index = 0; index < length; index++) {
-    pair = pairs[index];
-
-    final += isMap ? '[' + pair[0] + ',' + pair[1] + ']' : pair[0];
-    final += index === lastIndex ? ']' : ',';
+    final += `${index ? ',' : ''}${
+      isMap ? `[${entry[0]},${entry[1]}]` : entry
+    }`;
   }
 
-  return getFunctionName(iterable.constructor) + SEPARATOR + final;
+  return `${final}]`;
 }
 
 /**
@@ -209,7 +216,7 @@ export function getSortedObject(object) {
 
   let key;
 
-  for (let index = 0; index < objectKeys.length; index++) {
+  for (let index = 0; index < objectKeys.length; ++index) {
     key = objectKeys[index];
 
     newObject[key] = object[key];
@@ -291,7 +298,7 @@ export function getStringifiedDocumentFragment(fragment) {
 
   let innerHTML = '';
 
-  for (let index = 0; index < children.length; index++) {
+  for (let index = 0; index < children.length; ++index) {
     innerHTML += children[index].outerHTML;
   }
 
@@ -310,7 +317,7 @@ export function getStringifiedDocumentFragment(fragment) {
  * @returns {number} the index after the value match in the array
  */
 export function getCutoffIndex(array, value) {
-  for (let index = 0; index < array.length; index++) {
+  for (let index = 0; index < array.length; ++index) {
     if (array[index] === value) {
       return index + 1;
     }
@@ -335,11 +342,11 @@ export function getNormalizedValue(value, cache, keys, passedTag) {
     const type = typeof value;
 
     if (type === 'string' || PRIMITIVE_TAGS[type]) {
-      return type + SEPARATOR + value;
+      return `${type}|${value}`;
     }
 
     if (value === null) {
-      return 'null' + SEPARATOR + value;
+      return `null|${value}`;
     }
   }
 
@@ -354,19 +361,19 @@ export function getNormalizedValue(value, cache, keys, passedTag) {
   }
 
   if (TOSTRING_TAGS[tag]) {
-    return OBJECT_CLASS_MAP[tag] + SEPARATOR + value.toString();
+    return `${OBJECT_CLASS_MAP[tag]}|${value.toString()}`;
   }
 
   if (ITERABLE_TAGS[tag]) {
-    return getSortedIterablePairs(value, cache, keys);
+    return getSortedIterable(value, cache, keys);
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.DATE) {
-    return OBJECT_CLASS_MAP[tag] + SEPARATOR + value.getTime();
+    return `${OBJECT_CLASS_MAP[tag]}|${value.getTime()}`;
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.ERROR) {
-    return OBJECT_CLASS_MAP[tag] + SEPARATOR + value.stack;
+    return `${OBJECT_CLASS_MAP[tag]}|${value.stack}`;
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.EVENT) {
@@ -374,27 +381,29 @@ export function getNormalizedValue(value, cache, keys, passedTag) {
   }
 
   if (UNPARSEABLE_TAGS[tag]) {
-    return OBJECT_CLASS_MAP[tag] + SEPARATOR + 'NOT_ENUMERABLE';
+    return `${OBJECT_CLASS_MAP[tag]}|NOT_ENUMERABLE`;
   }
 
   if (HTML_ELEMENT_REGEXP.test(tag) || SVG_ELEMENT_REGEXP.test(tag)) {
-    return tag.slice(8, -1) + SEPARATOR + value.outerHTML;
+    return `${tag.slice(8, -1)}|${value.outerHTML}`;
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.DOCUMENTFRAGMENT) {
-    return OBJECT_CLASS_MAP[tag] + SEPARATOR + getStringifiedDocumentFragment(value);
+    return `${OBJECT_CLASS_MAP[tag]}|${getStringifiedDocumentFragment(value)}`;
   }
 
   if (TYPEDARRAY_TAGS[tag]) {
-    return OBJECT_CLASS_MAP[tag] + SEPARATOR + value.join(',');
+    return `${OBJECT_CLASS_MAP[tag]}|${value.join(',')}`;
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.ARRAYBUFFER) {
-    return OBJECT_CLASS_MAP[tag] + SEPARATOR + getStringifiedArrayBuffer(value);
+    return `${OBJECT_CLASS_MAP[tag]}|${getStringifiedArrayBuffer(value)}`;
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.DATAVIEW) {
-    return OBJECT_CLASS_MAP[tag] + SEPARATOR + getStringifiedArrayBuffer(value.buffer);
+    return `${OBJECT_CLASS_MAP[tag]}|${getStringifiedArrayBuffer(
+      value.buffer,
+    )}`;
   }
 
   return value;
@@ -410,7 +419,7 @@ export function getNormalizedValue(value, cache, keys, passedTag) {
  * @returns {function(key: string, value: any)} function getting the normalized value
  */
 export function createReplacer(cache = [], keys = []) {
-  return function(key, value) {
+  return function (key, value) {
     if (typeof value === 'object') {
       if (cache.length) {
         const thisCutoff = getCutoffIndex(cache, this);
@@ -427,9 +436,7 @@ export function createReplacer(cache = [], keys = []) {
         const valueCutoff = getCutoffIndex(cache, value);
 
         if (valueCutoff !== 0) {
-          const ref = keys.slice(0, valueCutoff).join('.') || '.';
-
-          return `[~${ref}]`;
+          return `[~${keys.slice(0, valueCutoff).join('.') || '.'}]`;
         }
 
         cache.push(value);
@@ -440,7 +447,14 @@ export function createReplacer(cache = [], keys = []) {
     }
 
     if (key && this[key] instanceof Date) {
-      return getNormalizedValue(this[key], cache, keys, OBJECT_CLASS_TYPE_MAP.DATE, cache, keys);
+      return getNormalizedValue(
+        this[key],
+        cache,
+        keys,
+        OBJECT_CLASS_TYPE_MAP.DATE,
+        cache,
+        keys,
+      );
     }
 
     return getNormalizedValue(value, cache, keys);
@@ -463,7 +477,10 @@ export function stringify(value, cache, keys) {
 
   const tag = toString.call(value);
 
-  if (tag === OBJECT_CLASS_TYPE_MAP.DATE || tag === OBJECT_CLASS_TYPE_MAP.REGEXP) {
+  if (
+    tag === OBJECT_CLASS_TYPE_MAP.DATE ||
+    tag === OBJECT_CLASS_TYPE_MAP.REGEXP
+  ) {
     return getNormalizedValue(value, cache, keys, tag);
   }
 

@@ -15,7 +15,7 @@ const TEST_VALUES = [
     key: 'arguments',
     value: (function() {
       return arguments;
-    })('foo', 'bar'),
+    }('foo', 'bar')),
   },
   {
     key: 'array',
@@ -55,7 +55,7 @@ const TEST_VALUES = [
   },
   {
     key: 'generator',
-    *value() {},
+    * value() {},
   },
   {
     key: 'int8Array',

@@ -1,12 +1,8 @@
 /**
- * @constant {string} CIRCULAR_VALUE
- */
-export const CIRCULAR_VALUE = '~';
-
-/**
  * @constant {boolean} HAS_BUFFER_FROM_SUPPORT
  */
-export const HAS_BUFFER_FROM_SUPPORT = typeof Buffer !== 'undefined' && typeof Buffer.from === 'function';
+export const HAS_BUFFER_FROM_SUPPORT =
+  typeof Buffer !== 'undefined' && typeof Buffer.from === 'function';
 
 /**
  * @constant {boolean} HAS_UINT16ARRAY_SUPPORT
@@ -26,7 +22,7 @@ export const SVG_ELEMENT_REGEXP = /\[object (SVG(.*)Element)\]/;
 /**
  * @constant {Array<string>} OBJECT_CLASSES
  */
-export const OBJECT_CLASSES = [
+const OBJECT_CLASSES = [
   'Arguments',
   'Array',
   'ArrayBuffer',
@@ -76,11 +72,14 @@ export const OBJECT_CLASS_MAP = OBJECT_CLASSES.reduce((objectClasses, type) => {
 /**
  * @constant {Object} OBJECT_CLASS_TYPE_MAP
  */
-export const OBJECT_CLASS_TYPE_MAP = Object.keys(OBJECT_CLASS_MAP).reduce((objectClassTypes, objectClass) => {
-  objectClassTypes[OBJECT_CLASS_MAP[objectClass].toUpperCase()] = objectClass;
+export const OBJECT_CLASS_TYPE_MAP = Object.keys(OBJECT_CLASS_MAP).reduce(
+  (objectClassTypes, objectClass) => {
+    objectClassTypes[OBJECT_CLASS_MAP[objectClass].toUpperCase()] = objectClass;
 
-  return objectClassTypes;
-}, {});
+    return objectClassTypes;
+  },
+  {},
+);
 
 export const ITERABLE_TAGS = {
   '[object Map]': true,
