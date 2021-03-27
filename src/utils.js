@@ -18,7 +18,6 @@ const SEPARATOR = '|';
 
 const FUNCTION_NAME_REGEX = /^\s*function\s*([^\(]*)/i;
 
-const charCodeAt = String.prototype.charCodeAt;
 const toString = Object.prototype.toString;
 const keys = Object.keys;
 
@@ -57,7 +56,7 @@ export function getIntegerHashValue(string) {
     charCode;
 
   while (index--) {
-    charCode = charCodeAt.call(string, index);
+    charCode = string.charCodeAt(index);
 
     hashA = (hashA * 33) ^ charCode;
     hashB = (hashB * 33) ^ charCode;
