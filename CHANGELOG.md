@@ -2,7 +2,8 @@
 
 ## 4.1.0
 
--
+- Add TypeScript definitions
+- Significant speed improvements
 
 ## 4.0.5
 
