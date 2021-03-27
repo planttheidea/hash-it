@@ -1,4 +1,3 @@
-// external dependencies
 // constants
 import {
   HAS_BUFFER_FROM_SUPPORT,
@@ -17,6 +16,8 @@ import {
 
 const SEPARATOR = '|';
 
+const FUNCTION_NAME_REGEX = /^\s*function\s*([^\(]*)/i;
+
 const charCodeAt = String.prototype.charCodeAt;
 const toString = Object.prototype.toString;
 const keys = Object.keys;
@@ -31,7 +32,11 @@ const keys = Object.keys;
  * @returns {string} the function name
  */
 export function getFunctionName(fn) {
-  return fn.name || (fn.toString().match(/^\s*function\s*([^\(]*)/i) || [])[1] || 'anonymous';
+  return (
+    fn.name
+    || (fn.toString().match(FUNCTION_NAME_REGEX) || [])[1]
+    || 'anonymous'
+  );
 }
 
 /**
@@ -140,7 +145,11 @@ export function sort(array, fn) {
   for (let index = 0; index < array.length; index++) {
     value = array[index];
 
-    for (subIndex = index - 1; ~subIndex && fn(array[subIndex], value); subIndex--) {
+    for (
+      subIndex = index - 1;
+      ~subIndex && fn(array[subIndex], value);
+      subIndex--
+    ) {
       array[subIndex + 1] = array[subIndex];
     }
 
@@ -161,37 +170,39 @@ export function sort(array, fn) {
  */
 export function getSortedIterablePairs(iterable, cache, keys) {
   const isMap = typeof iterable.get === 'function';
-  const pairs = [];
+  const entries = [];
 
   if (isMap) {
     iterable.forEach((value, key) => {
-      // eslint-disable-next-line no-use-before-define
-      pairs.push([stringify(key, cache, keys), stringify(value, cache, keys)]);
+      entries.push([
+        // eslint-disable-next-line no-use-before-define
+        stringify(key, cache, keys),
+        // eslint-disable-next-line no-use-before-define
+        stringify(value, cache, keys),
+      ]);
     });
+
+    sort(entries, shouldSortPair);
   } else {
     iterable.forEach((value) => {
       // eslint-disable-next-line no-use-before-define
-      pairs.push([stringify(value, cache, keys)]);
+      entries.push(stringify(value, cache, keys));
     });
+
+    sort(entries, shouldSort);
   }
 
-  sort(pairs, shouldSortPair);
+  let final = getFunctionName(iterable.constructor) + SEPARATOR + '[';
 
-  const { length } = pairs;
-  const lastIndex = length - 1;
+  for (let index = 0, length = entries.length, entry; index < length; index++) {
+    entry = entries[index];
 
-  let final = '[';
-
-  let pair;
-
-  for (let index = 0; index < length; index++) {
-    pair = pairs[index];
-
-    final += isMap ? '[' + pair[0] + ',' + pair[1] + ']' : pair[0];
-    final += index === lastIndex ? ']' : ',';
+    final += `${index ? ',' : ''}${
+      isMap ? `[${entry[0]},${entry[1]}]` : entry
+    }`;
   }
 
-  return getFunctionName(iterable.constructor) + SEPARATOR + final;
+  return final + ']';
 }
 
 /**
@@ -382,7 +393,9 @@ export function getNormalizedValue(value, cache, keys, passedTag) {
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.DOCUMENTFRAGMENT) {
-    return OBJECT_CLASS_MAP[tag] + SEPARATOR + getStringifiedDocumentFragment(value);
+    return (
+      OBJECT_CLASS_MAP[tag] + SEPARATOR + getStringifiedDocumentFragment(value)
+    );
   }
 
   if (TYPEDARRAY_TAGS[tag]) {
@@ -394,7 +407,11 @@ export function getNormalizedValue(value, cache, keys, passedTag) {
   }
 
   if (tag === OBJECT_CLASS_TYPE_MAP.DATAVIEW) {
-    return OBJECT_CLASS_MAP[tag] + SEPARATOR + getStringifiedArrayBuffer(value.buffer);
+    return (
+      OBJECT_CLASS_MAP[tag] +
+      SEPARATOR +
+      getStringifiedArrayBuffer(value.buffer)
+    );
   }
 
   return value;
@@ -440,7 +457,14 @@ export function createReplacer(cache = [], keys = []) {
     }
 
     if (key && this[key] instanceof Date) {
-      return getNormalizedValue(this[key], cache, keys, OBJECT_CLASS_TYPE_MAP.DATE, cache, keys);
+      return getNormalizedValue(
+        this[key],
+        cache,
+        keys,
+        OBJECT_CLASS_TYPE_MAP.DATE,
+        cache,
+        keys
+      );
     }
 
     return getNormalizedValue(value, cache, keys);
@@ -463,7 +487,10 @@ export function stringify(value, cache, keys) {
 
   const tag = toString.call(value);
 
-  if (tag === OBJECT_CLASS_TYPE_MAP.DATE || tag === OBJECT_CLASS_TYPE_MAP.REGEXP) {
+  if (
+    tag === OBJECT_CLASS_TYPE_MAP.DATE
+    || tag === OBJECT_CLASS_TYPE_MAP.REGEXP
+  ) {
     return getNormalizedValue(value, cache, keys, tag);
   }
 
