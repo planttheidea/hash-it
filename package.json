@@ -110,7 +110,7 @@
     "transpile:es": "npm run clean:es && BABEL_ENV=es babel src --out-dir es",
     "transpile:lib": "npm run clean:lib && BABEL_ENV=lib babel src --out-dir lib"
   },
-  "version": "4.0.5",
+  "version": "4.1.0",
   "dependencies": {
     "curriable": "^1.1.0"
   }
