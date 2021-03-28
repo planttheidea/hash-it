@@ -23,7 +23,7 @@ const keys = Object.keys;
  * @param fn the function to test
  * @returns the function name
  */
-function getFunctionName(fn: Function) {
+function getFunctionName(fn: (...args: any[]) => any) {
   return (
     fn.name ||
     (fn.toString().match(FUNCTION_NAME_REGEX) || [])[1] ||

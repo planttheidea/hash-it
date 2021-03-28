@@ -8,7 +8,9 @@ const HAS_UINT16ARRAY_SUPPORT = typeof Uint16Array === 'function';
  * @param buffer the array buffer to convert
  * @returns the stringified buffer
  */
-export function getStringifiedArrayBufferFallback(buffer: Buffer): string {
+export function getStringifiedArrayBufferFallback(
+  buffer: ArrayBufferLike,
+): string {
   return String.fromCharCode.apply(null, new Uint16Array(buffer));
 }
 
@@ -18,7 +20,9 @@ export function getStringifiedArrayBufferFallback(buffer: Buffer): string {
  * @param buffer the array buffer to convert
  * @returns the stringified buffer
  */
-export function getStringifiedArrayBufferModern(buffer: Buffer): string {
+export function getStringifiedArrayBufferModern(
+  buffer: ArrayBufferLike,
+): string {
   return Buffer.from(buffer).toString('utf8');
 }
 
@@ -27,7 +31,8 @@ export function getStringifiedArrayBufferModern(buffer: Buffer): string {
  *
  * @returns the placeholder
  */
-export function getStringifiedArrayBufferNoSupport() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function getStringifiedArrayBufferNoSupport(buffer: ArrayBufferLike) {
   return '';
 }
 
