@@ -1,5 +1,5 @@
 module.exports = {
-  coveragePathIgnorePatterns: ['node_modules', 'src/types.ts'],
+  coveragePathIgnorePatterns: ['node_modules', 'src/types.ts', '__helpers__'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   roots: ['<rootDir>'],
   setupFiles: ['<rootDir>/jest.init.js'],

@@ -48,6 +48,13 @@ export const TEST_VALUES = [
   },
   {
     comparator: 'is',
+    expectedResult: 'bigint|9007199254740991',
+    expectedString: 'bigint|9007199254740991',
+    key: 'bigint',
+    value: BigInt(9007199254740991),
+  },
+  {
+    comparator: 'is',
     expectedResult: 'boolean|true',
     expectedString: 'boolean|true',
     key: 'boolean',

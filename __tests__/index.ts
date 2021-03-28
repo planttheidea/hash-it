@@ -73,6 +73,26 @@ describe('hash', () => {
     expect(count).toBe(0);
   });
 
+  it('should hash based on a sorted Map', () => {
+    const map1 = new Map([
+      ['foo', 'bar'],
+      ['bar', 'foo'],
+    ]);
+    const map2 = new Map([
+      ['bar', 'foo'],
+      ['foo', 'bar'],
+    ]);
+
+    expect(hash(map1)).toBe(hash(map2));
+  });
+
+  it('should hash based on a sorted Set', () => {
+    const set1 = new Set(['foo', 'bar']);
+    const set2 = new Set(['bar', 'foo']);
+
+    expect(hash(set1)).toBe(hash(set2));
+  });
+
   describe('hash.is', () => {
     it('should check equality', () => {
       expect(hash.is(undefined, null)).toBe(false);
