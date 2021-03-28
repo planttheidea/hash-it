@@ -23,7 +23,8 @@ const keys = Object.keys;
  * @param fn the function to test
  * @returns the function name
  */
-function getFunctionName(fn: (...args: any[]) => any) {
+// eslint-disable-next-line @typescript-eslint/ban-types
+function getConstructorName(fn: Function) {
   return (
     fn.name ||
     (fn.toString().match(FUNCTION_NAME_REGEX) || [])[1] ||
@@ -118,26 +119,26 @@ function getSortedIterable(
   keys: string[],
 ) {
   const isMap = iterable instanceof Map;
-  const entries = [];
+  const entries: [string, string][] | string[] = [];
 
   if (isMap) {
     iterable.forEach((value: any, key: any) => {
-      entries.push([
+      (entries as [string, string][]).push([
         stringify(key, cache, keys),
         stringify(value, cache, keys),
-      ]);
+      ] as [string, string]);
     });
 
     sort(entries, shouldSortPair);
   } else {
     iterable.forEach((value: any) => {
-      entries.push(stringify(value, cache, keys));
+      (entries as string[]).push(stringify(value, cache, keys));
     });
 
     sort(entries, shouldSort);
   }
 
-  let final = `${getFunctionName(iterable.constructor)}|[`;
+  let final = `${getConstructorName(iterable.constructor)}|[`;
 
   for (let index = 0, length = entries.length, entry; index < length; ++index) {
     entry = entries[index];
@@ -233,7 +234,7 @@ function getNormalizedValue(
 
   const tag: keyof typeof OBJECT_CLASS = passedTag || toString.call(value);
 
-  if (SELF_TAGS[tag]) {
+  if (SELF_TAGS[tag as keyof typeof SELF_TAGS]) {
     return value;
   }
 
@@ -241,11 +242,11 @@ function getNormalizedValue(
     return getSortedObject(value);
   }
 
-  if (TO_STRING_TAGS[tag]) {
+  if (TO_STRING_TAGS[tag as keyof typeof TO_STRING_TAGS]) {
     return `${OBJECT_CLASS[tag]}|${value.toString()}`;
   }
 
-  if (ITERABLE_TAGS[tag]) {
+  if (ITERABLE_TAGS[tag as keyof typeof ITERABLE_TAGS]) {
     return getSortedIterable(value, cache, keys);
   }
 
@@ -261,7 +262,7 @@ function getNormalizedValue(
     return getSortedEvent(value);
   }
 
-  if (BAILOUT_TAGS[tag]) {
+  if (BAILOUT_TAGS[tag as keyof typeof BAILOUT_TAGS]) {
     return `${OBJECT_CLASS[tag]}|NOT_ENUMERABLE`;
   }
 
@@ -273,7 +274,7 @@ function getNormalizedValue(
     return `${OBJECT_CLASS[tag]}|${getStringifiedDocumentFragment(value)}`;
   }
 
-  if (TYPED_ARRAY_TAGS[tag]) {
+  if (TYPED_ARRAY_TAGS[tag as keyof typeof TYPED_ARRAY_TAGS]) {
     return `${OBJECT_CLASS[tag]}|${value.join(',')}`;
   }
 
@@ -336,7 +337,7 @@ function createReplacer(cache: any[] = [], keys: string[] = []) {
  * @param value the value to stringify
  * @returns the stringified value
  */
-function stringify(value: any, cache?: any[], keys?: string[]) {
+function stringify(value: any, cache?: any[], keys?: string[]): string {
   if (!value || typeof value !== 'object') {
     return getNormalizedValue(value, cache, keys);
   }

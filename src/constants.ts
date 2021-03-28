@@ -87,10 +87,13 @@ export const ITERABLE_TAGS = {
 } as const;
 
 export const PRIMITIVE_TAGS = {
+  bigint: true,
   boolean: true,
   function: true,
   number: true,
+  object: false,
   string: true,
+  symbol: false,
   undefined: true,
 } as const;
 
