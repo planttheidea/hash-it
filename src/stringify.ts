@@ -222,17 +222,19 @@ function getNormalizedValue(
   keys?: string[],
   passedTag?: keyof typeof OBJECT_CLASS,
 ) {
-  const type = typeof value;
+  if (!passedTag) {
+    const type = typeof value;
 
-  if (
-    type === 'string' ||
-    PRIMITIVE_TAGS[type as keyof typeof PRIMITIVE_TAGS]
-  ) {
-    return `${type}|${value}`;
-  }
+    if (
+      type === 'string' ||
+      PRIMITIVE_TAGS[type as keyof typeof PRIMITIVE_TAGS]
+    ) {
+      return `${type}|${value}`;
+    }
 
-  if (value === null) {
-    return `null|${value}`;
+    if (value === null) {
+      return `null|${value}`;
+    }
   }
 
   const tag: keyof typeof OBJECT_CLASS = passedTag || toString.call(value);
