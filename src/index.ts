@@ -15,15 +15,9 @@ function is(value: any, otherValue: any) {
   return hash(value) === hash(otherValue);
 }
 
-function isAll(value: any, otherValue: any) {
-  const comparisonValues = arguments.length - 1;
-
-  if (comparisonValues === 1) {
-    return is(value, otherValue);
-  }
-
-  for (let index = 0; index < comparisonValues; ++index) {
-    if (!is(value, arguments[index + 1])) {
+function isAll(value: any, ...otherValues: any[]) {
+  for (let index = 0; index < otherValues.length; ++index) {
+    if (!is(value, otherValues[index])) {
       return false;
     }
   }
@@ -31,15 +25,9 @@ function isAll(value: any, otherValue: any) {
   return true;
 }
 
-function isAny(value: any, otherValue: any) {
-  const comparisonValues = arguments.length - 1;
-
-  if (comparisonValues === 1) {
-    return is(value, otherValue);
-  }
-
-  for (let index = 0; index < comparisonValues; ++index) {
-    if (is(value, arguments[index + 1])) {
+function isAny(value: any, ...otherValues: any[]) {
+  for (let index = 0; index < otherValues.length; ++index) {
+    if (is(value, otherValues[index])) {
       return true;
     }
   }
