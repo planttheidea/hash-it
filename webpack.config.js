@@ -18,13 +18,9 @@ module.exports = {
     noInfo: false,
     port: PORT,
     quiet: false,
-    stats: {
-      colors: true,
-      progress: true,
-    },
   },
 
-  devtool: '#source-map',
+  devtool: 'source-map',
 
   entry: [path.resolve(ROOT, 'DEV_ONLY', 'index.tsx')],
 
