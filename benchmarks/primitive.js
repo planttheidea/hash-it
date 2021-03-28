@@ -1,6 +1,6 @@
-'use strict';
+/* eslint-disable @typescript-eslint/no-var-requires */
 
-const hash = require('../lib').default;
+const hash = require('../dist/hash-it.min');
 
 const boolean = (exports.boolean = true);
 const infinite = (exports.infinite = Infinity);
@@ -12,7 +12,7 @@ const undef = (exports.undef = undefined);
 
 exports.hashBoolean = (cycles) => {
   let index = -1,
-      val;
+    val;
 
   while (++index < cycles) {
     val = hash(boolean);
@@ -21,7 +21,7 @@ exports.hashBoolean = (cycles) => {
 
 exports.hashInfinity = (cycles) => {
   let index = -1,
-      val;
+    val;
 
   while (++index < cycles) {
     val = hash(infinite);
@@ -30,7 +30,7 @@ exports.hashInfinity = (cycles) => {
 
 exports.hashNaN = (cycles) => {
   let index = -1,
-      val;
+    val;
 
   while (++index < cycles) {
     val = hash(notANumber);
@@ -39,7 +39,7 @@ exports.hashNaN = (cycles) => {
 
 exports.hashNull = (cycles) => {
   let index = -1,
-      val;
+    val;
 
   while (++index < cycles) {
     val = hash(nul);
@@ -48,7 +48,7 @@ exports.hashNull = (cycles) => {
 
 exports.hashNumber = (cycles) => {
   let index = -1,
-      val;
+    val;
 
   while (++index < cycles) {
     val = hash(number);
@@ -57,7 +57,7 @@ exports.hashNumber = (cycles) => {
 
 exports.hashString = (cycles) => {
   let index = -1,
-      val;
+    val;
 
   while (++index < cycles) {
     val = hash(string);
@@ -66,7 +66,7 @@ exports.hashString = (cycles) => {
 
 exports.hashUndefined = (cycles) => {
   let index = -1,
-      val;
+    val;
 
   while (++index < cycles) {
     val = hash(undef);

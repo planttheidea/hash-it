@@ -1,18 +1,5 @@
 {
   "env": {
-    "development": {
-      "plugins": [
-        [
-          "@babel/plugin-transform-runtime",
-          {
-            "corejs": false,
-            "helpers": false,
-            "regenerator": true,
-            "useESModules": true
-          }
-        ]
-      ]
-    },
     "lib": {
       "presets": [
         [
@@ -24,29 +11,18 @@
       ]
     },
     "test": {
-      "plugins": [
-        [
-          "@babel/plugin-transform-runtime",
-          {
-            "corejs": false,
-            "helpers": false,
-            "regenerator": true,
-            "useESModules": true
-          }
-        ]
-      ],
       "presets": [
         [
           "@babel/preset-env",
           {
             "loose": true
           }
-        ],
-        "@babel/preset-react"
+        ]
       ]
     }
   },
   "presets": [
+    "@babel/preset-typescript",
     [
       "@babel/preset-env",
       {
@@ -54,6 +30,5 @@
         "modules": false
       }
     ]
-  ],
-  "plugins": ["@babel/plugin-proposal-class-properties"]
+  ]
 }

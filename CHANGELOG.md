@@ -1,5 +1,17 @@
 # hash-it CHANGELOG
 
+## 5.0.0
+
+### Breaking changes
+
+- Remove autocurrying of `hash.is` methods
+- Remove transpiled builds in favor of rollup distributed files (deep-linking will no longer work)
+
+### Enhancements
+
+- Codebase rewritten in TypeScript
+- Added `BigInt` support
+
 ## 4.1.0
 
 - Add TypeScript definitions

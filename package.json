@@ -1,17 +1,6 @@
 {
   "author": "planttheidea",
-  "ava": {
-    "failFast": true,
-    "files": [
-      "test/*.js",
-      "!test/data/*"
-    ],
-    "require": [
-      "@babel/register",
-      "./test/helpers/setup-browser-env.js"
-    ],
-    "verbose": true
-  },
+  "browser": "dist/hash-it.js",
   "browserslist": [
     "defaults",
     "Explorer >= 9",
@@ -25,43 +14,45 @@
   },
   "description": "Hash any object based on its value",
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.8.4",
-    "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@babel/plugin-transform-runtime": "^7.8.3",
-    "@babel/polyfill": "^7.8.3",
-    "@babel/preset-env": "^7.8.4",
-    "@babel/preset-react": "^7.8.3",
-    "@babel/register": "^7.8.3",
-    "@babel/runtime": "^7.8.4",
-    "@rollup/plugin-node-resolve": "^7.1.1",
-    "ava": "^1.0.1",
-    "babel-eslint": "^10.0.1",
-    "babel-loader": "^8.0.5",
-    "benchmark": "^2.1.4",
-    "browser-env": "^3.3.0",
-    "eslint": "^5.12.0",
+    "@babel/cli": "7.13.10",
+    "@babel/core": "7.13.13",
+    "@babel/plugin-proposal-class-properties": "7.13.0",
+    "@babel/preset-env": "7.13.12",
+    "@babel/preset-react": "^7.13.13",
+    "@babel/preset-typescript": "7.13.0",
+    "@rollup/plugin-babel": "5.3.0",
+    "@rollup/plugin-commonjs": "18.0.0",
+    "@rollup/plugin-node-resolve": "11.2.1",
+    "@types/jest": "26.0.22",
+    "@typescript-eslint/eslint-plugin": "4.19.0",
+    "@typescript-eslint/parser": "4.19.0",
+    "babel-eslint": "10.1.0",
+    "babel-jest": "26.6.3",
+    "babel-loader": "8.2.2",
+    "benchmark": "2.1.4",
+    "eslint": "7.23.0",
     "eslint-friendly-formatter": "4.0.1",
-    "eslint-loader": "^2.1.1",
-    "faker": "^4.1.0",
+    "eslint-loader": "4.0.2",
+    "faker": "^5.5.1",
     "hash-object": "^0.1.7",
-    "html-webpack-plugin": "^3.2.0",
-    "in-publish": "2.0.0",
-    "node-object-hash": "^2.0.0",
-    "nyc": "^15.0.0",
-    "object-hash": "^2.0.1",
-    "optimize-js-plugin": "^0.0.4",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "rimraf": "^3.0.1",
-    "rollup": "^1.31.0",
-    "rollup-plugin-babel": "^4.2.0",
-    "rollup-plugin-terser": "^5.2.0",
-    "sinon": "8.1.1",
-    "uuid": "^3.4.0",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "3.10.2"
+    "html-webpack-plugin": "5.3.1",
+    "husky": "5.2.0",
+    "jest": "26.6.3",
+    "node-object-hash": "^2.3.1",
+    "object-hash": "^2.1.1",
+    "ora": "5.4.0",
+    "prop-types": "15.7.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "regenerator-runtime": "^0.13.7",
+    "rimraf": "3.0.2",
+    "rollup": "2.43.1",
+    "rollup-plugin-terser": "7.0.2",
+    "tslib": "2.1.0",
+    "typescript": "4.2.3",
+    "webpack": "5.28.0",
+    "webpack-cli": "4.6.0",
+    "webpack-dev-server": "3.11.2"
   },
   "homepage": "https://github.com/planttheidea/hash-it#readme",
   "keywords": [
@@ -71,47 +62,27 @@
     "unique"
   ],
   "license": "MIT",
-  "main": "lib/index.js",
-  "module": "es/index.js",
+  "main": "dist/hash-it.cjs.js",
+  "module": "dist/hash-it.esm.js",
   "name": "hash-it",
-  "nyc": {
-    "exclude": [
-      "test/*",
-      "test/data/*"
-    ],
-    "reporter": [
-      "text",
-      "html",
-      "text-summary"
-    ]
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/planttheidea/hash-it.git"
   },
   "scripts": {
-    "benchmark": "npm run transpile:lib && node benchmarks/index.js",
-    "benchmark:compare": "npm run transpile:lib && node benchmarks/compare.js",
+    "benchmark": "npm run build && node benchmarks/index.js",
+    "benchmark:compare": "npm run build && node benchmarks/compare.js",
     "build": "NODE_ENV=production rollup -c",
-    "clean": "npm run clean:lib && npm run clean:es && npm run clean:dist",
-    "clean:dist": "rimraf dist",
-    "clean:es": "rimraf es",
-    "clean:lib": "rimraf lib",
-    "dev": "NODE_ENV=development webpack-dev-server   --colors --progress --config=webpack/webpack.config.dev.js",
-    "dist": "npm run clean:dist && npm run build",
+    "clean": "rimraf dist",
+    "dev": "NODE_ENV=development webpack serve --progress",
     "lint": "NODE_ENV=test eslint src",
     "lint:fix": "npm run lint -- --fix",
-    "prepublish": "if in-publish; then npm run prepublish:compile; fi",
-    "prepublish:compile": "npm run lint && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
+    "prepublishOnly": "npm run typecheck && npm run lint && npm run test && npm run build",
     "start": "npm run dev",
-    "test": "NODE_PATH=. NODE_ENV=test ava",
-    "test:coverage": "nyc npm test",
+    "test": "NODE_ENV=test jest",
+    "test:coverage": "npm test -- --coverage",
     "test:watch": "npm test -- --watch",
-    "transpile:es": "npm run clean:es && BABEL_ENV=es babel src --out-dir es",
-    "transpile:lib": "npm run clean:lib && BABEL_ENV=lib babel src --out-dir lib"
+    "typecheck": "tsc --noEmit"
   },
-  "version": "4.1.0",
-  "dependencies": {
-    "curriable": "^1.1.0"
-  }
+  "version": "4.1.0"
 }

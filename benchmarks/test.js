@@ -1,12 +1,10 @@
-'use strict';
-
 const REPEATS = [1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000];
 const TOTAL = REPEATS.reduce((sum, cycles) => sum + cycles, 0);
 
 exports.test = (name, benchmark) => {
-  let totalTime = 0,
-      startTime,
-      testTime;
+  let totalTime = 0;
+  let startTime;
+  let testTime;
 
   let displayText = `\n${name}:\n${REPEATS.map((cycles) => {
     startTime = Date.now();
@@ -24,7 +22,9 @@ exports.test = (name, benchmark) => {
     return `${cycles.toLocaleString()}: ${testTime / 1000} sec`;
   }).join('\n')}`;
 
-  displayText += `\nAverage: ${Math.round((TOTAL / totalTime) * 1000).toLocaleString()} ops/sec`;
+  displayText += `\nAverage: ${Math.round(
+    (TOTAL / totalTime) * 1000,
+  ).toLocaleString()} ops/sec`;
 
   return displayText;
 };

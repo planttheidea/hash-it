@@ -1,6 +1,4 @@
-/* eslint-disable no-console, import/no-commonjs */
-
-'use strict';
+/* eslint-disable @typescript-eslint/no-var-requires */
 
 const fs = require('fs');
 const { repeats, test } = require('./test');
@@ -73,7 +71,7 @@ console.log('');
 
 // write to file
 if (fs && fs.writeFileSync) {
-  fs.writeFileSync('results_latest.csv', results.join('\n'), 'utf8');
+  fs.writeFileSync('results_latest.txt', results.join('\n'), 'utf8');
   console.log('Benchmarks done! Results saved to results.csv');
 } else {
   console.log('Benchmarks done!');

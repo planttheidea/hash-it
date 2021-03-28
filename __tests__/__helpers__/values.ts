@@ -1,15 +1,17 @@
-/* eslint-disable prefer-rest-params, import/no-commonjs */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
-const DATE = new Date();
+export const INTEGER_ARRAY = [1, 2, 3];
+
+export const ARRAY_BUFFER = new Uint16Array(INTEGER_ARRAY).buffer;
+export const DATE = new Date();
+export const ERROR = new Error('boom');
+
 const DOCUMENT_FRAGMENT = document.createDocumentFragment();
-const ERROR = new Error('boom');
-const EVENT = new Event('custom');
-const INTEGER_ARRAY = [1, 2, 3];
-const ARRAYBUFFER = new Uint16Array(INTEGER_ARRAY).buffer;
-
 DOCUMENT_FRAGMENT.appendChild(document.createElement('div'));
 
-const TEST_VALUES = [
+const EVENT = new Event('custom');
+
+export const TEST_VALUES = [
   {
     comparator: 'deepEqual',
     expectedResult: {},
@@ -26,21 +28,30 @@ const TEST_VALUES = [
   },
   {
     comparator: 'deepEqual',
-    expectedResult: (function() {
+    expectedResult: (function (a: string, b: string) {
       return arguments;
-    }('foo', 'bar')),
+    })('foo', 'bar'),
     expectedString: '{"0":"string|foo","1":"string|bar"}',
     key: 'arguments',
-    value: (function() {
+    value: (function (a: string, b: string) {
       return arguments;
-    }('foo', 'bar')),
+    })('foo', 'bar'),
   },
   {
     comparator: 'deepEqual',
-    expectedResult: `ArrayBuffer|${Buffer.from(ARRAYBUFFER).toString('utf8')}`,
-    expectedString: JSON.stringify(`ArrayBuffer|${Buffer.from(ARRAYBUFFER).toString('utf8')}`),
+    expectedResult: `ArrayBuffer|${Buffer.from(ARRAY_BUFFER).toString('utf8')}`,
+    expectedString: JSON.stringify(
+      `ArrayBuffer|${Buffer.from(ARRAY_BUFFER).toString('utf8')}`,
+    ),
     key: 'arrayBuffer',
-    value: ARRAYBUFFER,
+    value: ARRAY_BUFFER,
+  },
+  {
+    comparator: 'is',
+    expectedResult: 'bigint|9007199254740991',
+    expectedString: 'bigint|9007199254740991',
+    key: 'bigint',
+    value: BigInt(9007199254740991),
   },
   {
     comparator: 'is',
@@ -51,11 +62,13 @@ const TEST_VALUES = [
   },
   {
     comparator: 'deepEqual',
-    expectedResult: `DataView|${Buffer.from(new DataView(new ArrayBuffer(2)).buffer).toString(
-      'utf8'
-    )}`,
+    expectedResult: `DataView|${Buffer.from(
+      new DataView(new ArrayBuffer(2)).buffer,
+    ).toString('utf8')}`,
     expectedString: JSON.stringify(
-      `DataView|${Buffer.from(new DataView(new ArrayBuffer(2)).buffer).toString('utf8')}`
+      `DataView|${Buffer.from(new DataView(new ArrayBuffer(2)).buffer).toString(
+        'utf8',
+      )}`,
     ),
     key: 'dataView',
     value: new DataView(new ArrayBuffer(2)),
@@ -124,6 +137,7 @@ const TEST_VALUES = [
     expectedResult: 'function|function value() {}',
     expectedString: 'function|function value() {}',
     key: 'function',
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     value() {},
   },
   {
@@ -166,12 +180,15 @@ const TEST_VALUES = [
     }, value);
   }`,
     key: 'generatorFunction',
-    * value() {},
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    *value() {},
   },
   {
     comparator: 'deepEqual',
     expectedResult: 'HTMLDivElement|<div class="class">foo</div>',
-    expectedString: JSON.stringify('HTMLDivElement|<div class="class">foo</div>'),
+    expectedString: JSON.stringify(
+      'HTMLDivElement|<div class="class">foo</div>',
+    ),
     key: 'htmlElement',
     value: (() => {
       const div = document.createElement('div');
@@ -187,7 +204,8 @@ const TEST_VALUES = [
     expectedResult: 'SVGSVGElement|<svg></svg>',
     expectedString: JSON.stringify('SVGSVGElement|<svg></svg>'),
     key: 'svgElement',
-    value: (() => document.createElementNS('http://www.w3.org/2000/svg', 'svg'))(),
+    value: (() =>
+      document.createElementNS('http://www.w3.org/2000/svg', 'svg'))(),
   },
   {
     comparator: 'deepEqual',
@@ -330,11 +348,3 @@ const TEST_VALUES = [
     value: new WeakSet().add({}),
   },
 ];
-
-module.exports = {
-  ARRAYBUFFER,
-  DATE,
-  ERROR,
-  INTEGER_ARRAY,
-  TEST_VALUES,
-};
