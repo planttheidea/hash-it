@@ -91,9 +91,7 @@ export const PRIMITIVE_TAGS = {
   boolean: true,
   function: true,
   number: true,
-  object: false,
   string: true,
-  symbol: false,
   undefined: true,
 } as const;
 

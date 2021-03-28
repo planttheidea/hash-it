@@ -1,12 +1,13 @@
+import 'regenerator-runtime/runtime';
+
 import React from 'react';
 import { render } from 'react-dom';
 import hash from '../src';
 
-
 document.body.style.backgroundColor = '#1d1d1d';
 document.body.style.color = '#d5d5d5';
-document.body.style.margin = 0;
-document.body.style.padding = 0;
+document.body.style.margin = '0px';
+document.body.style.padding = '0px';
 
 const fragment = document.createDocumentFragment();
 
@@ -34,11 +35,14 @@ a.b = b;
 
 const object = {
   ReactStatefulClass: StatefulComponent,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   ReactStatefulElement: <StatefulComponent />,
   ReactStatelessClass: StatelessComponent,
   ReactStatelessElement: <StatelessComponent />,
   arr: ['foo', 'bar'],
   arrayBuffer: new Uint16Array([1, 2, 3]).buffer,
+  bigint: BigInt(9007199254740991),
   bool: true,
   dataView: new DataView(new ArrayBuffer(2)),
   doc: document,
@@ -61,15 +65,16 @@ const object = {
   func() {
     alert('y');
   },
-  * generator() {
-    let value = yield 1;
+  *generator() {
+    const value = yield 1;
 
     yield value + 2;
   },
   int8Array: new Int8Array([1, 2, 3]),
   int16Array: new Int16Array([1, 2, 3]),
   int32Array: new Int32Array([1, 2, 3]),
-  map: new Map().set(true, 7).set({foo: 3}, ['abc']),
+  map: new Map().set(true, 7).set({ foo: 3 }, ['abc']),
+  math: Math,
   nil: null,
   nodeList: document.querySelectorAll('div'),
   num: 12,
@@ -87,8 +92,8 @@ const object = {
   uint16Array: new Uint16Array([1, 2, 3]),
   uint32Array: new Uint32Array([1, 2, 3]),
   undef: undefined,
-  weakMap: new WeakMap().set({}, 7).set({foo: 3}, ['abc']),
-  weakSet: new WeakSet().add({}).add({foo: 'bar'}),
+  weakMap: new WeakMap().set({}, 7).set({ foo: 3 }, ['abc']),
+  weakSet: new WeakSet().add({}).add({ foo: 'bar' }),
   win: window,
 };
 
@@ -101,7 +106,7 @@ const profile = (iterations = 100) => {
     hash(object);
     hash(a);
 
-    for (let key in object) {
+    for (const key in object) {
       hash(object[key]);
     }
 
@@ -115,13 +120,14 @@ const profile = (iterations = 100) => {
   console.log('Check the Profiles tab in DevTools to see the output.');
 };
 
-const benchmark = () => require('../benchmarks/index');
+// const benchmark = () => require('../benchmarks/index');
 
-const visualValidation = (iterations = 100) => {
+const visualValidation = () => {
   console.log(object, hash(object));
   console.log(a, hash(a));
   console.log(object.string, hash(object.string));
   console.log(object.num, hash(object.num));
+  console.log(object.bigint, hash(object.bigint));
   console.log(object.bool, hash(object.bool));
   console.log(object.func, hash(object.func));
   console.log(object.undef, hash(object.undef));
@@ -164,7 +170,7 @@ const visualValidation = (iterations = 100) => {
   console.log(object.win, hash(object.win));
 };
 
-const hashOnlyValidation = (iterations = 100) => {
+const hashOnlyValidation = () => {
   console.log(hash(object));
   console.log(hash(a));
   console.log(hash(object.string));
