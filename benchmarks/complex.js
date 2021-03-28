@@ -1,7 +1,16 @@
-'use strict';
+/* eslint-disable @typescript-eslint/no-var-requires */
 
-const hash = require('../lib').default;
-const {boolean, infinite, notANumber, nul, number, string, undef} = require('./primitive');
+const hash = require('../dist/hash-it.min');
+
+const {
+  boolean,
+  infinite,
+  notANumber,
+  nul,
+  number,
+  string,
+  undef,
+} = require('./primitive');
 
 const array = [boolean, infinite, notANumber, nul, number, string, undef];
 const object = {
@@ -11,10 +20,14 @@ const object = {
   nul,
   number,
   string,
-  undef
+  undef,
 };
-const func = function(foo, bar) {};
-const map = new Map([['foo', 'bar'], ['bar', 'baz']]);
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const func = function (foo, bar) {};
+const map = new Map([
+  ['foo', 'bar'],
+  ['bar', 'baz'],
+]);
 const regex = /foo/;
 const set = new Set(['foo', 'bar', 'baz']);
 const recursiveObject = (() => {
@@ -22,8 +35,8 @@ const recursiveObject = (() => {
     this.deeply = {
       nested: {
         reference: this,
-        value
-      }
+        value,
+      },
     };
   }
 
@@ -32,7 +45,7 @@ const recursiveObject = (() => {
 
 exports.hashArray = (cycles) => {
   let index = -1,
-      val;
+    val;
 
   while (++index < cycles) {
     val = hash(array, true);
@@ -41,7 +54,7 @@ exports.hashArray = (cycles) => {
 
 exports.hashFunction = (cycles) => {
   let index = -1,
-      val;
+    val;
 
   while (++index < cycles) {
     val = hash(func, true);
@@ -50,7 +63,7 @@ exports.hashFunction = (cycles) => {
 
 exports.hashMap = (cycles) => {
   let index = -1,
-      val;
+    val;
 
   while (++index < cycles) {
     val = hash(map, true);
@@ -59,7 +72,7 @@ exports.hashMap = (cycles) => {
 
 exports.hashObject = (cycles) => {
   let index = -1,
-      val;
+    val;
 
   while (++index < cycles) {
     val = hash(object, true);
@@ -68,7 +81,7 @@ exports.hashObject = (cycles) => {
 
 exports.hashCircularObject = (cycles) => {
   let index = -1,
-      val;
+    val;
 
   while (++index < cycles) {
     val = hash(recursiveObject, true);
@@ -77,7 +90,7 @@ exports.hashCircularObject = (cycles) => {
 
 exports.hashRegExp = (cycles) => {
   let index = -1,
-      val;
+    val;
 
   while (++index < cycles) {
     val = hash(regex);
@@ -86,7 +99,7 @@ exports.hashRegExp = (cycles) => {
 
 exports.hashSet = (cycles) => {
   let index = -1,
-      val;
+    val;
 
   while (++index < cycles) {
     val = hash(set, true);

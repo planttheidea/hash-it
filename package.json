@@ -1,17 +1,6 @@
 {
   "author": "planttheidea",
-  "ava": {
-    "failFast": true,
-    "files": [
-      "test/*.js",
-      "!test/data/*"
-    ],
-    "require": [
-      "@babel/register",
-      "./test/helpers/setup-browser-env.js"
-    ],
-    "verbose": true
-  },
+  "browser": "dist/hash-it.js",
   "browserslist": [
     "defaults",
     "Explorer >= 9",
@@ -44,9 +33,13 @@
     "eslint": "7.10.0",
     "eslint-friendly-formatter": "4.0.1",
     "eslint-loader": "4.0.2",
+    "faker": "^5.5.1",
+    "hash-object": "^0.1.7",
     "html-webpack-plugin": "4.5.0",
     "husky": "4.3.0",
     "jest": "26.4.2",
+    "node-object-hash": "^2.3.1",
+    "object-hash": "^2.1.1",
     "ora": "5.1.0",
     "prop-types": "15.7.2",
     "react": "^17.0.2",
@@ -69,48 +62,27 @@
     "unique"
   ],
   "license": "MIT",
-  "main": "lib/index.js",
-  "module": "es/index.js",
+  "main": "dist/hash-it.cjs.js",
+  "module": "dist/hash-it.esm.js",
   "name": "hash-it",
-  "nyc": {
-    "exclude": [
-      "test/*",
-      "test/data/*"
-    ],
-    "reporter": [
-      "text",
-      "html",
-      "text-summary"
-    ]
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/planttheidea/hash-it.git"
   },
   "scripts": {
-    "benchmark": "npm run transpile:lib && node benchmarks/index.js",
-    "benchmark:compare": "npm run transpile:lib && node benchmarks/compare.js",
+    "benchmark": "npm run build && node benchmarks/index.js",
+    "benchmark:compare": "npm run build && node benchmarks/compare.js",
     "build": "NODE_ENV=production rollup -c",
-    "clean": "npm run clean:lib && npm run clean:es && npm run clean:dist",
-    "clean:dist": "rimraf dist",
-    "clean:es": "rimraf es",
-    "clean:lib": "rimraf lib",
-    "dev": "NODE_ENV=development webpack-dev-server   --colors --progress",
-    "dist": "npm run clean:dist && npm run build",
+    "clean": "rimraf dist",
+    "dev": "NODE_ENV=development webpack-dev-server --colors --progress",
     "lint": "NODE_ENV=test eslint src",
     "lint:fix": "npm run lint -- --fix",
-    "prepublish": "if in-publish; then npm run prepublish:compile; fi",
-    "prepublish:compile": "npm run lint && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
+    "prepublishOnly": "npm run typecheck && npm run lint && npm run test && npm run build",
     "start": "npm run dev",
     "test": "NODE_ENV=test jest",
     "test:coverage": "npm test -- --coverage",
     "test:watch": "npm test -- --watch",
-    "typecheck": "tsc --noEmit",
-    "transpile:es": "npm run clean:es && BABEL_ENV=es babel src --out-dir es",
-    "transpile:lib": "npm run clean:lib && BABEL_ENV=lib babel src --out-dir lib"
+    "typecheck": "tsc --noEmit"
   },
-  "version": "4.1.0",
-  "dependencies": {
-    "curriable": "^1.1.0"
-  }
+  "version": "4.1.0"
 }

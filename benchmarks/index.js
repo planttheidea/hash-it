@@ -1,6 +1,4 @@
-/* eslint-disable no-console, import/no-commonjs */
-
-'use strict';
+/* eslint-disable @typescript-eslint/no-var-requires */
 
 const fs = require('fs');
 const { repeats, test } = require('./test');

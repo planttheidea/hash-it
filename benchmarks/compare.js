@@ -1,7 +1,5 @@
-/**
- * Created on 9/5/16.
- */
-'use strict';
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 const Benchmark = require('benchmark');
 const suite = new Benchmark.Suite();
 const faker = require('faker');
@@ -11,15 +9,9 @@ const dataArray = [];
 const objectHash = require('object-hash');
 const nodeObjectHash = require('node-object-hash')();
 const hashObject = require('hash-object');
-const hash = require('../lib').default;
+const hash = require('../dist/hash-it.min');
 
-let dataStairs = {end: 'is near'};
-
-const Foo = function Foo(value) {
-  this.value = value;
-
-  return value;
-};
+let dataStairs = { end: 'is near' };
 
 console.log('Creating fake data...');
 
@@ -30,35 +22,40 @@ for (let i = 0; i < 50; i++) {
     address: {
       city: faker.address.city(),
       streetAddress: faker.address.streetAddress(),
-      country: faker.address.country()
+      country: faker.address.country(),
     },
-    email: [faker.internet.email(), faker.internet.email(), faker.internet.email(), faker.internet.email()],
+    email: [
+      faker.internet.email(),
+      faker.internet.email(),
+      faker.internet.email(),
+      faker.internet.email(),
+    ],
     randoms: [
-      faker.random.number(),
+      faker.datatype.number(),
       faker.random.alphaNumeric(),
-      faker.random.number(),
+      faker.datatype.number(),
       faker.random.alphaNumeric(),
       faker.random.words(),
-      faker.random.word()
+      faker.random.word(),
     ],
     avatars: [
       {
-        number: faker.random.number(),
-        avatar: faker.internet.avatar()
+        number: faker.datatype.number(),
+        avatar: faker.internet.avatar(),
       },
       {
-        number: faker.random.number(),
-        avatar: faker.internet.avatar()
+        number: faker.datatype.number(),
+        avatar: faker.internet.avatar(),
       },
       {
-        number: faker.random.number(),
-        avatar: faker.internet.avatar()
+        number: faker.datatype.number(),
+        avatar: faker.internet.avatar(),
       },
       {
-        number: faker.random.number(),
-        avatar: faker.internet.avatar()
-      }
-    ]
+        number: faker.datatype.number(),
+        avatar: faker.internet.avatar(),
+      },
+    ],
   });
 }
 
@@ -66,18 +63,20 @@ let tmp;
 
 for (let i = 0; i < 100; i++) {
   tmp = {
-    data: dataStairs
+    data: dataStairs,
   };
   dataStairs = tmp;
 }
 
 // test preparations
-const hashObjectOpts = {algorithm: 'sha256'};
+const hashObjectOpts = { algorithm: 'sha256' };
 const objectHashOpts = {
   algorithm: 'sha256',
   encoding: 'hex',
-  unorderedArrays: true
+  unorderedArrays: true,
 };
+
+console.log('Running benchmarks...');
 
 // add tests
 suite
@@ -101,10 +100,10 @@ suite
   .on('cycle', (event) => {
     console.log(String(event.target));
   })
-  .on('complete', function() {
+  .on('complete', function () {
     const fastest = this.filter('fastest').map('name');
 
     console.log(`Fastest is ${fastest}`);
   })
   // run async
-  .run({async: true});
+  .run({ async: true });
