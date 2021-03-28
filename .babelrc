@@ -18,8 +18,7 @@
           {
             "loose": true
           }
-        ],
-        "@babel/preset-react"
+        ]
       ]
     }
   },
