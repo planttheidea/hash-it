@@ -14,3 +14,9 @@ test
 webpack
 *.csv
 yarn*
+__tests__
+results_*.txt
+jest.config.js
+jest.init.js
+webpack.config.js
+tsconfig.json
