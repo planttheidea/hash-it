@@ -3,7 +3,6 @@ import {
   ITERABLE_TAGS,
   OBJECT_CLASS,
   OBJECT_CLASS_TYPE,
-  PRIMITIVE_TAGS,
   SELF_TAGS,
   TO_STRING_TAGS,
   TYPED_ARRAY_TAGS,
@@ -225,7 +224,11 @@ function getNormalizedValue(
 
     if (
       type === 'string' ||
-      PRIMITIVE_TAGS[type as keyof typeof PRIMITIVE_TAGS]
+      type === 'number' ||
+      type === 'boolean' ||
+      type === 'function' ||
+      type === 'undefined' ||
+      type === 'bigint'
     ) {
       return `${type}|${value}`;
     }

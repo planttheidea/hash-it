@@ -96,15 +96,6 @@ export const ITERABLE_TAGS = getFlags([
   OBJECT_CLASS_TYPE.Set,
 ]);
 
-export const PRIMITIVE_TAGS = getFlags([
-  'bigint',
-  'boolean',
-  'function',
-  'number',
-  'string',
-  'undefined',
-] as const);
-
 export const SELF_TAGS = getFlags([
   OBJECT_CLASS_TYPE.Arguments,
   OBJECT_CLASS_TYPE.Array,
