@@ -1,5 +1,9 @@
 # hash-it CHANGELOG
 
+## 5.0.1
+
+- Update `.npmignore` to reduce package tarball size ([#39](https://github.com/planttheidea/hash-it/pull/39))
+
 ## 5.0.0
 
 ### Breaking changes
