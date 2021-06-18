@@ -223,10 +223,7 @@ function getNormalizedValue(
   if (!passedTag) {
     const type = typeof value;
 
-    if (
-      type === 'string' ||
-      PRIMITIVE_TAGS[type as keyof typeof PRIMITIVE_TAGS]
-    ) {
+    if (PRIMITIVE_TAGS[type as keyof typeof PRIMITIVE_TAGS]) {
       return `${type}|${value}`;
     }
 
