@@ -138,17 +138,16 @@ function getSortedIterable(
     sort(entries, shouldSort);
   }
 
-  let final = `${getConstructorName(iterable.constructor)}|[`;
+  const stringEntries: string[] = [];
 
   for (let index = 0, length = entries.length, entry; index < length; ++index) {
     entry = entries[index];
-
-    final += `${index ? ',' : ''}${
-      isMap ? `[${entry[0]},${entry[1]}]` : entry
-    }`;
+    stringEntries.push(isMap ? `[${entry[0]},${entry[1]}]` : (entry as string));
   }
 
-  return `${final}]`;
+  return `${getConstructorName(iterable.constructor)}|[${stringEntries.join(
+    ',',
+  )}]`;
 }
 
 /**
@@ -180,14 +179,13 @@ function getSortedObject<UnsortedObject>(object: UnsortedObject) {
  */
 function getStringifiedDocumentFragment(fragment: DocumentFragment) {
   const children = fragment.children;
-
-  let innerHTML = '';
+  const innerHTML: string[] = [];
 
   for (let index = 0; index < children.length; ++index) {
-    innerHTML += children[index].outerHTML;
+    innerHTML.push(children[index].outerHTML);
   }
 
-  return innerHTML;
+  return innerHTML.join(',');
 }
 
 /**
