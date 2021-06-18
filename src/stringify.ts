@@ -224,7 +224,7 @@ function getNormalizedValue(
     }
 
     if (value === null) {
-      return `null|${value}`;
+      return `${value}|${value}`;
     }
   }
 

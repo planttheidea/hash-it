@@ -10,7 +10,7 @@ const VALUE_HASHES = VALUES.reduce((map, { key, value }) => {
   return map;
 }, {} as Record<string, any>);
 
-const CONSISTENCY_ITERATIONS = 10;
+const CONSISTENCY_ITERATIONS = 10000;
 
 describe('hash', () => {
   it('should have hashed values that are non-zero', () => {
