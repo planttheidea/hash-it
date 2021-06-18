@@ -12,8 +12,7 @@ import {
 import { getStringifiedArrayBuffer } from './arrayBuffer';
 
 const FUNCTION_NAME_REGEX = /^\s*function\s*([^(]*)/i;
-const HTML_ELEMENT_REGEXP = /\[object (HTML(.*)Element)\]/;
-const SVG_ELEMENT_REGEXP = /\[object (SVG(.*)Element)\]/;
+const XML_ELEMENT_REGEXP = /\[object ([HTML|SVG](.*)Element)\]/;
 
 const toString = Object.prototype.toString;
 const keys = Object.keys;
@@ -272,7 +271,7 @@ function getNormalizedValue(
     return `${OBJECT_CLASS[tag]}|NOT_ENUMERABLE`;
   }
 
-  if (HTML_ELEMENT_REGEXP.test(tag) || SVG_ELEMENT_REGEXP.test(tag)) {
+  if (XML_ELEMENT_REGEXP.test(tag)) {
     return `${tag.slice(8, -1)}|${value.outerHTML}`;
   }
 
