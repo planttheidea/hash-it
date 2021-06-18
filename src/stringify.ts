@@ -119,35 +119,31 @@ function getSortedIterable(
   keys: string[],
 ) {
   const isMap = iterable instanceof Map;
-  const entries: [string, string][] | string[] = [];
+  const entries: string[] = [];
 
   if (isMap) {
     iterable.forEach((value: any, key: any) => {
-      (entries as [string, string][]).push([
+      entries.push([
         stringify(key, cache, keys),
         stringify(value, cache, keys),
-      ] as [string, string]);
+      ] as unknown as string);
     });
 
     sort(entries, shouldSortPair);
+
+    for (let index = 0, entry; index < entries.length; ++index) {
+      entry = entries[index];
+      entries[index] = `[${entry[0]},${entry[1]}]`;
+    }
   } else {
     iterable.forEach((value: any) => {
-      (entries as string[]).push(stringify(value, cache, keys));
+      entries.push(stringify(value, cache, keys));
     });
 
     sort(entries, shouldSort);
   }
 
-  const stringEntries: string[] = [];
-
-  for (let index = 0, length = entries.length, entry; index < length; ++index) {
-    entry = entries[index];
-    stringEntries.push(isMap ? `[${entry[0]},${entry[1]}]` : (entry as string));
-  }
-
-  return `${getConstructorName(iterable.constructor)}|[${stringEntries.join(
-    ',',
-  )}]`;
+  return `${getConstructorName(iterable.constructor)}|[${entries.join(',')}]`;
 }
 
 /**
