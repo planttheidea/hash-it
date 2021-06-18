@@ -44,42 +44,62 @@ const getFlags = <Flags extends readonly any[]>(
   }, {} as MappedFlag<Flags>);
 
 const OBJECT_CLASSES = [
-  'Arguments',
+  // self tags
   'Array',
-  'ArrayBuffer',
-  'BigInt',
-  'Boolean',
-  'DataView',
+  'Arguments',
+
+  'Object',
+
+  // toString tags
+  'RegExp',
+  'Symbol',
+
+  // iterable tags
+  'Map',
+  'Set',
+
   'Date',
-  'DocumentFragment',
+
   'Error',
+
   'Event',
+
+  // bailout tags
+  'Generator',
+  'Promise',
+  'WeakMap',
+  'WeakSet',
+
+  'DocumentFragment',
+
+  // typed array tags
   'Float32Array',
   'Float64Array',
-  'Function',
-  'Generator',
-  'GeneratorFunction',
-  'HTMLElement',
   'Int8Array',
   'Int16Array',
   'Int32Array',
-  'Map',
-  'Null',
-  'Number',
-  'Object',
-  'Promise',
-  'RegExp',
-  'Set',
-  'String',
-  'Symbol',
   'Uint8Array',
   'Uint8ClampedArray',
   'Uint16Array',
   'Uint32Array',
-  'Undefined',
-  'WeakMap',
-  'WeakSet',
+
+  'ArrayBuffer',
+
+  'DataView',
+
+  'DocumentFragment',
+
   'Window',
+
+  // primitive classes, e.g. new String()
+  'String',
+  'Number',
+  'Boolean',
+  'Function',
+  'Undefined',
+  'GeneratorFunction',
+  'BigInt',
+  'Null',
 ] as const;
 
 export const OBJECT_CLASS_TYPE = getClassTypes(OBJECT_CLASSES);
