@@ -34,12 +34,14 @@ const getReversedClassTypes = <Classes extends readonly any[]>(
     return map;
   }, {} as MappedReverseClass<Classes>);
 
-const getFlags = <Tags extends readonly any[]>(tags: Tags): MappedFlag<Tags> =>
-  tags.reduce((tag, item) => {
-    tag[item as Tags[number]] = true;
+const getFlags = <Flags extends readonly any[]>(
+  flags: Flags,
+): MappedFlag<Flags> =>
+  flags.reduce((flag, item: Flags[number]) => {
+    flag[item] = true;
 
-    return tag;
-  }, {} as MappedFlag<Tags>);
+    return flag;
+  }, {} as MappedFlag<Flags>);
 
 const OBJECT_CLASSES = [
   'Arguments',
