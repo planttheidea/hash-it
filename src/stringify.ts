@@ -31,6 +31,10 @@ function getConstructorName(fn: Function) {
   );
 }
 
+function getFirstEntry(entry: [string, string]) {
+  return entry[0];
+}
+
 /**
  * get the event object sorted by its properties
  *
@@ -137,17 +141,12 @@ function getSortedIterable(
     sort(entries, shouldSort);
   }
 
-  let final = `${getConstructorName(iterable.constructor)}|[`;
-
-  for (let index = 0, length = entries.length, entry; index < length; ++index) {
-    entry = entries[index];
-
-    final += `${index ? ',' : ''}${
-      isMap ? `[${entry[0]},${entry[1]}]` : entry
-    }`;
-  }
-
-  return `${final}]`;
+  return (
+    getConstructorName(iterable.constructor) +
+    (isMap
+      ? (entries as [string, string][]).map(getFirstEntry).join(',')
+      : entries.join(','))
+  );
 }
 
 /**
