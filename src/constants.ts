@@ -93,6 +93,11 @@ export const BAILOUT_TAGS = getFlags([
   OBJECT_CLASS_TYPE.WeakSet,
 ]);
 
+export const NORMALIZED_TAGS = getFlags([
+  OBJECT_CLASS_TYPE.Date,
+  OBJECT_CLASS_TYPE.RegExp,
+]);
+
 export const ITERABLE_TAGS = getFlags([
   OBJECT_CLASS_TYPE.Map,
   OBJECT_CLASS_TYPE.Set,

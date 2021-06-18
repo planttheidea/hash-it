@@ -2,6 +2,7 @@ import {
   BAILOUT_TAGS,
   ITERABLE_TAGS,
   OBJECT_CLASS,
+  NORMALIZED_TAGS,
   OBJECT_CLASS_TYPE,
   SELF_TAGS,
   TO_STRING_TAGS,
@@ -329,11 +330,9 @@ function createReplacer(cache: any[] = [], keys: string[] = []) {
       }
     }
 
-    if (key && this[key] instanceof Date) {
-      return getNormalizedValue(this[key], cache, keys, OBJECT_CLASS_TYPE.Date);
-    }
-
-    return getNormalizedValue(value, cache, keys);
+    return key && this[key] instanceof Date
+      ? getNormalizedValue(this[key], cache, keys, OBJECT_CLASS_TYPE.Date)
+      : getNormalizedValue(value, cache, keys);
   };
 }
 
@@ -350,11 +349,9 @@ function stringify(value: any, cache?: any[], keys?: string[]): string {
 
   const tag = toString.call(value);
 
-  if (tag === OBJECT_CLASS_TYPE.Date || tag === OBJECT_CLASS_TYPE.RegExp) {
-    return getNormalizedValue(value, cache, keys, tag);
-  }
-
-  return JSON.stringify(value, createReplacer(cache, keys));
+  return NORMALIZED_TAGS[tag as keyof typeof NORMALIZED_TAGS]
+    ? getNormalizedValue(value, cache, keys, tag)
+    : JSON.stringify(value, createReplacer(cache, keys));
 }
 
 export default stringify;
