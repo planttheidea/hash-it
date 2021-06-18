@@ -1,6 +1,7 @@
 import {
   BAILOUT_TAGS,
   ITERABLE_TAGS,
+  NORMALIZED_TAGS,
   OBJECT_CLASS,
   OBJECT_CLASS_TYPE,
   PRIMITIVE_TAGS,
@@ -349,7 +350,7 @@ function stringify(value: any, cache?: any[], keys?: string[]): string {
 
   const tag = toString.call(value);
 
-  if (tag === OBJECT_CLASS_TYPE.Date || tag === OBJECT_CLASS_TYPE.RegExp) {
+  if (NORMALIZED_TAGS[tag as keyof typeof NORMALIZED_TAGS]) {
     return getNormalizedValue(value, cache, keys, tag);
   }
 
