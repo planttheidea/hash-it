@@ -14,7 +14,7 @@ const FUNCTION_NAME_REGEX = /^\s*function\s*([^(]*)/i;
 const XML_ELEMENT_REGEXP = /\[object ([HTML|SVG](.*)Element)\]/;
 
 const toString = Object.prototype.toString;
-const keys = Object.keys;
+const getKeys = Object.keys;
 
 /**
  * get the name of the function based on a series of fallback attempts
@@ -157,7 +157,7 @@ function getSortedIterable(
  * @returns the sorted object
  */
 function getSortedObject<UnsortedObject>(object: UnsortedObject) {
-  const objectKeys = sort(keys(object), shouldSort);
+  const objectKeys = sort(getKeys(object), shouldSort);
   const newObject = {} as UnsortedObject;
 
   let key: keyof UnsortedObject;
