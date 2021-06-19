@@ -11,13 +11,8 @@ module.exports = {
   cache: true,
 
   devServer: {
-    contentBase: path.join(ROOT, 'dist'),
     host: 'localhost',
-    inline: true,
-    lazy: false,
-    noInfo: false,
     port: PORT,
-    quiet: false,
   },
 
   devtool: 'source-map',
