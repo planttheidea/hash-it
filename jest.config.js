@@ -6,6 +6,7 @@ module.exports = {
   transform: {
     '\\.(js|ts|tsx)$': 'babel-jest',
   },
+  testEnvironment: 'jsdom',
   testPathIgnorePatterns: ['<rootDir>/__tests__/__helpers__'],
   testRegex: '/__tests__/.*\\.(ts|tsx|js)$',
   verbose: true,
