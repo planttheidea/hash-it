@@ -110,42 +110,47 @@ function sort(array: any[], fn: (item: any, comparisonItem: any) => boolean) {
 }
 
 /**
- * get the pairs in the iterable for stringification
+ * get the pairs in the map for stringification
  *
- * @param iterable the iterable to get the pairs for
- * @returns the sorted, stringified entries
+ * @param map the map to get the pairs for
+ * @returns the sorted, stringified map
  */
-function getSortedIterable(
-  iterable: Map<any, any> | Set<any>,
-  cache: any[],
-  keys: string[],
-) {
-  const isMap = iterable instanceof Map;
+function getSortedMap(map: Map<any, any>, cache: any[], keys: string[]) {
   const entries: string[] = [];
 
-  if (isMap) {
-    iterable.forEach((value: any, key: any) => {
-      entries.push([
-        stringify(key, cache, keys),
-        stringify(value, cache, keys),
-      ] as unknown as string);
-    });
+  map.forEach((value: any, key: any) => {
+    entries.push([
+      stringify(key, cache, keys),
+      stringify(value, cache, keys),
+    ] as unknown as string);
+  });
 
-    sort(entries, shouldSortPair);
+  sort(entries, shouldSortPair);
 
-    for (let index = 0, entry; index < entries.length; ++index) {
-      entry = entries[index];
-      entries[index] = `[${entry[0]},${entry[1]}]`;
-    }
-  } else {
-    iterable.forEach((value: any) => {
-      entries.push(stringify(value, cache, keys));
-    });
-
-    sort(entries, shouldSort);
+  for (let index = 0, entry; index < entries.length; ++index) {
+    entry = entries[index];
+    entries[index] = `[${entry[0]},${entry[1]}]`;
   }
 
-  return `${getConstructorName(iterable.constructor)}|[${entries.join(',')}]`;
+  return `Map|[${entries.join(',')}]`;
+}
+
+/**
+ * get the values in the set for stringification
+ *
+ * @param set the set to get the values for
+ * @returns the sorted, stringified set
+ */
+function getSortedSet(set: Set<any>, cache: any[], keys: string[]) {
+  const entries: string[] = [];
+
+  set.forEach((value: any) => {
+    entries.push(stringify(value, cache, keys));
+  });
+
+  sort(entries, shouldSort);
+
+  return `Set|[${entries.join(',')}]`;
 }
 
 /**
@@ -245,7 +250,9 @@ function getNormalizedValue(
   }
 
   if (ITERABLE_TAGS[tag as keyof typeof ITERABLE_TAGS]) {
-    return getSortedIterable(value, cache as any[], keys as string[]);
+    return value instanceof Map
+      ? getSortedMap(value, cache as any[], keys as string[])
+      : getSortedSet(value, cache as any, keys as string[]);
   }
 
   if (tag === OBJECT_CLASS_TYPE.Date) {
