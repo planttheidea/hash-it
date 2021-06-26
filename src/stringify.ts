@@ -1,6 +1,7 @@
 import {
   BAILOUT_TAGS,
   ITERABLE_TAGS,
+  NORMALIZED_TAGS,
   OBJECT_CLASS,
   OBJECT_CLASS_TYPE,
   PRIMITIVE_TAGS,
@@ -10,27 +11,12 @@ import {
 } from './constants';
 import { getStringifiedArrayBuffer } from './arrayBuffer';
 
-const FUNCTION_NAME_REGEX = /^\s*function\s*([^(]*)/i;
-const HTML_ELEMENT_REGEXP = /\[object (HTML(.*)Element)\]/;
-const SVG_ELEMENT_REGEXP = /\[object (SVG(.*)Element)\]/;
+type ObjectClass = keyof typeof OBJECT_CLASS;
+
+const XML_ELEMENT_REGEXP = /\[object ([HTML|SVG](.*)Element)\]/;
 
 const toString = Object.prototype.toString;
 const keys = Object.keys;
-
-/**
- * get the name of the function based on a series of fallback attempts
- *
- * @param fn the function to test
- * @returns the function name
- */
-// eslint-disable-next-line @typescript-eslint/ban-types
-function getConstructorName(fn: Function) {
-  return (
-    fn.name ||
-    (fn.toString().match(FUNCTION_NAME_REGEX) || [])[1] ||
-    'anonymous'
-  );
-}
 
 /**
  * get the event object sorted by its properties
@@ -108,47 +94,47 @@ function sort(array: any[], fn: (item: any, comparisonItem: any) => boolean) {
 }
 
 /**
- * get the pairs in the iterable for stringification
+ * get the pairs in the map for stringification
  *
- * @param iterable the iterable to get the pairs for
- * @returns the sorted, stringified entries
+ * @param map the map to get the pairs for
+ * @returns the sorted, stringified map
  */
-function getSortedIterable(
-  iterable: Map<any, any> | Set<any>,
-  cache: any[],
-  keys: string[],
-) {
-  const isMap = iterable instanceof Map;
-  const entries: [string, string][] | string[] = [];
+function getSortedMap(map: Map<any, any>, cache: any[], keys: string[]) {
+  const entries: string[] = [];
 
-  if (isMap) {
-    iterable.forEach((value: any, key: any) => {
-      (entries as [string, string][]).push([
-        stringify(key, cache, keys),
-        stringify(value, cache, keys),
-      ] as [string, string]);
-    });
+  map.forEach((value: any, key: any) => {
+    entries.push([
+      stringify(key, cache, keys),
+      stringify(value, cache, keys),
+    ] as unknown as string);
+  });
 
-    sort(entries, shouldSortPair);
-  } else {
-    iterable.forEach((value: any) => {
-      (entries as string[]).push(stringify(value, cache, keys));
-    });
+  sort(entries, shouldSortPair);
 
-    sort(entries, shouldSort);
-  }
-
-  let final = `${getConstructorName(iterable.constructor)}|[`;
-
-  for (let index = 0, length = entries.length, entry; index < length; ++index) {
+  for (let index = 0, entry; index < entries.length; ++index) {
     entry = entries[index];
-
-    final += `${index ? ',' : ''}${
-      isMap ? `[${entry[0]},${entry[1]}]` : entry
-    }`;
+    entries[index] = `[${entry[0]},${entry[1]}]`;
   }
 
-  return `${final}]`;
+  return `Map|[${entries.join(',')}]`;
+}
+
+/**
+ * get the values in the set for stringification
+ *
+ * @param set the set to get the values for
+ * @returns the sorted, stringified set
+ */
+function getSortedSet(set: Set<any>, cache: any[], keys: string[]) {
+  const entries: string[] = [];
+
+  set.forEach((value: any) => {
+    entries.push(stringify(value, cache, keys));
+  });
+
+  sort(entries, shouldSort);
+
+  return `Set|[${entries.join(',')}]`;
 }
 
 /**
@@ -180,14 +166,13 @@ function getSortedObject<UnsortedObject>(object: UnsortedObject) {
  */
 function getStringifiedDocumentFragment(fragment: DocumentFragment) {
   const children = fragment.children;
-
-  let innerHTML = '';
+  const innerHTML: string[] = [];
 
   for (let index = 0; index < children.length; ++index) {
-    innerHTML += children[index].outerHTML;
+    innerHTML.push(children[index].outerHTML);
   }
 
-  return innerHTML;
+  return innerHTML.join(',');
 }
 
 /**
@@ -220,24 +205,21 @@ function getNormalizedValue(
   value: any,
   cache?: any[],
   keys?: string[],
-  passedTag?: keyof typeof OBJECT_CLASS,
+  passedTag?: ObjectClass,
 ) {
   if (!passedTag) {
     const type = typeof value;
 
-    if (
-      type === 'string' ||
-      PRIMITIVE_TAGS[type as keyof typeof PRIMITIVE_TAGS]
-    ) {
+    if (PRIMITIVE_TAGS[type as keyof typeof PRIMITIVE_TAGS]) {
       return `${type}|${value}`;
     }
 
     if (value === null) {
-      return `null|${value}`;
+      return `${value}|${value}`;
     }
   }
 
-  const tag: keyof typeof OBJECT_CLASS = passedTag || toString.call(value);
+  const tag = passedTag || (toString.call(value) as ObjectClass);
 
   if (SELF_TAGS[tag as keyof typeof SELF_TAGS]) {
     return value;
@@ -252,7 +234,9 @@ function getNormalizedValue(
   }
 
   if (ITERABLE_TAGS[tag as keyof typeof ITERABLE_TAGS]) {
-    return getSortedIterable(value, cache, keys);
+    return value instanceof Map
+      ? getSortedMap(value, cache as any[], keys as string[])
+      : getSortedSet(value, cache as any, keys as string[]);
   }
 
   if (tag === OBJECT_CLASS_TYPE.Date) {
@@ -271,7 +255,7 @@ function getNormalizedValue(
     return `${OBJECT_CLASS[tag]}|NOT_ENUMERABLE`;
   }
 
-  if (HTML_ELEMENT_REGEXP.test(tag) || SVG_ELEMENT_REGEXP.test(tag)) {
+  if (XML_ELEMENT_REGEXP.test(tag)) {
     return `${tag.slice(8, -1)}|${value.outerHTML}`;
   }
 
@@ -301,7 +285,7 @@ function getNormalizedValue(
  * @returns function getting the normalized value
  */
 function createReplacer(cache: any[] = [], keys: string[] = []) {
-  return function (key: string, value: any) {
+  return function (this: any, key: string, value: any) {
     if (typeof value === 'object') {
       if (cache.length) {
         const thisCutoff = getCutoffIndex(cache, this);
@@ -347,9 +331,9 @@ function stringify(value: any, cache?: any[], keys?: string[]): string {
     return getNormalizedValue(value, cache, keys);
   }
 
-  const tag = toString.call(value);
+  const tag = toString.call(value) as ObjectClass;
 
-  if (tag === OBJECT_CLASS_TYPE.Date || tag === OBJECT_CLASS_TYPE.RegExp) {
+  if (NORMALIZED_TAGS[tag as keyof typeof NORMALIZED_TAGS]) {
     return getNormalizedValue(value, cache, keys, tag);
   }
 
