@@ -11,7 +11,10 @@ const HAS_UINT16ARRAY_SUPPORT = typeof Uint16Array === 'function';
 export function getStringifiedArrayBufferFallback(
   buffer: ArrayBufferLike,
 ): string {
-  return String.fromCharCode.apply(null, new Uint16Array(buffer));
+  return String.fromCharCode.apply(
+    null,
+    new Uint16Array(buffer) as unknown as number[],
+  );
 }
 
 /**

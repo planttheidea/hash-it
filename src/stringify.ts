@@ -11,6 +11,8 @@ import {
 } from './constants';
 import { getStringifiedArrayBuffer } from './arrayBuffer';
 
+type ObjectClass = keyof typeof OBJECT_CLASS;
+
 const FUNCTION_NAME_REGEX = /^\s*function\s*([^(]*)/i;
 const XML_ELEMENT_REGEXP = /\[object ([HTML|SVG](.*)Element)\]/;
 
@@ -214,7 +216,7 @@ function getNormalizedValue(
   value: any,
   cache?: any[],
   keys?: string[],
-  passedTag?: keyof typeof OBJECT_CLASS,
+  passedTag?: ObjectClass,
 ) {
   if (!passedTag) {
     const type = typeof value;
@@ -228,7 +230,7 @@ function getNormalizedValue(
     }
   }
 
-  const tag: keyof typeof OBJECT_CLASS = passedTag || toString.call(value);
+  const tag = passedTag || (toString.call(value) as ObjectClass);
 
   if (SELF_TAGS[tag as keyof typeof SELF_TAGS]) {
     return value;
@@ -243,7 +245,7 @@ function getNormalizedValue(
   }
 
   if (ITERABLE_TAGS[tag as keyof typeof ITERABLE_TAGS]) {
-    return getSortedIterable(value, cache, keys);
+    return getSortedIterable(value, cache as any[], keys as string[]);
   }
 
   if (tag === OBJECT_CLASS_TYPE.Date) {
@@ -292,7 +294,7 @@ function getNormalizedValue(
  * @returns function getting the normalized value
  */
 function createReplacer(cache: any[] = [], keys: string[] = []) {
-  return function (key: string, value: any) {
+  return function (this: any, key: string, value: any) {
     if (typeof value === 'object') {
       if (cache.length) {
         const thisCutoff = getCutoffIndex(cache, this);
@@ -338,7 +340,7 @@ function stringify(value: any, cache?: any[], keys?: string[]): string {
     return getNormalizedValue(value, cache, keys);
   }
 
-  const tag = toString.call(value);
+  const tag = toString.call(value) as ObjectClass;
 
   if (NORMALIZED_TAGS[tag as keyof typeof NORMALIZED_TAGS]) {
     return getNormalizedValue(value, cache, keys, tag);
