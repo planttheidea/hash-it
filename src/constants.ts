@@ -16,23 +16,24 @@ type MappedReverseClass<Type extends readonly any[]> = {
   [Key in ElementOf<Type> as `[object ${Key}]`]: Key;
 };
 
-const getClassTypes = <Classes extends readonly any[]>(
+const getClassTypes = <
+  Classes extends readonly any[],
+  Reversed extends boolean,
+>(
   classes: Classes,
-): MappedClass<Classes> =>
+  reversed: Reversed,
+): Reversed extends true ? MappedReverseClass<Classes> : MappedClass<Classes> =>
   classes.reduce((map, className: Classes[number]) => {
-    map[className] = `[object ${className}]`;
+    const toStringClassName = `[object ${className}]`;
+
+    if (reversed) {
+      map[toStringClassName] = className;
+    } else {
+      map[className] = toStringClassName;
+    }
 
     return map;
-  }, {} as MappedClass<Classes>);
-
-const getReversedClassTypes = <Classes extends readonly any[]>(
-  classes: Classes,
-): MappedReverseClass<Classes> =>
-  classes.reduce((map, className: Classes[number]) => {
-    map[`[object ${className}]` as const] = className;
-
-    return map;
-  }, {} as MappedReverseClass<Classes>);
+  }, {});
 
 const getFlags = <Flags extends readonly any[]>(
   flags: Flags,
@@ -41,7 +42,7 @@ const getFlags = <Flags extends readonly any[]>(
     flag[item] = true;
 
     return flag;
-  }, {} as MappedFlag<Flags>);
+  }, {});
 
 const OBJECT_CLASSES = [
   // self tags
@@ -102,9 +103,8 @@ const OBJECT_CLASSES = [
   'Null',
 ] as const;
 
-export const OBJECT_CLASS_TYPE = getClassTypes(OBJECT_CLASSES);
-
-export const OBJECT_CLASS = getReversedClassTypes(OBJECT_CLASSES);
+export const OBJECT_CLASS_TYPE = getClassTypes(OBJECT_CLASSES, false);
+export const OBJECT_CLASS = getClassTypes(OBJECT_CLASSES, true);
 
 export const BAILOUT_TAGS = getFlags([
   OBJECT_CLASS_TYPE.Generator,
