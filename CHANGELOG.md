@@ -1,5 +1,10 @@
 # hash-it CHANGELOG
 
+## 5.0.2
+
+- Reduce code size by 28% (20% gzipped size)
+- Activate strict mode for typing
+
 ## 5.0.1
 
 - Update `.npmignore` to reduce package tarball size ([#39](https://github.com/planttheidea/hash-it/pull/39))
