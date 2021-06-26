@@ -13,26 +13,10 @@ import { getStringifiedArrayBuffer } from './arrayBuffer';
 
 type ObjectClass = keyof typeof OBJECT_CLASS;
 
-const FUNCTION_NAME_REGEX = /^\s*function\s*([^(]*)/i;
 const XML_ELEMENT_REGEXP = /\[object ([HTML|SVG](.*)Element)\]/;
 
 const toString = Object.prototype.toString;
 const keys = Object.keys;
-
-/**
- * get the name of the function based on a series of fallback attempts
- *
- * @param fn the function to test
- * @returns the function name
- */
-// eslint-disable-next-line @typescript-eslint/ban-types
-function getConstructorName(fn: Function) {
-  return (
-    fn.name ||
-    (fn.toString().match(FUNCTION_NAME_REGEX) || [])[1] ||
-    'anonymous'
-  );
-}
 
 /**
  * get the event object sorted by its properties

@@ -2,7 +2,7 @@
 
 ## 5.0.2
 
-- Reduce code size by 28% (20% gzipped size)
+- Reduce code size by 29.29% (19.42% gzipped size)
 - Activate strict mode for typing
 
 ## 5.0.1
