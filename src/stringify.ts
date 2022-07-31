@@ -1,170 +1,185 @@
-import {
-  BAILOUT_TAGS,
-  ITERABLE_TAGS,
-  NORMALIZED_TAGS,
-  OBJECT_CLASS,
-  OBJECT_CLASS_TYPE,
-  PRIMITIVE_TAGS,
-  SELF_TAGS,
-  TO_STRING_TAGS,
-  TYPED_ARRAY_TAGS,
-} from './constants';
-import { getStringifiedArrayBuffer } from './arrayBuffer';
+import sort, { sortByKey, sortBySelf } from "./sort";
 
-type ObjectClass = keyof typeof OBJECT_CLASS;
+interface RecursiveState {
+  cache: WeakMap<any, number>;
+  id: number;
+}
+
+enum Classes {
+  "[object Arguments]",
+  "[object Array]",
+  "[object ArrayBuffer]",
+  "[object BigInt]",
+  "[object Boolean]",
+  "[object DataView]",
+  "[object Date]",
+  "[object DocumentFragment]",
+  "[object Error]",
+  "[object Event]",
+  "[object Float32Array]",
+  "[object Float64Array]",
+  "[object Generator]",
+  "[object Int8Array]",
+  "[object Int16Array]",
+  "[object Map]",
+  "[object Number]",
+  "[object Object]",
+  "[object Promise]",
+  "[object RegExp]",
+  "[object Set]",
+  "[object String]",
+  "[object Uint8Array]",
+  "[object Uint8ClampedArray]",
+  "[object Uint16Array]",
+  "[object Uint32Array]",
+  "[object WeakMap]",
+  "[object WeakSet]",
+  "ELEMENT",
+  "CUSTOM",
+}
+
+enum NonEnumerableClasses {
+  "[object Generator]" = 1,
+  "[object Promise]" = 2,
+  "[object WeakMap]" = 3,
+  "[object WeakSet]" = 4,
+}
+
+enum TypedArrayClasses {
+  "[object Float32Array]" = 1,
+  "[object Float64Array]" = 2,
+  "[object Int8Array]" = 3,
+  "[object Int16Array]" = 4,
+  "[object Uint8Array]" = 5,
+  "[object Uint8ClampedArray]" = 6,
+  "[object Uint16Array]" = 7,
+  "[object Uint32Array]" = 8,
+}
+
+enum Types {
+  string,
+  number,
+  bigint,
+  boolean,
+  symbol,
+  undefined,
+  object,
+  function,
+}
 
 const XML_ELEMENT_REGEXP = /\[object ([HTML|SVG](.*)Element)\]/;
 
 const toString = Object.prototype.toString;
-const keys = Object.keys;
 
-/**
- * get the event object sorted by its properties
- *
- * @param event the event to sort
- * @returns the event object with all properties sorted
- */
-function getSortedEvent(event: Event) {
-  return {
-    bubbles: event.bubbles,
-    cancelBubble: event.cancelBubble,
-    cancelable: event.cancelable,
-    composed: event.composed,
-    currentTarget: event.currentTarget,
-    defaultPrevented: event.defaultPrevented,
-    eventPhase: event.eventPhase,
-    isTrusted: event.isTrusted,
-    returnValue: event.returnValue,
-    target: event.target,
-    type: event.type,
-  };
-}
+export function stringifyAnyObject(value: any, state: RecursiveState) {
+  const classType = toString.call(value) as unknown as keyof typeof Classes;
+  const prefix = `${Types.object}:${Classes[classType]}`;
 
-/**
- * get the sort result based on the two values to compare
- *
- * @param first the first value to compare
- * @param second the second value to compare
- * @returns should the value be sorted
- */
-function shouldSort(first: string, second: string) {
-  return first > second;
-}
+  const cached = state.cache.get(value);
 
-/**
- * get the sort result based on the two pairs to compare
- *
- * @param firstPair the first pair to compare
- * @param secondPair the second pair to compare
- * @returns should the value be sorted
- */
-function shouldSortPair(
-  firstPair: [string, string],
-  secondPair: [string, string],
-) {
-  return firstPair[0] > secondPair[0];
-}
-
-/**
- * sort the array based on the fn passed
- *
- * @param array the array to sort
- * @param fn the sorting function
- * @returns the sorted array
- */
-function sort(array: any[], fn: (item: any, comparisonItem: any) => boolean) {
-  let subIndex;
-  let value;
-
-  for (let index = 0; index < array.length; ++index) {
-    value = array[index];
-
-    for (
-      subIndex = index - 1;
-      ~subIndex && fn(array[subIndex], value);
-      --subIndex
-    ) {
-      array[subIndex + 1] = array[subIndex];
-    }
-
-    array[subIndex + 1] = value;
+  if (cached) {
+    return `${prefix}:RECURSIVE${cached}`;
   }
 
-  return array;
-}
-
-/**
- * get the pairs in the map for stringification
- *
- * @param map the map to get the pairs for
- * @returns the sorted, stringified map
- */
-function getSortedMap(map: Map<any, any>, cache: any[], keys: string[]) {
-  const entries: string[] = [];
-
-  map.forEach((value: any, key: any) => {
-    entries.push([
-      stringify(key, cache, keys),
-      stringify(value, cache, keys),
-    ] as unknown as string);
-  });
-
-  sort(entries, shouldSortPair);
-
-  for (let index = 0, entry; index < entries.length; ++index) {
-    entry = entries[index];
-    entries[index] = `[${entry[0]},${entry[1]}]`;
+  if (classType === "[object Date]") {
+    return `${prefix}:${value.getTime()}`;
   }
 
-  return `Map|[${entries.join(',')}]`;
-}
-
-/**
- * get the values in the set for stringification
- *
- * @param set the set to get the values for
- * @returns the sorted, stringified set
- */
-function getSortedSet(set: Set<any>, cache: any[], keys: string[]) {
-  const entries: string[] = [];
-
-  set.forEach((value: any) => {
-    entries.push(stringify(value, cache, keys));
-  });
-
-  sort(entries, shouldSort);
-
-  return `Set|[${entries.join(',')}]`;
-}
-
-/**
- * get the object with the keys sorted
- *
- * @param object the object to sort
- * @returns the sorted object
- */
-function getSortedObject<UnsortedObject>(object: UnsortedObject) {
-  const objectKeys = sort(keys(object), shouldSort);
-  const newObject = {} as UnsortedObject;
-
-  let key: keyof UnsortedObject;
-
-  for (let index = 0; index < objectKeys.length; ++index) {
-    key = objectKeys[index];
-
-    newObject[key] = object[key];
+  if (classType === "[object RegExp]") {
+    return `${prefix}:${value.toString()}`;
   }
 
-  return newObject;
+  state.cache.set(value, state.id++);
+
+  if (classType === "[object Object]") {
+    return `${prefix}:${stringifyObject(value, state)}`;
+  }
+
+  if (classType === "[object Array]" || classType === "[object Arguments]") {
+    return `${prefix}:${stringifyArray(value, state)}`;
+  }
+
+  if (classType === "[object Map]") {
+    return `${prefix}:${stringifyMap(value, state)}`;
+  }
+
+  if (classType === "[object Set]") {
+    return `${prefix}:${stringifySet(value, state)}`;
+  }
+
+  if (classType === "[object Event]") {
+    return `${prefix}:${JSON.stringify({
+      bubbles: value.bubbles,
+      cancelBubble: value.cancelBubble,
+      cancelable: value.cancelable,
+      composed: value.composed,
+      currentTarget: value.currentTarget,
+      defaultPrevented: value.defaultPrevented,
+      eventPhase: value.eventPhase,
+      isTrusted: value.isTrusted,
+      returnValue: value.returnValue,
+      target: value.target,
+      type: value.type,
+    })}`;
+  }
+
+  if (classType === "[object Error]") {
+    return `${prefix}:${value.message}:${value.stack}`;
+  }
+
+  if (NonEnumerableClasses[classType as keyof typeof NonEnumerableClasses]) {
+    return `${prefix}:NOT_ENUMERABLE`;
+  }
+
+  if (TypedArrayClasses[classType as keyof typeof TypedArrayClasses]) {
+    return `${prefix}:${value.join()}`;
+  }
+
+  if (classType === "[object ArrayBuffer]") {
+    return `${prefix}:${stringifyArrayBuffer(value)}`;
+  }
+
+  if (classType === "[object DataView]") {
+    return `${prefix}:${stringifyArrayBuffer(value.buffer)}`;
+  }
+
+  if (XML_ELEMENT_REGEXP.test(value)) {
+    return `${Classes.ELEMENT}:${value.outerHTML}`;
+  }
+
+  if (classType === "[object DocumentFragment]") {
+    return `${prefix}:${stringifyDocumentFragment(value)}`;
+  }
+
+  return `${Classes.CUSTOM}:${stringifyObject(value, state)}`;
 }
 
-/**
- * build a string based on all the fragment's children
- *
- * @param fragment the fragment to stringify
- * @returns the stringified fragment
- */
-function getStringifiedDocumentFragment(fragment: DocumentFragment) {
+export function stringifyArray(value: any[], state: RecursiveState) {
+  const result: string[] = [];
+
+  for (let index = 0, length = value.length; index < length; ++index) {
+    result[index] = stringifyValue(value[index], state);
+  }
+
+  return result.join();
+}
+
+export function stringifyArrayBufferModern(buffer: ArrayBufferLike): string {
+  return Buffer.from(buffer).toString("utf8");
+}
+
+export function stringifyArrayBufferFallback(buffer: ArrayBufferLike): string {
+  return String.fromCharCode.apply(
+    null,
+    new Uint16Array(buffer) as unknown as number[]
+  );
+}
+
+export function stringifyArrayBufferNone(): string {
+  return "UNSUPPORTED";
+}
+
+export function stringifyDocumentFragment(fragment: DocumentFragment): string {
   const children = fragment.children;
   const innerHTML: string[] = [];
 
@@ -172,172 +187,93 @@ function getStringifiedDocumentFragment(fragment: DocumentFragment) {
     innerHTML.push(children[index].outerHTML);
   }
 
-  return innerHTML.join(',');
+  return innerHTML.join();
 }
 
-/**
- * get the index after that of the value match in the array (faster than
- * native indexOf) to determine the cutoff index for the `splice()` call.
- *
- * @param array the array to get the index of the value at
- * @param value the value to match
- * @returns the index after the value match in the array
- */
-function getCutoffIndex(array: any[], value: any) {
-  for (let index = 0; index < array.length; ++index) {
-    if (array[index] === value) {
-      return index + 1;
-    }
+const stringifyArrayBuffer =
+  typeof Buffer !== "undefined" && typeof Buffer.from === "function"
+    ? stringifyArrayBufferModern
+    : typeof Uint16Array === "function"
+    ? stringifyArrayBufferFallback
+    : stringifyArrayBufferNone;
+
+export function stringifyMap(map: Map<any, any>, state: RecursiveState) {
+  const result: string[] | Array<[string, string]> = [];
+
+  let index = 0;
+  map.forEach((value, key) => {
+    result[index++] = [
+      stringifyValue(key, state),
+      stringifyValue(value, state),
+    ];
+  });
+
+  sort(result, sortByKey);
+
+  for (let index = 0, length = result.length; index < length; ++index) {
+    result[index] = `[${result[index][0]},${result[index][1]}]`;
   }
 
-  return 0;
+  return result.join();
 }
 
-/**
- * get the value normalized for stringification
- *
- * @param value the value to normalize
- * @param sortedCache the cache of sorted objects
- * @param passedTag the previously-calculated tag
- * @returns the normalized value
- */
-function getNormalizedValue(
-  value: any,
-  cache?: any[],
-  keys?: string[],
-  passedTag?: ObjectClass,
+export function stringifyObject(
+  value: Record<string, any>,
+  state: RecursiveState
 ) {
-  if (!passedTag) {
-    const type = typeof value;
+  const result: string[] | Array<[string, string]> = [];
+  const properties = Object.getOwnPropertyNames(value);
 
-    if (PRIMITIVE_TAGS[type as keyof typeof PRIMITIVE_TAGS]) {
-      return `${type}|${value}`;
-    }
+  for (let index = 0, length = properties.length; index < length; ++index) {
+    const property = properties[index];
 
-    if (value === null) {
-      return `${value}|${value}`;
-    }
+    result[index] = [
+      stringifyValue(property, state),
+      stringifyValue(value[property], state),
+    ];
   }
 
-  const tag = passedTag || (toString.call(value) as ObjectClass);
+  sort(result, sortByKey);
 
-  if (SELF_TAGS[tag as keyof typeof SELF_TAGS]) {
-    return value;
+  for (let index = 0, length = result.length; index < length; ++index) {
+    result[index] = `${result[index][0]}:${result[index][1]}`;
   }
 
-  if (tag === OBJECT_CLASS_TYPE.Object) {
-    return getSortedObject(value);
-  }
-
-  if (TO_STRING_TAGS[tag as keyof typeof TO_STRING_TAGS]) {
-    return `${OBJECT_CLASS[tag]}|${value.toString()}`;
-  }
-
-  if (ITERABLE_TAGS[tag as keyof typeof ITERABLE_TAGS]) {
-    return value instanceof Map
-      ? getSortedMap(value, cache as any[], keys as string[])
-      : getSortedSet(value, cache as any, keys as string[]);
-  }
-
-  if (tag === OBJECT_CLASS_TYPE.Date) {
-    return `${OBJECT_CLASS[tag]}|${value.getTime()}`;
-  }
-
-  if (tag === OBJECT_CLASS_TYPE.Error) {
-    return `${OBJECT_CLASS[tag]}|${value.stack}`;
-  }
-
-  if (tag === OBJECT_CLASS_TYPE.Event) {
-    return getSortedEvent(value);
-  }
-
-  if (BAILOUT_TAGS[tag as keyof typeof BAILOUT_TAGS]) {
-    return `${OBJECT_CLASS[tag]}|NOT_ENUMERABLE`;
-  }
-
-  if (XML_ELEMENT_REGEXP.test(tag)) {
-    return `${tag.slice(8, -1)}|${value.outerHTML}`;
-  }
-
-  if (tag === OBJECT_CLASS_TYPE.DocumentFragment) {
-    return `${OBJECT_CLASS[tag]}|${getStringifiedDocumentFragment(value)}`;
-  }
-
-  if (TYPED_ARRAY_TAGS[tag as keyof typeof TYPED_ARRAY_TAGS]) {
-    return `${OBJECT_CLASS[tag]}|${value.join(',')}`;
-  }
-
-  if (tag === OBJECT_CLASS_TYPE.ArrayBuffer) {
-    return `${OBJECT_CLASS[tag]}|${getStringifiedArrayBuffer(value)}`;
-  }
-
-  if (tag === OBJECT_CLASS_TYPE.DataView) {
-    return `${OBJECT_CLASS[tag]}|${getStringifiedArrayBuffer(value.buffer)}`;
-  }
-
-  return value;
+  return `{${result.join()}}`;
 }
 
-/**
- * create the replacer function used for stringification
- *
- * @param sortedCache the cache to use for sorting objects
- * @returns function getting the normalized value
- */
-function createReplacer(cache: any[] = [], keys: string[] = []) {
-  return function (this: any, key: string, value: any) {
-    if (typeof value === 'object') {
-      if (cache.length) {
-        const thisCutoff = getCutoffIndex(cache, this);
+export function stringifySet(set: Set<any>, state: RecursiveState) {
+  const result: string[] = [];
 
-        if (thisCutoff === 0) {
-          cache.push(this);
-        } else {
-          cache.splice(thisCutoff);
-          keys.splice(thisCutoff);
-        }
+  let index = 0;
+  set.forEach((value) => {
+    result[index++] = stringifyValue(value, state);
+  });
 
-        keys.push(key);
+  sort(result, sortBySelf);
 
-        const valueCutoff = getCutoffIndex(cache, value);
-
-        if (valueCutoff !== 0) {
-          return `[~${keys.slice(0, valueCutoff).join('.') || '.'}]`;
-        }
-
-        cache.push(value);
-      } else {
-        cache[0] = value;
-        keys[0] = key;
-      }
-    }
-
-    if (key && this[key] instanceof Date) {
-      return getNormalizedValue(this[key], cache, keys, OBJECT_CLASS_TYPE.Date);
-    }
-
-    return getNormalizedValue(value, cache, keys);
-  };
+  return result.join();
 }
 
-/**
- * stringify the value based on the options passed
- *
- * @param value the value to stringify
- * @returns the stringified value
- */
-function stringify(value: any, cache?: any[], keys?: string[]): string {
-  if (!value || typeof value !== 'object') {
-    return getNormalizedValue(value, cache, keys);
+export function stringifyValue(value: any, state?: RecursiveState): string {
+  const type = typeof value;
+
+  if (value) {
+    if (type === "object") {
+      return stringifyAnyObject(
+        value,
+        state || { cache: new WeakMap(), id: 1 }
+      );
+    }
+
+    if (type === "function" || type === "symbol") {
+      return `${Types[type]}:${value.toString()}`;
+    }
   }
 
-  const tag = toString.call(value) as ObjectClass;
-
-  if (NORMALIZED_TAGS[tag as keyof typeof NORMALIZED_TAGS]) {
-    return getNormalizedValue(value, cache, keys, tag);
-  }
-
-  return JSON.stringify(value, createReplacer(cache, keys));
+  return `${Types[type]}:${value}`;
 }
 
-export default stringify;
+export default function stringify(value: any): string {
+  return stringifyValue(value);
+}

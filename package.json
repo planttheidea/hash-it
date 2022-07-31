@@ -49,7 +49,7 @@
     "rollup": "2.52.1",
     "rollup-plugin-terser": "7.0.2",
     "tslib": "2.3.0",
-    "typescript": "4.3.4",
+    "typescript": "4.7.4",
     "webpack": "5.39.1",
     "webpack-cli": "4.7.2",
     "webpack-dev-server": "4.0.0-beta.3"
@@ -84,5 +84,6 @@
     "test:watch": "npm test -- --watch",
     "typecheck": "tsc --noEmit"
   },
-  "version": "5.0.2"
+  "version": "5.0.2",
+  "dependencies": {}
 }

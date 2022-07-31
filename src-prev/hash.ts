@@ -6,7 +6,7 @@
  * @param string the string to get the hash value for
  * @returns the hash value
  */
-export default function hash(string: string) {
+function getUniqueIntegerFromString(string: string) {
   let index = string.length;
   let hashA = 5381;
   let hashB = 52711;
@@ -21,3 +21,5 @@ export default function hash(string: string) {
 
   return (hashA >>> 0) * 4096 + (hashB >>> 0);
 }
+
+export default getUniqueIntegerFromString;
