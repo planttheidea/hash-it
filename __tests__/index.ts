@@ -93,7 +93,7 @@ describe("hash", () => {
     expect(hash(set1)).toBe(hash(set2));
   });
 
-  describe.skip("hash.is", () => {
+  describe("hash.is", () => {
     it("should check equality", () => {
       expect(hash.is(undefined, null)).toBe(false);
       expect(hash.is(null, undefined)).toBe(false);
@@ -133,7 +133,7 @@ describe("hash", () => {
       });
     });
 
-    describe.skip("hash.is.any", () => {
+    describe("hash.is.any", () => {
       it("should check any objects for value equality", () => {
         const equalTest1 = {
           foo: "bar",
@@ -167,7 +167,7 @@ describe("hash", () => {
       });
     });
 
-    describe.skip("hash.is.not", () => {
+    describe("hash.is.not", () => {
       it("should check any objects for value inequality", () => {
         expect(hash.is.not(undefined, null)).toBe(true);
         expect(hash.is.not(null, undefined)).toBe(true);
@@ -177,7 +177,7 @@ describe("hash", () => {
       });
     });
 
-    describe.skip("specific value validation", () => {
+    describe("specific value validation", () => {
       it("should not allow simple string faking to produce false positives", () => {
         expect(hash.is(42, "number|42")).toBe(false);
         expect(hash.is(null, "null|null")).toBe(false);
