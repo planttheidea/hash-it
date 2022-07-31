@@ -72,7 +72,7 @@ console.log('');
 // write to file
 if (fs && fs.writeFileSync) {
   fs.writeFileSync('results_latest.txt', results.join('\n'), 'utf8');
-  console.log('Benchmarks done! Results saved to results.csv');
+  console.log('Benchmarks done! Results saved to results_latest.txt');
 } else {
   console.log('Benchmarks done!');
 }
