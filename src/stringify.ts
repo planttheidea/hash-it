@@ -5,75 +5,75 @@ interface RecursiveState {
   id: number;
 }
 
-enum Classes {
-  "[object Arguments]",
-  "[object Array]",
-  "[object ArrayBuffer]",
-  "[object BigInt]",
-  "[object Boolean]",
-  "[object DataView]",
-  "[object Date]",
-  "[object DocumentFragment]",
-  "[object Error]",
-  "[object Event]",
-  "[object Float32Array]",
-  "[object Float64Array]",
-  "[object Generator]",
-  "[object Int8Array]",
-  "[object Int16Array]",
-  "[object Map]",
-  "[object Number]",
-  "[object Object]",
-  "[object Promise]",
-  "[object RegExp]",
-  "[object Set]",
-  "[object String]",
-  "[object Uint8Array]",
-  "[object Uint8ClampedArray]",
-  "[object Uint16Array]",
-  "[object Uint32Array]",
-  "[object WeakMap]",
-  "[object WeakSet]",
-  "ELEMENT",
-  "CUSTOM",
-}
+const CLASSES = {
+  "[object Arguments]": 0,
+  "[object Array]": 1,
+  "[object ArrayBuffer]": 2,
+  "[object BigInt]": 3,
+  "[object Boolean]": 4,
+  "[object DataView]": 5,
+  "[object Date]": 6,
+  "[object DocumentFragment]": 7,
+  "[object Error]": 8,
+  "[object Event]": 9,
+  "[object Float32Array]": 10,
+  "[object Float64Array]": 11,
+  "[object Generator]": 12,
+  "[object Int8Array]": 13,
+  "[object Int16/Array]": 14,
+  "[object Map]": 15,
+  "[object Number]": 16,
+  "[object Object]": 17,
+  "[object Promise]": 18,
+  "[object RegExp]": 19,
+  "[object Set]": 20,
+  "[object String]": 21,
+  "[object Uint8Array]": 22,
+  "[object Uint8ClampedArray]": 23,
+  "[object Uint16Array]": 24,
+  "[object Uint32Array]": 25,
+  "[object WeakMap]": 26,
+  "[object WeakSet]": 27,
+  ELEMENT: 28,
+  CUSTOM: 29,
+} as const;
 
-enum NonEnumerableClasses {
-  "[object Generator]" = 1,
-  "[object Promise]" = 2,
-  "[object WeakMap]" = 3,
-  "[object WeakSet]" = 4,
-}
+const NON_ENUMERABLE_CLASSES = {
+  "[object Generator]": 1,
+  "[object Promise]": 2,
+  "[object WeakMap]": 3,
+  "[object WeakSet]": 4,
+} as const;
 
-enum TypedArrayClasses {
-  "[object Float32Array]" = 1,
-  "[object Float64Array]" = 2,
-  "[object Int8Array]" = 3,
-  "[object Int16Array]" = 4,
-  "[object Uint8Array]" = 5,
-  "[object Uint8ClampedArray]" = 6,
-  "[object Uint16Array]" = 7,
-  "[object Uint32Array]" = 8,
-}
+const TYPED_ARRAY_CLASSES = {
+  "[object Float32Array]": 1,
+  "[object Float64Array]": 2,
+  "[object Int8Array]": 3,
+  "[object Int16Array]": 4,
+  "[object Uint8Array]": 5,
+  "[object Uint8ClampedArray]": 6,
+  "[object Uint16Array]": 7,
+  "[object Uint32Array]": 8,
+} as const;
 
-enum Types {
-  string,
-  number,
-  bigint,
-  boolean,
-  symbol,
-  undefined,
-  object,
-  function,
-}
+const Types = {
+  string: 0,
+  number: 1,
+  bigint: 2,
+  boolean: 3,
+  symbol: 4,
+  undefined: 5,
+  object: 6,
+  function: 7,
+} as const;
 
 const XML_ELEMENT_REGEXP = /\[object ([HTML|SVG](.*)Element)\]/;
 
 const toString = Object.prototype.toString;
 
 export function stringifyAnyObject(value: any, state: RecursiveState) {
-  const classType = toString.call(value) as unknown as keyof typeof Classes;
-  const prefix = `${Types.object}:${Classes[classType]}`;
+  const classType = toString.call(value) as unknown as keyof typeof CLASSES;
+  const prefix = `${Types.object}:${CLASSES[classType]}`;
 
   const cached = state.cache.get(value);
 
@@ -127,11 +127,13 @@ export function stringifyAnyObject(value: any, state: RecursiveState) {
     return `${prefix}:${value.message}:${value.stack}`;
   }
 
-  if (NonEnumerableClasses[classType as keyof typeof NonEnumerableClasses]) {
+  if (
+    NON_ENUMERABLE_CLASSES[classType as keyof typeof NON_ENUMERABLE_CLASSES]
+  ) {
     return `${prefix}:NOT_ENUMERABLE`;
   }
 
-  if (TypedArrayClasses[classType as keyof typeof TypedArrayClasses]) {
+  if (TYPED_ARRAY_CLASSES[classType as keyof typeof TYPED_ARRAY_CLASSES]) {
     return `${prefix}:${value.join()}`;
   }
 
@@ -144,14 +146,14 @@ export function stringifyAnyObject(value: any, state: RecursiveState) {
   }
 
   if (XML_ELEMENT_REGEXP.test(value)) {
-    return `${Classes.ELEMENT}:${value.outerHTML}`;
+    return `${CLASSES.ELEMENT}:${value.outerHTML}`;
   }
 
   if (classType === "[object DocumentFragment]") {
     return `${prefix}:${stringifyDocumentFragment(value)}`;
   }
 
-  return `${Classes.CUSTOM}:${stringifyObject(value, state)}`;
+  return `${CLASSES.CUSTOM}:${stringifyObject(value, state)}`;
 }
 
 export function stringifyArray(value: any[], state: RecursiveState) {
