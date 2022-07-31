@@ -186,7 +186,7 @@ export function stringifyDocumentFragment(fragment: DocumentFragment): string {
   const innerHTML: string[] = [];
 
   for (let index = 0; index < children.length; ++index) {
-    innerHTML.push(children[index].outerHTML);
+    innerHTML[index] = children[index].outerHTML;
   }
 
   return innerHTML.join();
