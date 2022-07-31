@@ -2,9 +2,6 @@
  * based on string passed, get the integer hash value
  * through bitwise operation (based on spinoff of dbj2
  * with enhancements for reduced collisions)
- *
- * @param string the string to get the hash value for
- * @returns the hash value
  */
 export default function hash(string: string) {
   let index = string.length;

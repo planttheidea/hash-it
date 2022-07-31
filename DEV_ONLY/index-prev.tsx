@@ -23,7 +23,7 @@ class StatefulComponent extends React.Component {
 
 const StatelessComponent = () => <div>test</div>;
 
-const a = {
+const a: Record<string, any> = {
   foo: 'bar',
 };
 

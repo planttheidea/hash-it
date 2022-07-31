@@ -1,7 +1,7 @@
-import hash from "../src/index";
+import hash from '../src/index';
 
-import { TEST_VALUES } from "./__helpers__/values";
-import WORDS from "./__helpers__/words.json";
+import { TEST_VALUES } from './__helpers__/values';
+import WORDS from './__helpers__/words.json';
 
 const VALUES = TEST_VALUES.map(({ key, value }) => ({ key, value }));
 const VALUE_HASHES = VALUES.reduce((map, { key, value }) => {
@@ -12,14 +12,14 @@ const VALUE_HASHES = VALUES.reduce((map, { key, value }) => {
 
 const CONSISTENCY_ITERATIONS = 10000;
 
-describe("hash", () => {
-  it("should have hashed values that are non-zero", () => {
+describe('hash', () => {
+  it('should have hashed values that are non-zero', () => {
     VALUES.forEach(({ value }) => {
       expect(hash(value)).not.toBe(0);
     });
   });
 
-  it("should have a unique hash", () => {
+  it('should have a unique hash', () => {
     VALUES.forEach(({ value }) => {
       VALUES.forEach(({ value: otherValue }) => {
         if (value !== otherValue) {
@@ -29,7 +29,7 @@ describe("hash", () => {
     });
   });
 
-  it("should have a consistent hash", () => {
+  it('should have a consistent hash', () => {
     TEST_VALUES.forEach(({ key, value }) => {
       for (let index = 0; index < CONSISTENCY_ITERATIONS; ++index) {
         expect(hash(value)).toBe(VALUE_HASHES[key]);
@@ -73,28 +73,28 @@ describe("hash", () => {
     expect(count).toBe(0);
   });
 
-  it("should hash based on a sorted Map", () => {
+  it('should hash based on a sorted Map', () => {
     const map1 = new Map([
-      ["foo", "bar"],
-      ["bar", "foo"],
+      ['foo', 'bar'],
+      ['bar', 'foo'],
     ]);
     const map2 = new Map([
-      ["bar", "foo"],
-      ["foo", "bar"],
+      ['bar', 'foo'],
+      ['foo', 'bar'],
     ]);
 
     expect(hash(map1)).toBe(hash(map2));
   });
 
-  it("should hash based on a sorted Set", () => {
-    const set1 = new Set(["foo", "bar"]);
-    const set2 = new Set(["bar", "foo"]);
+  it('should hash based on a sorted Set', () => {
+    const set1 = new Set(['foo', 'bar']);
+    const set2 = new Set(['bar', 'foo']);
 
     expect(hash(set1)).toBe(hash(set2));
   });
 
-  describe("hash.is", () => {
-    it("should check equality", () => {
+  describe('hash.is', () => {
+    it('should check equality', () => {
       expect(hash.is(undefined, null)).toBe(false);
       expect(hash.is(null, undefined)).toBe(false);
 
@@ -102,16 +102,16 @@ describe("hash", () => {
       expect(hash.is(null, null)).toBe(true);
     });
 
-    describe("hash.is.all", () => {
-      it("should check all objects for value equality", () => {
+    describe('hash.is.all', () => {
+      it('should check all objects for value equality', () => {
         const equalTest1 = {
-          foo: "bar",
+          foo: 'bar',
         };
         const equalTest2 = { ...equalTest1 };
         const equalTest3 = { ...equalTest2 };
 
         const equalTest4 = {
-          foo: "baz",
+          foo: 'baz',
         };
 
         expect(equalTest1).not.toBe(equalTest2);
@@ -128,21 +128,21 @@ describe("hash", () => {
         expect(hash.is.all(equalTest1, equalTest2, equalTest3)).toBe(true);
         expect(hash.is.all(equalTest1, equalTest2, equalTest4)).toBe(false);
         expect(
-          hash.is.all(equalTest1, equalTest2, equalTest3, equalTest4)
+          hash.is.all(equalTest1, equalTest2, equalTest3, equalTest4),
         ).toBe(false);
       });
     });
 
-    describe("hash.is.any", () => {
-      it("should check any objects for value equality", () => {
+    describe('hash.is.any', () => {
+      it('should check any objects for value equality', () => {
         const equalTest1 = {
-          foo: "bar",
+          foo: 'bar',
         };
         const equalTest2 = { ...equalTest1 };
         const equalTest3 = { ...equalTest2 };
 
         const equalTest4 = {
-          foo: "baz",
+          foo: 'baz',
         };
 
         expect(equalTest1).not.toBe(equalTest2);
@@ -159,16 +159,16 @@ describe("hash", () => {
         expect(hash.is.any(equalTest1, equalTest2, equalTest3)).toBe(true);
         expect(hash.is.any(equalTest1, equalTest2, equalTest4)).toBe(true);
         expect(
-          hash.is.any(equalTest1, equalTest2, equalTest3, equalTest4)
+          hash.is.any(equalTest1, equalTest2, equalTest3, equalTest4),
         ).toBe(true);
         expect(
-          hash.is.any(equalTest4, equalTest1, equalTest2, equalTest3)
+          hash.is.any(equalTest4, equalTest1, equalTest2, equalTest3),
         ).toBe(false);
       });
     });
 
-    describe("hash.is.not", () => {
-      it("should check any objects for value inequality", () => {
+    describe('hash.is.not', () => {
+      it('should check any objects for value inequality', () => {
         expect(hash.is.not(undefined, null)).toBe(true);
         expect(hash.is.not(null, undefined)).toBe(true);
 
@@ -177,33 +177,33 @@ describe("hash", () => {
       });
     });
 
-    describe("specific value validation", () => {
-      it("should not allow simple string faking to produce false positives", () => {
-        expect(hash.is(42, "number|42")).toBe(false);
-        expect(hash.is(null, "null|null")).toBe(false);
-        expect(hash.is(new Date(1970, 0, 1), "Date|0")).toBe(false);
-        expect(hash.is(new Date(1970, 0, 1), "1970-01-01T00:00:00.000Z")).toBe(
-          false
+    describe('specific value validation', () => {
+      it('should not allow simple string faking to produce false positives', () => {
+        expect(hash.is(42, 'number|42')).toBe(false);
+        expect(hash.is(null, 'null|null')).toBe(false);
+        expect(hash.is(new Date(1970, 0, 1), 'Date|0')).toBe(false);
+        expect(hash.is(new Date(1970, 0, 1), '1970-01-01T00:00:00.000Z')).toBe(
+          false,
         );
       });
 
-      it("should handle nested dates", () => {
+      it('should handle nested dates', () => {
         expect(hash.is(new Date(1970, 0, 1), new Date(1970, 0, 1))).toBe(true);
         expect(
           hash.is(
             { date: new Date(1970, 0, 1) },
-            { date: new Date(1970, 0, 1) }
-          )
+            { date: new Date(1970, 0, 1) },
+          ),
         ).toBe(true);
         expect(
           hash.is(
             { date: new Date(1970, 0, 1) },
-            { date: "1970-01-01T00:00:00.000Z" }
-          )
+            { date: '1970-01-01T00:00:00.000Z' },
+          ),
         ).toBe(false);
       });
 
-      it("should handle recursive values", () => {
+      it('should handle recursive values', () => {
         const object: Record<string, any> = {};
 
         object.self = object;
@@ -220,8 +220,8 @@ describe("hash", () => {
         expect(
           hash.is(
             array1,
-            '[{"self":"[~.0]"},{"self":"[~.1]"},{"self":"[~.2]"}]'
-          )
+            '[{"self":"[~.0]"},{"self":"[~.1]"},{"self":"[~.2]"}]',
+          ),
         ).toBe(false);
         expect(hash.is(array1, array2)).toBe(false);
       });

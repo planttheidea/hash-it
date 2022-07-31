@@ -1,6 +1,6 @@
 export function sortByKey(
   first: [string, string],
-  second: [string, string]
+  second: [string, string],
 ): boolean {
   return first[0] > second[0];
 }
@@ -11,7 +11,7 @@ export function sortBySelf(first: string, second: string) {
 
 export default function sort(
   array: any[],
-  fn: (item: any, comparisonItem: any) => boolean
+  fn: (item: any, comparisonItem: any) => boolean,
 ) {
   let subIndex;
   let value;
