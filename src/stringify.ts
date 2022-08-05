@@ -71,7 +71,17 @@ const XML_ELEMENT_REGEXP = /\[object ([HTML|SVG](.*)Element)\]/;
 
 const toString = Object.prototype.toString;
 
+function createStringifyReplacer(state: RecursiveState) {
+  return function (key: string, value: any) {
+    return stringifyAnyObject(value, state);
+  };
+}
+
 export function stringifyAnyObject(value: any, state: RecursiveState) {
+  if (typeof value !== 'object') {
+    return stringifyValue(value, state);
+  }
+
   const classType = toString.call(value) as unknown as keyof typeof CLASSES;
   const prefix = `${Types.object}:${CLASSES[classType]}`;
 
@@ -262,9 +272,9 @@ export function stringifyValue(value: any, state?: RecursiveState): string {
 
   if (value) {
     if (type === 'object') {
-      return stringifyAnyObject(
+      return JSON.stringify(
         value,
-        state || { cache: new WeakMap(), id: 1 },
+        createStringifyReplacer(state || { cache: new WeakMap(), id: 1 }),
       );
     }
 
