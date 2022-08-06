@@ -145,12 +145,14 @@ function stringifyRecursive(value: any, state: RecursiveState) {
     return `${prefix}:NOT_ENUMERABLE`;
   }
 
-  if (XML_ELEMENT_REGEXP.test(value)) {
-    return `${CLASSES.ELEMENT}:${value.outerHTML}`;
-  }
-
   if (classType === '[object DocumentFragment]') {
     return `${prefix}:${stringifyDocumentFragment(value)}`;
+  }
+
+  const element = XML_ELEMENT_REGEXP.exec(value);
+
+  if (element) {
+    return `${CLASSES.ELEMENT}:${element[1]}:${value.outerHTML}`;
   }
 
   // This would only be hit with custom `toStringTag` values
