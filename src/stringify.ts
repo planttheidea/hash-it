@@ -20,7 +20,7 @@ const CLASSES = {
   '[object Float64Array]': 11,
   '[object Generator]': 12,
   '[object Int8Array]': 13,
-  '[object Int16/Array]': 14,
+  '[object Int16Array]': 14,
   '[object Map]': 15,
   '[object Number]': 16,
   '[object Object]': 17,
@@ -56,6 +56,25 @@ const TYPED_ARRAY_CLASSES = {
   '[object Uint32Array]': 8,
 } as const;
 
+const RECURSIVE_CLASSES = {
+  '[object Arguments]': 1,
+  '[object Array]': 2,
+  '[object ArrayBuffer]': 3,
+  '[object DataView]': 4,
+  '[object Float32Array]': 5,
+  '[object Float64Array]': 6,
+  '[object Int8Array]': 7,
+  '[object Int16Array]': 8,
+  '[object Map]': 9,
+  '[object Object]': 1,
+  '[object Set]': 11,
+  '[object Uint8Array]': 12,
+  '[object Uint8ClampedArray]': 13,
+  '[object Uint16Array]': 14,
+  '[object Uint32Array]': 15,
+  CUSTOM: 16,
+} as const;
+
 const Types = {
   string: 0,
   number: 1,
@@ -71,25 +90,26 @@ const XML_ELEMENT_REGEXP = /\[object ([HTML|SVG](.*)Element)\]/;
 
 const toString = Object.prototype.toString;
 
-function createStringifyReplacer(state: RecursiveState) {
-  return function (key: string, value: any) {
-    return stringifyAnyObject(value, state);
-  };
-}
+function stringifyRecursive(value: any, state: RecursiveState) {
+  const type = typeof value;
 
-export function stringifyAnyObject(value: any, state: RecursiveState) {
-  if (typeof value !== 'object') {
-    return stringifyValue(value, state);
+  if (type !== 'object') {
+    return stringifyStandard(type, value);
   }
 
   const classType = toString.call(value) as unknown as keyof typeof CLASSES;
-  const prefix = `${Types.object}:${CLASSES[classType]}`;
 
-  const cached = state.cache.get(value);
-
-  if (cached) {
-    return `${prefix}:RECURSIVE${cached}`;
+  if (RECURSIVE_CLASSES[classType as keyof typeof RECURSIVE_CLASSES]) {
+    return JSON.stringify(value, (key, value) =>
+      stringifyRecursiveAsJson(
+        classType as keyof typeof RECURSIVE_CLASSES,
+        value,
+        state,
+      ),
+    );
   }
+
+  const prefix = `${Types.object}:${CLASSES[classType]}`;
 
   if (classType === '[object Date]') {
     return `${prefix}:${value.getTime()}`;
@@ -97,24 +117,6 @@ export function stringifyAnyObject(value: any, state: RecursiveState) {
 
   if (classType === '[object RegExp]') {
     return `${prefix}:${value.toString()}`;
-  }
-
-  state.cache.set(value, state.id++);
-
-  if (classType === '[object Object]') {
-    return `${prefix}:${stringifyObject(value, state)}`;
-  }
-
-  if (classType === '[object Array]' || classType === '[object Arguments]') {
-    return `${prefix}:${stringifyArray(value, state)}`;
-  }
-
-  if (classType === '[object Map]') {
-    return `${prefix}:${stringifyMap(value, state)}`;
-  }
-
-  if (classType === '[object Set]') {
-    return `${prefix}:${stringifySet(value, state)}`;
   }
 
   if (classType === '[object Event]') {
@@ -143,6 +145,50 @@ export function stringifyAnyObject(value: any, state: RecursiveState) {
     return `${prefix}:NOT_ENUMERABLE`;
   }
 
+  if (XML_ELEMENT_REGEXP.test(value)) {
+    return `${CLASSES.ELEMENT}:${value.outerHTML}`;
+  }
+
+  if (classType === '[object DocumentFragment]') {
+    return `${prefix}:${stringifyDocumentFragment(value)}`;
+  }
+
+  // This would only be hit with custom `toStringTag` values
+  return JSON.stringify(value, (key, value) =>
+    stringifyRecursiveAsJson('CUSTOM', value, state),
+  );
+}
+
+function stringifyRecursiveAsJson(
+  classType: keyof typeof RECURSIVE_CLASSES,
+  value: any,
+  state: RecursiveState,
+) {
+  const prefix = `${Types.object}:${CLASSES[classType]}:${RECURSIVE_CLASSES[classType]}`;
+  const cached = state.cache.get(value);
+
+  if (cached) {
+    return `${prefix}:RECURSIVE${cached}`;
+  }
+
+  state.cache.set(value, ++state.id);
+
+  if (classType === '[object Object]') {
+    return `${prefix}:${stringifyObject(value, state)}`;
+  }
+
+  if (classType === '[object Array]' || classType === '[object Arguments]') {
+    return `${prefix}:${stringifyArray(value, state)}`;
+  }
+
+  if (classType === '[object Map]') {
+    return `${prefix}:${stringifyMap(value, state)}`;
+  }
+
+  if (classType === '[object Set]') {
+    return `${prefix}:${stringifySet(value, state)}`;
+  }
+
   if (TYPED_ARRAY_CLASSES[classType as keyof typeof TYPED_ARRAY_CLASSES]) {
     return `${prefix}:${value.join()}`;
   }
@@ -155,15 +201,13 @@ export function stringifyAnyObject(value: any, state: RecursiveState) {
     return `${prefix}:${stringifyArrayBuffer(value.buffer)}`;
   }
 
-  if (XML_ELEMENT_REGEXP.test(value)) {
-    return `${CLASSES.ELEMENT}:${value.outerHTML}`;
-  }
-
-  if (classType === '[object DocumentFragment]') {
-    return `${prefix}:${stringifyDocumentFragment(value)}`;
-  }
-
   return `${CLASSES.CUSTOM}:${stringifyObject(value, state)}`;
+}
+
+function stringifyStandard(type: keyof typeof Types, value: any) {
+  return `${Types[type]}:${
+    type === 'function' || type === 'symbol' ? value.toString() : value
+  }`;
 }
 
 export function stringifyArray(value: any[], state: RecursiveState) {
@@ -237,11 +281,9 @@ export function stringifyObject(
   const properties = Object.getOwnPropertyNames(value);
 
   for (let index = 0, length = properties.length; index < length; ++index) {
-    const property = properties[index];
-
     result[index] = [
-      stringifyValue(property, state),
-      stringifyValue(value[property], state),
+      properties[index],
+      stringifyValue(value[properties[index]], state),
     ];
   }
 
@@ -270,20 +312,9 @@ export function stringifySet(set: Set<any>, state: RecursiveState) {
 export function stringifyValue(value: any, state?: RecursiveState): string {
   const type = typeof value;
 
-  if (value) {
-    if (type === 'object') {
-      return JSON.stringify(
-        value,
-        createStringifyReplacer(state || { cache: new WeakMap(), id: 1 }),
-      );
-    }
-
-    if (type === 'function' || type === 'symbol') {
-      return `${Types[type]}:${value.toString()}`;
-    }
-  }
-
-  return `${Types[type]}:${value}`;
+  return type === 'object' && value
+    ? stringifyRecursive(value, state || { cache: new WeakMap(), id: 1 })
+    : stringifyStandard(type, value);
 }
 
 export default function stringify(value: any): string {

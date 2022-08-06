@@ -33,6 +33,10 @@ const b = {
 
 a.b = b;
 
+function getArguments() {
+  return arguments;
+}
+
 const object = {
   ReactStatefulClass: StatefulComponent,
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -40,6 +44,8 @@ const object = {
   ReactStatefulElement: <StatefulComponent />,
   ReactStatelessClass: StatelessComponent,
   ReactStatelessElement: <StatelessComponent />,
+  // @ts-expect-error - arguments are not defined
+  arguments: getArguments('foo', 'bar'),
   arr: ['foo', 'bar'],
   arrayBuffer: new Uint16Array([1, 2, 3]).buffer,
   bigint: BigInt(9007199254740991),
