@@ -149,7 +149,7 @@ function stringifyRecursive(value: any, state: RecursiveState) {
     return `${prefix}:${stringifyDocumentFragment(value)}`;
   }
 
-  const element = XML_ELEMENT_REGEXP.exec(value);
+  const element = classType.match(XML_ELEMENT_REGEXP);
 
   if (element) {
     return `${CLASSES.ELEMENT}:${element[1]}:${value.outerHTML}`;
