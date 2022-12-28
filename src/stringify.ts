@@ -131,9 +131,11 @@ function stringifyRecursiveAsJson(
 }
 
 export function stringifyArray(value: any[], state: RecursiveState) {
-  const result: string[] = [];
+  let index = value.length;
 
-  for (let index = 0, length = value.length; index < length; ++index) {
+  const result: string[] = new Array(index);
+
+  while (--index >= 0) {
     result[index] = stringify(value[index], state);
   }
 
@@ -157,9 +159,12 @@ export function stringifyArrayBufferNone(): string {
 
 export function stringifyDocumentFragment(fragment: DocumentFragment): string {
   const children = fragment.children;
-  const innerHTML: string[] = [];
 
-  for (let index = 0; index < children.length; ++index) {
+  let index = children.length;
+
+  const innerHTML: string[] = new Array(index);
+
+  while (--index >= 0) {
     innerHTML[index] = children[index].outerHTML;
   }
 
@@ -174,7 +179,7 @@ const stringifyArrayBuffer =
     : stringifyArrayBufferNone;
 
 export function stringifyMap(map: Map<any, any>, state: RecursiveState) {
-  const result: string[] | Array<[string, string]> = [];
+  const result: string[] | Array<[string, string]> = new Array(map.size);
 
   let index = 0;
   map.forEach((value, key) => {
@@ -183,7 +188,7 @@ export function stringifyMap(map: Map<any, any>, state: RecursiveState) {
 
   sort(result, sortByKey);
 
-  for (let index = 0, length = result.length; index < length; ++index) {
+  while (--index >= 0) {
     result[index] = `[${result[index][0]},${result[index][1]}]`;
   }
 
@@ -194,10 +199,13 @@ export function stringifyObject(
   value: Record<string, any>,
   state: RecursiveState,
 ) {
-  const result: string[] | Array<[string, string]> = [];
   const properties = Object.getOwnPropertyNames(value);
+  const length = properties.length;
+  const result: string[] | Array<[string, string]> = new Array(length);
 
-  for (let index = 0, length = properties.length; index < length; ++index) {
+  let index = length;
+
+  while (--index >= 0) {
     result[index] = [
       properties[index],
       stringify(value[properties[index]], state),
@@ -206,7 +214,9 @@ export function stringifyObject(
 
   sort(result, sortByKey);
 
-  for (let index = 0, length = result.length; index < length; ++index) {
+  index = length;
+
+  while (--index >= 0) {
     result[index] = `${result[index][0]}:${result[index][1]}`;
   }
 
@@ -214,7 +224,7 @@ export function stringifyObject(
 }
 
 export function stringifySet(set: Set<any>, state: RecursiveState) {
-  const result: string[] = [];
+  const result: string[] = new Array(set.size);
 
   let index = 0;
   set.forEach((value) => {
