@@ -1,90 +1,18 @@
+import {
+  ARRAY_LIKE_CLASSES,
+  CLASSES,
+  NON_ENUMERABLE_CLASSES,
+  RECURSIVE_CLASSES,
+  TO_STRING_TYPES,
+  TYPED_ARRAY_CLASSES,
+  TYPES,
+} from './constants';
 import { sort, sortByKey, sortBySelf } from './sort';
 
 interface RecursiveState {
   cache: WeakMap<any, number>;
   id: number;
 }
-
-const CLASSES = {
-  '[object Arguments]': 0,
-  '[object Array]': 1,
-  '[object ArrayBuffer]': 2,
-  '[object BigInt]': 3,
-  '[object Boolean]': 4,
-  '[object DataView]': 5,
-  '[object Date]': 6,
-  '[object DocumentFragment]': 7,
-  '[object Error]': 8,
-  '[object Event]': 9,
-  '[object Float32Array]': 10,
-  '[object Float64Array]': 11,
-  '[object Generator]': 12,
-  '[object Int8Array]': 13,
-  '[object Int16Array]': 14,
-  '[object Map]': 15,
-  '[object Number]': 16,
-  '[object Object]': 17,
-  '[object Promise]': 18,
-  '[object RegExp]': 19,
-  '[object Set]': 20,
-  '[object String]': 21,
-  '[object Uint8Array]': 22,
-  '[object Uint8ClampedArray]': 23,
-  '[object Uint16Array]': 24,
-  '[object Uint32Array]': 25,
-  '[object WeakMap]': 26,
-  '[object WeakSet]': 27,
-  ELEMENT: 28,
-  CUSTOM: 29,
-} as const;
-
-const NON_ENUMERABLE_CLASSES = {
-  '[object Generator]': 1,
-  '[object Promise]': 2,
-  '[object WeakMap]': 3,
-  '[object WeakSet]': 4,
-} as const;
-
-const TYPED_ARRAY_CLASSES = {
-  '[object Float32Array]': 1,
-  '[object Float64Array]': 2,
-  '[object Int8Array]': 3,
-  '[object Int16Array]': 4,
-  '[object Uint8Array]': 5,
-  '[object Uint8ClampedArray]': 6,
-  '[object Uint16Array]': 7,
-  '[object Uint32Array]': 8,
-} as const;
-
-const RECURSIVE_CLASSES = {
-  '[object Arguments]': 1,
-  '[object Array]': 2,
-  '[object ArrayBuffer]': 3,
-  '[object DataView]': 4,
-  '[object Float32Array]': 5,
-  '[object Float64Array]': 6,
-  '[object Int8Array]': 7,
-  '[object Int16Array]': 8,
-  '[object Map]': 9,
-  '[object Object]': 1,
-  '[object Set]': 11,
-  '[object Uint8Array]': 12,
-  '[object Uint8ClampedArray]': 13,
-  '[object Uint16Array]': 14,
-  '[object Uint32Array]': 15,
-  CUSTOM: 16,
-} as const;
-
-const TYPES = {
-  string: 0,
-  number: 1,
-  bigint: 2,
-  boolean: 3,
-  symbol: 4,
-  undefined: 5,
-  object: 6,
-  function: 7,
-} as const;
 
 const XML_ELEMENT_REGEXP = /\[object ([HTML|SVG](.*)Element)\]/;
 
@@ -150,7 +78,7 @@ function stringifyComplexType(value: any, state: RecursiveState) {
   }
 
   // This would only be hit with custom `toStringTag` values
-  return JSON.stringify(value, (key, value) =>
+  return JSON.stringify(value, (_key, value) =>
     stringifyRecursiveAsJson('CUSTOM', value, state),
   );
 }
@@ -173,7 +101,7 @@ function stringifyRecursiveAsJson(
     return `${prefix}:${stringifyObject(value, state)}`;
   }
 
-  if (classType === '[object Array]' || classType === '[object Arguments]') {
+  if (ARRAY_LIKE_CLASSES[classType as keyof typeof ARRAY_LIKE_CLASSES]) {
     return `${prefix}:${stringifyArray(value, state)}`;
   }
 
@@ -198,12 +126,6 @@ function stringifyRecursiveAsJson(
   }
 
   return `${CLASSES.CUSTOM}:${stringifyObject(value, state)}`;
-}
-
-function stringifySimpleType(type: keyof typeof TYPES, value: any) {
-  return `${TYPES[type]}:${
-    type === 'function' || type === 'symbol' ? value.toString() : value
-  }`;
 }
 
 export function stringifyArray(value: any[], state: RecursiveState) {
@@ -308,7 +230,18 @@ export function stringify(
 ): string {
   const type = typeof value;
 
-  return type === 'object' && value
-    ? stringifyComplexType(value, state || { cache: new WeakMap(), id: 1 })
-    : stringifySimpleType(type, value);
+  if (type === 'object' && value) {
+    return stringifyComplexType(
+      value,
+      state || { cache: new WeakMap(), id: 1 },
+    );
+  }
+
+  const prefix = TYPES[type];
+
+  if (type === 'function' || type === 'symbol') {
+    return `${prefix}:${value.toString()}`;
+  }
+
+  return `${prefix}:${value}`;
 }
