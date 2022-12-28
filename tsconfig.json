@@ -15,5 +15,6 @@
     "target": "es5"
   },
   "exclude": ["node_modules"],
-  "include": ["src/*", "__tests__/*"]
+  "include": ["src/*", "__tests__/*"],
+  "files": ["node_modules/jest-expect-message/types/index.d.ts"]
 }

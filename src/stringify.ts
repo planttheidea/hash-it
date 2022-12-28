@@ -1,12 +1,21 @@
 import {
   ARRAY_LIKE_CLASSES,
   CLASSES,
+  HASHABLE_TYPES,
   NON_ENUMERABLE_CLASSES,
   RECURSIVE_CLASSES,
   TYPED_ARRAY_CLASSES,
-  TYPES,
 } from './constants';
 import { sort, sortByKey, sortBySelf } from './sort';
+
+import type {
+  ArrayLikeClass,
+  Class,
+  NonEnumerableClass,
+  RecursiveClass,
+  TypedArrayClass,
+} from './constants';
+import { getUnsupportedHash } from './cache';
 
 interface RecursiveState {
   cache: WeakMap<any, number>;
@@ -18,19 +27,13 @@ const XML_ELEMENT_REGEXP = /\[object ([HTML|SVG](.*)Element)\]/;
 const toString = Object.prototype.toString;
 
 function stringifyComplexType(value: any, state: RecursiveState) {
-  const classType = toString.call(value) as unknown as keyof typeof CLASSES;
+  const classType = toString.call(value) as unknown as Class;
 
-  if (RECURSIVE_CLASSES[classType as keyof typeof RECURSIVE_CLASSES]) {
-    return JSON.stringify(value, (_key, value) =>
-      stringifyRecursiveAsJson(
-        classType as keyof typeof RECURSIVE_CLASSES,
-        value,
-        state,
-      ),
-    );
+  if (RECURSIVE_CLASSES[classType as RecursiveClass]) {
+    return stringifyRecursiveAsJson(classType as RecursiveClass, value, state);
   }
 
-  const prefix = `${TYPES.object}:${CLASSES[classType]}`;
+  const prefix = `${HASHABLE_TYPES.object}:${CLASSES[classType]}`;
 
   if (classType === '[object Date]') {
     return `${prefix}:${value.getTime()}`;
@@ -60,12 +63,6 @@ function stringifyComplexType(value: any, state: RecursiveState) {
     return `${prefix}:${value.message}:${value.stack}`;
   }
 
-  if (
-    NON_ENUMERABLE_CLASSES[classType as keyof typeof NON_ENUMERABLE_CLASSES]
-  ) {
-    return `${prefix}:NOT_ENUMERABLE`;
-  }
-
   if (classType === '[object DocumentFragment]') {
     return `${prefix}:${stringifyDocumentFragment(value)}`;
   }
@@ -76,22 +73,24 @@ function stringifyComplexType(value: any, state: RecursiveState) {
     return `${CLASSES.ELEMENT}:${element[1]}:${value.outerHTML}`;
   }
 
+  if (NON_ENUMERABLE_CLASSES[classType as NonEnumerableClass]) {
+    return getUnsupportedHash(value, prefix);
+  }
+
   // This would only be hit with custom `toStringTag` values
-  return JSON.stringify(value, (_key, value) =>
-    stringifyRecursiveAsJson('CUSTOM', value, state),
-  );
+  return stringifyRecursiveAsJson('CUSTOM', value, state);
 }
 
 function stringifyRecursiveAsJson(
-  classType: keyof typeof RECURSIVE_CLASSES,
+  classType: RecursiveClass,
   value: any,
   state: RecursiveState,
 ) {
-  const prefix = `${TYPES.object}:${CLASSES[classType]}`;
+  const prefix = `${HASHABLE_TYPES.object}:${CLASSES[classType]}`;
   const cached = state.cache.get(value);
 
   if (cached) {
-    return `${prefix}:RECURSIVE${cached}`;
+    return `${prefix}:RECURSIVE~${cached}`;
   }
 
   state.cache.set(value, ++state.id);
@@ -100,7 +99,7 @@ function stringifyRecursiveAsJson(
     return `${prefix}:${stringifyObject(value, state)}`;
   }
 
-  if (ARRAY_LIKE_CLASSES[classType as keyof typeof ARRAY_LIKE_CLASSES]) {
+  if (ARRAY_LIKE_CLASSES[classType as ArrayLikeClass]) {
     return `${prefix}:${stringifyArray(value, state)}`;
   }
 
@@ -112,7 +111,7 @@ function stringifyRecursiveAsJson(
     return `${prefix}:${stringifySet(value, state)}`;
   }
 
-  if (TYPED_ARRAY_CLASSES[classType as keyof typeof TYPED_ARRAY_CLASSES]) {
+  if (TYPED_ARRAY_CLASSES[classType as TypedArrayClass]) {
     return `${prefix}:${value.join()}`;
   }
 
@@ -122,6 +121,10 @@ function stringifyRecursiveAsJson(
 
   if (classType === '[object DataView]') {
     return `${prefix}:${stringifyArrayBuffer(value.buffer)}`;
+  }
+
+  if (NON_ENUMERABLE_CLASSES[classType as NonEnumerableClass]) {
+    return getUnsupportedHash(value, prefix);
   }
 
   return `${CLASSES.CUSTOM}:${stringifyObject(value, state)}`;
@@ -236,7 +239,7 @@ export function stringify(
     );
   }
 
-  const prefix = TYPES[type];
+  const prefix = HASHABLE_TYPES[type];
 
   if (type === 'function' || type === 'symbol') {
     return `${prefix}:${value.toString()}`;

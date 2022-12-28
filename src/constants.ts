@@ -31,10 +31,14 @@ export const CLASSES = {
   CUSTOM: 29,
 } as const;
 
+export type Class = keyof typeof CLASSES;
+
 export const ARRAY_LIKE_CLASSES = {
   '[object Arguments]': 1,
   '[object Array]': 2,
 } as const;
+
+export type ArrayLikeClass = keyof typeof ARRAY_LIKE_CLASSES;
 
 export const NON_ENUMERABLE_CLASSES = {
   '[object Generator]': 1,
@@ -42,6 +46,8 @@ export const NON_ENUMERABLE_CLASSES = {
   '[object WeakMap]': 3,
   '[object WeakSet]': 4,
 } as const;
+
+export type NonEnumerableClass = keyof typeof NON_ENUMERABLE_CLASSES;
 
 export const TYPED_ARRAY_CLASSES = {
   '[object Float32Array]': 1,
@@ -53,6 +59,8 @@ export const TYPED_ARRAY_CLASSES = {
   '[object Uint16Array]': 7,
   '[object Uint32Array]': 8,
 } as const;
+
+export type TypedArrayClass = keyof typeof TYPED_ARRAY_CLASSES;
 
 export const RECURSIVE_CLASSES = {
   '[object Arguments]': 1,
@@ -73,7 +81,9 @@ export const RECURSIVE_CLASSES = {
   CUSTOM: 16,
 } as const;
 
-export const TYPES = {
+export type RecursiveClass = keyof typeof RECURSIVE_CLASSES;
+
+export const HASHABLE_TYPES = {
   string: 0,
   number: 1,
   bigint: 2,
@@ -83,3 +93,5 @@ export const TYPES = {
   object: 6,
   function: 7,
 } as const;
+
+export type HashableType = keyof typeof HASHABLE_TYPES;

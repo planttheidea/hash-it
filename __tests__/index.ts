@@ -20,10 +20,13 @@ describe('hash', () => {
   });
 
   it('should have a unique hash', () => {
-    VALUES.forEach(({ value }) => {
-      VALUES.forEach(({ value: otherValue }) => {
+    VALUES.forEach(({ key, value }) => {
+      VALUES.forEach(({ key: otherKey, value: otherValue }) => {
         if (value !== otherValue) {
-          expect(hash(value)).not.toBe(hash(otherValue));
+          expect(
+            hash(value),
+            `{ key: ${key}, otherKey: ${otherKey} }`,
+          ).not.toBe(hash(otherValue));
         }
       });
     });
@@ -91,6 +94,24 @@ describe('hash', () => {
     const set2 = new Set(['bar', 'foo']);
 
     expect(hash(set1)).toBe(hash(set2));
+  });
+
+  it('should hash the same non-enumerable references the same, but unique references differently', () => {
+    [
+      () =>
+        (function* foo() {
+          yield true;
+        })(),
+      () => Promise.resolve(),
+      () => new WeakMap(),
+      () => new WeakSet(),
+    ].forEach((getItem) => {
+      const item1 = getItem();
+      const item2 = getItem();
+
+      expect(hash(item1)).toBe(hash(item1));
+      expect(hash(item1)).not.toBe(hash(item2));
+    });
   });
 
   describe('hash.is', () => {

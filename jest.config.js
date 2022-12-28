@@ -3,6 +3,7 @@ module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   roots: ['<rootDir>'],
   setupFiles: ['<rootDir>/jest.init.js'],
+  setupFilesAfterEnv: ['jest-expect-message'],
   transform: {
     '\\.(js|ts|tsx)$': 'babel-jest',
   },
