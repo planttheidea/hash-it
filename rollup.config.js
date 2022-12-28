@@ -1,6 +1,6 @@
 import resolve from '@rollup/plugin-node-resolve';
 import babel from '@rollup/plugin-babel';
-import { terser } from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import pkg from './package.json';
 
 const EXTERNALS = [
@@ -46,6 +46,7 @@ export default [
       ...DEFAULT_OUTPUT,
       file: pkg.browser.replace('.js', '.min.js'),
       format: 'umd',
+      sourcemap: false,
     },
     plugins: [...DEFAULT_CONFIG.plugins, terser()],
   },

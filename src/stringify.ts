@@ -1,4 +1,4 @@
-import sort, { sortByKey, sortBySelf } from './sort';
+import { sort, sortByKey, sortBySelf } from './sort';
 
 interface RecursiveState {
   cache: WeakMap<any, number>;
@@ -216,7 +216,7 @@ export function stringifyArray(value: any[], state: RecursiveState) {
   const result: string[] = [];
 
   for (let index = 0, length = value.length; index < length; ++index) {
-    result[index] = stringifyValue(value[index], state);
+    result[index] = stringify(value[index], state);
   }
 
   return result.join();
@@ -260,10 +260,7 @@ export function stringifyMap(map: Map<any, any>, state: RecursiveState) {
 
   let index = 0;
   map.forEach((value, key) => {
-    result[index++] = [
-      stringifyValue(key, state),
-      stringifyValue(value, state),
-    ];
+    result[index++] = [stringify(key, state), stringify(value, state)];
   });
 
   sort(result, sortByKey);
@@ -285,7 +282,7 @@ export function stringifyObject(
   for (let index = 0, length = properties.length; index < length; ++index) {
     result[index] = [
       properties[index],
-      stringifyValue(value[properties[index]], state),
+      stringify(value[properties[index]], state),
     ];
   }
 
@@ -303,7 +300,7 @@ export function stringifySet(set: Set<any>, state: RecursiveState) {
 
   let index = 0;
   set.forEach((value) => {
-    result[index++] = stringifyValue(value, state);
+    result[index++] = stringify(value, state);
   });
 
   sort(result, sortBySelf);
@@ -311,14 +308,10 @@ export function stringifySet(set: Set<any>, state: RecursiveState) {
   return result.join();
 }
 
-export function stringifyValue(value: any, state?: RecursiveState): string {
+export function stringify(value: any, state?: RecursiveState): string {
   const type = typeof value;
 
   return type === 'object' && value
     ? stringifyRecursive(value, state || { cache: new WeakMap(), id: 1 })
     : stringifyStandard(type, value);
-}
-
-export default function stringify(value: any): string {
-  return stringifyValue(value);
 }

@@ -9,7 +9,7 @@ export function sortBySelf(first: string, second: string) {
   return first > second;
 }
 
-export default function sort(
+export function sort(
   array: any[],
   fn: (item: any, comparisonItem: any) => boolean,
 ) {
