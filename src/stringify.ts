@@ -308,7 +308,10 @@ export function stringifySet(set: Set<any>, state: RecursiveState) {
   return result.join();
 }
 
-export function stringify(value: any, state?: RecursiveState): string {
+export function stringify(
+  value: any,
+  state: RecursiveState | undefined,
+): string {
   const type = typeof value;
 
   return type === 'object' && value

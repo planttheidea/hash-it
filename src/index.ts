@@ -22,7 +22,7 @@ is.any = any;
 is.not = not;
 
 function hashIt(value: any): number {
-  return hash(stringify(value));
+  return hash(stringify(value, undefined));
 }
 
 hashIt.is = is;
