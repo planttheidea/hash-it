@@ -75,7 +75,7 @@ const RECURSIVE_CLASSES = {
   CUSTOM: 16,
 } as const;
 
-const Types = {
+const TYPES = {
   string: 0,
   number: 1,
   bigint: 2,
@@ -90,17 +90,11 @@ const XML_ELEMENT_REGEXP = /\[object ([HTML|SVG](.*)Element)\]/;
 
 const toString = Object.prototype.toString;
 
-function stringifyRecursive(value: any, state: RecursiveState) {
-  const type = typeof value;
-
-  if (type !== 'object') {
-    return stringifyStandard(type, value);
-  }
-
+function stringifyComplexType(value: any, state: RecursiveState) {
   const classType = toString.call(value) as unknown as keyof typeof CLASSES;
 
   if (RECURSIVE_CLASSES[classType as keyof typeof RECURSIVE_CLASSES]) {
-    return JSON.stringify(value, (key, value) =>
+    return JSON.stringify(value, (_key, value) =>
       stringifyRecursiveAsJson(
         classType as keyof typeof RECURSIVE_CLASSES,
         value,
@@ -109,7 +103,7 @@ function stringifyRecursive(value: any, state: RecursiveState) {
     );
   }
 
-  const prefix = `${Types.object}:${CLASSES[classType]}`;
+  const prefix = `${TYPES.object}:${CLASSES[classType]}`;
 
   if (classType === '[object Date]') {
     return `${prefix}:${value.getTime()}`;
@@ -166,7 +160,7 @@ function stringifyRecursiveAsJson(
   value: any,
   state: RecursiveState,
 ) {
-  const prefix = `${Types.object}:${CLASSES[classType]}:${RECURSIVE_CLASSES[classType]}`;
+  const prefix = `${TYPES.object}:${CLASSES[classType]}`;
   const cached = state.cache.get(value);
 
   if (cached) {
@@ -206,8 +200,8 @@ function stringifyRecursiveAsJson(
   return `${CLASSES.CUSTOM}:${stringifyObject(value, state)}`;
 }
 
-function stringifyStandard(type: keyof typeof Types, value: any) {
-  return `${Types[type]}:${
+function stringifySimpleType(type: keyof typeof TYPES, value: any) {
+  return `${TYPES[type]}:${
     type === 'function' || type === 'symbol' ? value.toString() : value
   }`;
 }
@@ -315,6 +309,6 @@ export function stringify(
   const type = typeof value;
 
   return type === 'object' && value
-    ? stringifyRecursive(value, state || { cache: new WeakMap(), id: 1 })
-    : stringifyStandard(type, value);
+    ? stringifyComplexType(value, state || { cache: new WeakMap(), id: 1 })
+    : stringifySimpleType(type, value);
 }
