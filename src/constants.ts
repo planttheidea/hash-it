@@ -83,8 +83,3 @@ export const TYPES = {
   object: 6,
   function: 7,
 } as const;
-
-export const TO_STRING_TYPES = {
-  function: 1,
-  symbol: 2,
-} as const;
