@@ -46,19 +46,19 @@ function stringifyComplexType(value: any, state: RecursiveState) {
   }
 
   if (classType === '[object Event]') {
-    return `${prefix}:${JSON.stringify({
-      bubbles: value.bubbles,
-      cancelBubble: value.cancelBubble,
-      cancelable: value.cancelable,
-      composed: value.composed,
-      currentTarget: value.currentTarget,
-      defaultPrevented: value.defaultPrevented,
-      eventPhase: value.eventPhase,
-      isTrusted: value.isTrusted,
-      returnValue: value.returnValue,
-      target: value.target,
-      type: value.type,
-    })}`;
+    return `${prefix}:${[
+      value.bubbles,
+      value.cancelBubble,
+      value.cancelable,
+      value.composed,
+      value.currentTarget,
+      value.defaultPrevented,
+      value.eventPhase,
+      value.isTrusted,
+      value.returnValue,
+      value.target,
+      value.type,
+    ].join()}`;
   }
 
   if (classType === '[object Error]') {

@@ -4,6 +4,8 @@ import {
   hashBoolean,
   hashCircularObject,
   hashDate,
+  hashError,
+  hashEvent,
   hashFunction,
   hashInfinity,
   hashMap,
@@ -89,6 +91,8 @@ console.log('');
 // complex tests
 logAndSave(runTest('Array', hashArray));
 logAndSave(runTest('Date', hashDate));
+logAndSave(runTest('Error', hashError));
+logAndSave(runTest('Event', hashEvent));
 logAndSave(runTest('Map', hashMap));
 logAndSave(runTest('Object', hashObject));
 logAndSave(runTest('Object (circular)', hashCircularObject));
