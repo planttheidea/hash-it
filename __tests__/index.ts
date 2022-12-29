@@ -113,4 +113,51 @@ describe('hash', () => {
       expect(hash(item1)).not.toBe(hash(item2));
     });
   });
+
+  it('should support primitive wrappers', () => {
+    [
+      [
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        async function () {},
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        async function () {},
+        async function () {
+          await console.log('foo');
+        },
+      ],
+      [
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        async function* () {},
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        async function* () {},
+        async function* () {
+          await console.log('foo');
+        },
+      ],
+      [
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        function () {},
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        function () {},
+        function () {
+          console.log('foo');
+        },
+      ],
+      [
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        function* () {},
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        function* () {},
+        function* () {
+          console.log('foo');
+        },
+      ],
+      [new Boolean(true), new Boolean(true), new Boolean(false)],
+      [new Number('123'), new Number('123'), new Number('234')],
+      [new String('foo'), new String('foo'), new String('bar')],
+    ].forEach(([item, equalItem, unequalItem]) => {
+      expect(hash(item)).toBe(hash(equalItem));
+      expect(hash(item)).not.toBe(hash(unequalItem));
+    });
+  });
 });

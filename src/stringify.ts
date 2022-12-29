@@ -3,6 +3,8 @@ import {
   CLASSES,
   HASHABLE_TYPES,
   NON_ENUMERABLE_CLASSES,
+  PrimitiveWrapperClass,
+  PRIMITIVE_WRAPPER_CLASSES,
   RECURSIVE_CLASSES,
   TYPED_ARRAY_CLASSES,
 } from './constants';
@@ -75,6 +77,10 @@ function stringifyComplexType(value: any, state: RecursiveState) {
 
   if (NON_ENUMERABLE_CLASSES[classType as NonEnumerableClass]) {
     return getUnsupportedHash(value, prefix);
+  }
+
+  if (PRIMITIVE_WRAPPER_CLASSES[classType as PrimitiveWrapperClass]) {
+    return `${prefix}:${value.toString()}`;
   }
 
   // This would only be hit with custom `toStringTag` values
