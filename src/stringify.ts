@@ -231,9 +231,7 @@ export function stringifySet(set: Set<any>, state: RecursiveState) {
     result[index++] = stringify(value, state);
   });
 
-  sort(result, sortBySelf);
-
-  return `[${result.join()}]`;
+  return `[${sort(result, sortBySelf).join()}]`;
 }
 
 export function stringify(
