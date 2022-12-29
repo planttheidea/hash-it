@@ -1,3 +1,5 @@
+import { SEPARATOR } from './constants';
+
 export const NON_ENUMERABLE_CLASS_CACHE = new WeakMap<
   NonEnumerableObject,
   string
@@ -20,7 +22,7 @@ export function getUnsupportedHash(
     return cached;
   }
 
-  const toCache = `${prefix}:NOT_ENUMERABLE:${refId++}`;
+  const toCache = prefix + 'NOT_ENUMERABLE' + SEPARATOR + refId++;
 
   NON_ENUMERABLE_CLASS_CACHE.set(value, toCache);
 

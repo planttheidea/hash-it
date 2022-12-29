@@ -1,3 +1,6 @@
+export const SEPARATOR = '|';
+export const XML_ELEMENT_REGEXP = /\[object ([HTML|SVG](.*)Element)\]/;
+
 export const CLASSES = {
   '[object Arguments]': 0,
   '[object Array]': 1,
