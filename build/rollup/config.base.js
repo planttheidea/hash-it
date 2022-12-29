@@ -2,16 +2,20 @@ import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import typescript from '@rollup/plugin-typescript';
+import fs from 'fs';
 import path from 'path';
 import tsc from 'typescript';
 import { fileURLToPath } from 'url';
-import pkg from '../packageJson.js';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 
+export const PACKAGE_JSON = JSON.parse(
+  fs.readFileSync(path.resolve(ROOT, 'package.json')),
+);
+
 const external = [
-  ...Object.keys(pkg.dependencies || {}),
-  ...Object.keys(pkg.peerDependencies || {}),
+  ...Object.keys(PACKAGE_JSON.dependencies || {}),
+  ...Object.keys(PACKAGE_JSON.peerDependencies || {}),
 ];
 const globals = external.reduce((globals, name) => {
   globals[name] = name;
@@ -19,7 +23,7 @@ const globals = external.reduce((globals, name) => {
   return globals;
 }, {});
 
-export default {
+export const BASE_CONFIG = {
   external,
   input: path.resolve(ROOT, 'src', 'index.ts'),
   output: {

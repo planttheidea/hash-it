@@ -1,11 +1,10 @@
-import baseConfig from './config.base.js';
-import pkg from '../packageJson.js';
+import { BASE_CONFIG, PACKAGE_JSON } from './config.base.js';
 
 export default {
-  ...baseConfig,
+  ...BASE_CONFIG,
   output: {
-    ...baseConfig.output,
-    file: pkg.module,
+    ...BASE_CONFIG.output,
+    file: PACKAGE_JSON.module,
     format: 'es',
   },
 };
