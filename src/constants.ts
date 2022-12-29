@@ -100,14 +100,14 @@ export const RECURSIVE_CLASSES = {
 export type RecursiveClass = keyof typeof RECURSIVE_CLASSES;
 
 export const HASHABLE_TYPES = {
-  string: 0,
-  number: 1,
-  bigint: 2,
-  boolean: 3,
-  symbol: 4,
-  undefined: 5,
-  object: 6,
-  function: 7,
+  bigint: 'i',
+  boolean: 'b',
+  function: 'g',
+  number: 'n',
+  object: 'o',
+  string: 's',
+  symbol: 's',
+  undefined: 'u',
 } as const;
 
 export type HashableType = keyof typeof HASHABLE_TYPES;
