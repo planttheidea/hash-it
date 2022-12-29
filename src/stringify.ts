@@ -28,9 +28,11 @@ interface RecursiveState {
 
 const toString = Object.prototype.toString;
 
-function stringifyComplexType(value: any, state: RecursiveState) {
-  const classType = toString.call(value) as unknown as Class;
-
+function stringifyComplexType(
+  value: any,
+  classType: Class,
+  state: RecursiveState,
+) {
   if (RECURSIVE_CLASSES[classType as RecursiveClass]) {
     return stringifyRecursiveAsJson(classType as RecursiveClass, value, state);
   }
@@ -247,6 +249,7 @@ export function stringify(
   if (type === 'object' && value) {
     return stringifyComplexType(
       value,
+      toString.call(value) as unknown as Class,
       state || { cache: new WeakMap(), id: 1 },
     );
   }
