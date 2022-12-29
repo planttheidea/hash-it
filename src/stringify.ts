@@ -35,18 +35,18 @@ function stringifyComplexType(value: any, state: RecursiveState) {
     return stringifyRecursiveAsJson(classType as RecursiveClass, value, state);
   }
 
-  const prefix = `${HASHABLE_TYPES.object}:${CLASSES[classType]}`;
+  const prefix = `${HASHABLE_TYPES.object}|${CLASSES[classType]}`;
 
   if (classType === '[object Date]') {
-    return `${prefix}:${value.getTime()}`;
+    return `${prefix}|${value.getTime()}`;
   }
 
   if (classType === '[object RegExp]') {
-    return `${prefix}:${value.toString()}`;
+    return `${prefix}|${value.toString()}`;
   }
 
   if (classType === '[object Event]') {
-    return `${prefix}:${[
+    return `${prefix}|${[
       value.bubbles,
       value.cancelBubble,
       value.cancelable,
@@ -62,17 +62,17 @@ function stringifyComplexType(value: any, state: RecursiveState) {
   }
 
   if (classType === '[object Error]') {
-    return `${prefix}:${value.message}:${value.stack}`;
+    return `${prefix}|${value.message}|${value.stack}`;
   }
 
   if (classType === '[object DocumentFragment]') {
-    return `${prefix}:${stringifyDocumentFragment(value)}`;
+    return `${prefix}|${stringifyDocumentFragment(value)}`;
   }
 
   const element = classType.match(XML_ELEMENT_REGEXP);
 
   if (element) {
-    return `${CLASSES.ELEMENT}:${element[1]}:${value.outerHTML}`;
+    return `${CLASSES.ELEMENT}|${element[1]}|${value.outerHTML}`;
   }
 
   if (NON_ENUMERABLE_CLASSES[classType as NonEnumerableClass]) {
@@ -80,7 +80,7 @@ function stringifyComplexType(value: any, state: RecursiveState) {
   }
 
   if (PRIMITIVE_WRAPPER_CLASSES[classType as PrimitiveWrapperClass]) {
-    return `${prefix}:${value.toString()}`;
+    return `${prefix}|${value.toString()}`;
   }
 
   // This would only be hit with custom `toStringTag` values
@@ -92,11 +92,11 @@ function stringifyRecursiveAsJson(
   value: any,
   state: RecursiveState,
 ) {
-  const prefix = `${HASHABLE_TYPES.object}:${CLASSES[classType]}`;
+  const prefix = `${HASHABLE_TYPES.object}|${CLASSES[classType]}`;
   const cached = state.cache.get(value);
 
   if (cached) {
-    return `${prefix}:RECURSIVE~${cached}`;
+    return `${prefix}|RECURSIVE~${cached}`;
   }
 
   state.cache.set(value, ++state.id);
@@ -104,38 +104,38 @@ function stringifyRecursiveAsJson(
   if (classType === '[object Object]') {
     return value[Symbol.iterator]
       ? getUnsupportedHash(value, prefix)
-      : `${prefix}:${stringifyObject(value, state)}`;
+      : `${prefix}|${stringifyObject(value, state)}`;
   }
 
   if (ARRAY_LIKE_CLASSES[classType as ArrayLikeClass]) {
-    return `${prefix}:${stringifyArray(value, state)}`;
+    return `${prefix}|${stringifyArray(value, state)}`;
   }
 
   if (classType === '[object Map]') {
-    return `${prefix}:${stringifyMap(value, state)}`;
+    return `${prefix}|${stringifyMap(value, state)}`;
   }
 
   if (classType === '[object Set]') {
-    return `${prefix}:${stringifySet(value, state)}`;
+    return `${prefix}|${stringifySet(value, state)}`;
   }
 
   if (TYPED_ARRAY_CLASSES[classType as TypedArrayClass]) {
-    return `${prefix}:${value.join()}`;
+    return `${prefix}|${value.join()}`;
   }
 
   if (classType === '[object ArrayBuffer]') {
-    return `${prefix}:${stringifyArrayBuffer(value)}`;
+    return `${prefix}|${stringifyArrayBuffer(value)}`;
   }
 
   if (classType === '[object DataView]') {
-    return `${prefix}:${stringifyArrayBuffer(value.buffer)}`;
+    return `${prefix}|${stringifyArrayBuffer(value.buffer)}`;
   }
 
   if (NON_ENUMERABLE_CLASSES[classType as NonEnumerableClass]) {
     return getUnsupportedHash(value, prefix);
   }
 
-  return `${CLASSES.CUSTOM}:${stringifyObject(value, state)}`;
+  return `${CLASSES.CUSTOM}|${stringifyObject(value, state)}`;
 }
 
 export function stringifyArray(value: any[], state: RecursiveState) {
@@ -214,7 +214,7 @@ export function stringifyObject(
   let index = length;
 
   while (--index >= 0) {
-    result[index] = `${properties[index]!}:${stringify(
+    result[index] = `${properties[index]!}|${stringify(
       value[properties[index]!],
       state,
     )}`;
@@ -252,8 +252,8 @@ export function stringify(
   const prefix = HASHABLE_TYPES[type];
 
   if (type === 'function' || type === 'symbol') {
-    return `${prefix}:${value.toString()}`;
+    return `${prefix}|${value.toString()}`;
   }
 
-  return `${prefix}:${value}`;
+  return `${prefix}|${value}`;
 }
