@@ -1,6 +1,6 @@
 {
   "author": "planttheidea",
-  "browser": "dist/hash-it.js",
+  "browser": "dist/umd/index.js",
   "browserslist": [
     "defaults",
     "Explorer >= 9",
@@ -23,7 +23,9 @@
     "@rollup/plugin-babel": "6.0.3",
     "@rollup/plugin-commonjs": "24.0.0",
     "@rollup/plugin-node-resolve": "15.0.1",
+    "@rollup/plugin-replace": "^5.0.2",
     "@rollup/plugin-terser": "^0.2.1",
+    "@rollup/plugin-typescript": "^10.0.1",
     "@types/jest": "29.2.4",
     "@typescript-eslint/eslint-plugin": "5.47.1",
     "@typescript-eslint/parser": "5.47.1",
@@ -50,11 +52,28 @@
     "rimraf": "3.0.2",
     "rollup": "3.9.0",
     "rollup-plugin-terser": "7.0.2",
+    "ts-jest": "^29.0.3",
     "tslib": "2.4.1",
     "typescript": "4.9.4",
     "webpack": "5.75.0",
     "webpack-cli": "5.0.1",
     "webpack-dev-server": "4.11.1"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/types/index.d.ts",
+        "default": "./dist/esm/index.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/types/index.d.ts",
+        "default": "./dist/cjs/index.cjs"
+      },
+      "default": {
+        "types": "./dist/umd/types/index.d.ts",
+        "default": "./dist/umd/index.js"
+      }
+    }
   },
   "homepage": "https://github.com/planttheidea/hash-it#readme",
   "keywords": [
@@ -64,8 +83,8 @@
     "unique"
   ],
   "license": "MIT",
-  "main": "dist/hash-it.cjs.js",
-  "module": "dist/hash-it.esm.js",
+  "main": "dist/cjs/index.cjs",
+  "module": "dist/esm/index.mjs",
   "name": "hash-it",
   "repository": {
     "type": "git",
@@ -74,9 +93,15 @@
   "scripts": {
     "benchmark": "npm run build && node benchmarks/index.js",
     "benchmark:compare": "npm run build && node benchmarks/compare.js",
-    "build": "NODE_ENV=production rollup -c --bundleConfigAsCjs",
+    "build": "npm run build:esm && npm run build:cjs && npm run build:umd && npm run build:min",
+    "build:test": "NODE_ENV=production rollup -c build/rollup/config.base.js",
+    "build:cjs": "NODE_ENV=production rollup -c build/rollup/config.cjs.js && tsc -p ./build/tsconfig/cjs.json",
+    "build:esm": "NODE_ENV=production rollup -c build/rollup/config.esm.js && tsc -p ./build/tsconfig/esm.json",
+    "build:min": "NODE_ENV=production rollup -c build/rollup/config.min.js && tsc -p ./build/tsconfig/min.json",
+    "build:umd": "NODE_ENV=production rollup -c build/rollup/config.umd.js && tsc -p ./build/tsconfig/umd.json",
     "clean": "rimraf dist",
-    "dev": "NODE_ENV=development webpack serve --progress",
+    "dev": "NODE_ENV=development webpack serve --progress --config=build/webpack.config.js",
+    "dist": "npm run clean && npm run dist",
     "lint": "NODE_ENV=test eslint src",
     "lint:fix": "npm run lint -- --fix",
     "prepublishOnly": "npm run typecheck && npm run lint && npm run test && npm run build",
@@ -86,5 +111,10 @@
     "test:watch": "npm test -- --watch",
     "typecheck": "tsc --noEmit"
   },
-  "version": "5.0.2"
+  "type": "module",
+  "types": "./index.d.ts",
+  "version": "5.0.2",
+  "dependencies": {
+    "@types/react-dom": "^18.0.10"
+  }
 }

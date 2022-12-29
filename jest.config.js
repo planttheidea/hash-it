@@ -1,14 +1,18 @@
-module.exports = {
+/** @type {import('ts-jest').JestConfigWithTsJest} */
+export default {
   coveragePathIgnorePatterns: ['node_modules', 'src/types.ts', '__helpers__'],
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  roots: ['<rootDir>'],
-  setupFiles: ['<rootDir>/jest.init.js'],
+  preset: 'ts-jest',
   setupFilesAfterEnv: ['jest-expect-message'],
-  transform: {
-    '\\.(js|ts|tsx)$': 'babel-jest',
-  },
   testEnvironment: 'jsdom',
-  testPathIgnorePatterns: ['<rootDir>/__tests__/__helpers__'],
-  testRegex: '/__tests__/.*\\.(ts|tsx|js)$',
-  verbose: true,
+  testPathIgnorePatterns: ['<rootDir>/__tests__/__helpers__', '<rootDir>/benchmark'],
+  transform: {
+    // '^.+\\.[tj]sx?$' to process js/ts with `ts-jest`
+    // '^.+\\.m?[tj]sx?$' to process js/ts/mjs/mts with `ts-jest`
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: '<rootDir>/build/tsconfig/base.json'
+      },
+    ],
+  },
 };

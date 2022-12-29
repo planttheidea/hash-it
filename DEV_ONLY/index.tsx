@@ -71,7 +71,7 @@ const object = {
   func() {
     alert('y');
   },
-  *generator() {
+  *generator(): Generator<any, any, any> {
     const value = yield 1;
 
     yield value + 2;
@@ -103,28 +103,29 @@ const object = {
   win: window,
 };
 
-const profile = (iterations = 100) => {
-  let index = -1;
+// const profile = (iterations = 100) => {
+//   let index = -1;
 
-  console.profile('hash timing');
+//   console.profile('hash timing');
 
-  while (++index < iterations) {
-    hash(object);
-    hash(a);
+//   while (++index < iterations) {
+//     hash(object);
+//     hash(a);
 
-    for (const key in object) {
-      hash(object[key]);
-    }
+//     for (const key in object) {
+//       // @ts-expect-error - not worth it
+//       hash(object[key]);
+//     }
 
-    hash(document.body);
-    // this is the killer, so only profiled if you uncomment
-    // hash(window);
-  }
+//     hash(document.body);
+//     // this is the killer, so only profiled if you uncomment
+//     // hash(window);
+//   }
 
-  console.profileEnd('hash timing');
+//   console.profileEnd('hash timing');
 
-  console.log('Check the Profiles tab in DevTools to see the output.');
-};
+//   console.log('Check the Profiles tab in DevTools to see the output.');
+// };
 
 // const benchmark = () => require('../benchmarks/index');
 
@@ -176,53 +177,53 @@ const visualValidation = () => {
   console.log(object.win, hash(object.win));
 };
 
-const hashOnlyValidation = () => {
-  console.log(hash(object));
-  console.log(hash(a));
-  console.log(hash(object.string));
-  console.log(hash(object.num));
-  console.log(hash(object.bool));
-  console.log(hash(object.func));
-  console.log(hash(object.undef));
-  console.log(hash(object.nil));
-  console.log(hash(object.obj));
-  console.log(hash(object.arr));
-  console.log(hash(object.el));
-  console.log(hash(object.fragment));
-  console.log(hash(object.svg));
-  console.log(hash(object.math));
-  console.log(hash(object.regexp));
-  console.log(hash(object.event));
-  console.log(hash(object.nodeList));
+// const hashOnlyValidation = () => {
+//   console.log(hash(object));
+//   console.log(hash(a));
+//   console.log(hash(object.string));
+//   console.log(hash(object.num));
+//   console.log(hash(object.bool));
+//   console.log(hash(object.func));
+//   console.log(hash(object.undef));
+//   console.log(hash(object.nil));
+//   console.log(hash(object.obj));
+//   console.log(hash(object.arr));
+//   console.log(hash(object.el));
+//   console.log(hash(object.fragment));
+//   console.log(hash(object.svg));
+//   console.log(hash(object.math));
+//   console.log(hash(object.regexp));
+//   console.log(hash(object.event));
+//   console.log(hash(object.nodeList));
 
-  // comment out for older browser testing
-  console.log(hash(object.symbol));
-  console.log(hash(object.err));
-  console.log(hash(object.map));
-  console.log(hash(object.set));
-  console.log(hash(object.weakMap));
-  console.log(hash(object.weakSet));
-  console.log(hash(object.arrayBuffer));
-  console.log(hash(object.dataView));
-  console.log(hash(object.float32Array));
-  console.log(hash(object.float64Array));
-  console.log(hash(object.generator));
-  console.log(hash(object.int8Array));
-  console.log(hash(object.int16Array));
-  console.log(hash(object.int32Array));
-  console.log(hash(object.promise));
-  console.log(hash(object.uint8Array));
-  console.log(hash(object.uint8ClampedArray));
-  console.log(hash(object.uint16Array));
-  console.log(hash(object.uint32Array));
+//   // comment out for older browser testing
+//   console.log(hash(object.symbol));
+//   console.log(hash(object.err));
+//   console.log(hash(object.map));
+//   console.log(hash(object.set));
+//   console.log(hash(object.weakMap));
+//   console.log(hash(object.weakSet));
+//   console.log(hash(object.arrayBuffer));
+//   console.log(hash(object.dataView));
+//   console.log(hash(object.float32Array));
+//   console.log(hash(object.float64Array));
+//   console.log(hash(object.generator));
+//   console.log(hash(object.int8Array));
+//   console.log(hash(object.int16Array));
+//   console.log(hash(object.int32Array));
+//   console.log(hash(object.promise));
+//   console.log(hash(object.uint8Array));
+//   console.log(hash(object.uint8ClampedArray));
+//   console.log(hash(object.uint16Array));
+//   console.log(hash(object.uint32Array));
 
-  console.log(hash(object.ReactStatefulClass));
-  console.log(hash(object.ReactStatefulElement));
-  console.log(hash(object.ReactStatelessClass));
-  console.log(hash(object.ReactStatelessElement));
-  console.log(hash(document.body));
-  console.log(hash(window));
-};
+//   console.log(hash(object.ReactStatefulClass));
+//   console.log(hash(object.ReactStatefulElement));
+//   console.log(hash(object.ReactStatelessClass));
+//   console.log(hash(object.ReactStatelessElement));
+//   console.log(hash(document.body));
+//   console.log(hash(window));
+// };
 
 // benchmark();
 // profile(1000);

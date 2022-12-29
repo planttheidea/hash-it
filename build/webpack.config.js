@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-const ESLintWebpackPlugin = require("eslint-webpack-plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const path = require("path");
-const webpack = require("webpack");
+import ESLintWebpackPlugin from "eslint-webpack-plugin";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import path from "path";
+import { fileURLToPath } from 'url';
+import webpack from 'webpack';
 
-const ROOT = __dirname;
+const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const PORT = 3000;
 
-module.exports = {
+export default {
   cache: true,
 
   devServer: {

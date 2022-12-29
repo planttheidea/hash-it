@@ -28,12 +28,12 @@ export const TEST_VALUES = [
   },
   {
     comparator: 'deepEqual',
-    expectedResult: (function (a: string, b: string) {
+    expectedResult: (function (_a: string, _b: string) {
       return arguments;
     })('foo', 'bar'),
     expectedString: '{"0":"string|foo","1":"string|bar"}',
     key: 'arguments',
-    value: (function (a: string, b: string) {
+    value: (function (_a: string, _b: string) {
       return arguments;
     })('foo', 'bar'),
   },

@@ -165,7 +165,7 @@ export function stringifyDocumentFragment(fragment: DocumentFragment): string {
   const innerHTML: string[] = new Array(index);
 
   while (--index >= 0) {
-    innerHTML[index] = children[index].outerHTML;
+    innerHTML[index] = children[index]!.outerHTML;
   }
 
   return innerHTML.join();
@@ -189,7 +189,7 @@ export function stringifyMap(map: Map<any, any>, state: RecursiveState) {
   sort(result, sortByKey);
 
   while (--index >= 0) {
-    result[index] = `[${result[index][0]},${result[index][1]}]`;
+    result[index] = `[${result[index]![0]},${result[index]![1]}]`;
   }
 
   return result.join();
@@ -207,8 +207,8 @@ export function stringifyObject(
 
   while (--index >= 0) {
     result[index] = [
-      properties[index],
-      stringify(value[properties[index]], state),
+      properties[index]!,
+      stringify(value[properties[index]!], state),
     ];
   }
 
@@ -217,7 +217,7 @@ export function stringifyObject(
   index = length;
 
   while (--index >= 0) {
-    result[index] = `${result[index][0]}:${result[index][1]}`;
+    result[index] = `${result[index]![0]}:${result[index]![1]}`;
   }
 
   return `{${result.join()}}`;
