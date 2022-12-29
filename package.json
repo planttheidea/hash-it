@@ -82,6 +82,9 @@
     "type": "git",
     "url": "git+https://github.com/planttheidea/hash-it.git"
   },
+  "resolutions": {
+    "decompress-response": "^8.0.0"
+  },
   "scripts": {
     "benchmark": "npm run build:esm && node benchmarks/index.js",
     "benchmark:compare": "npm run build:esm && node benchmarks/compare.js",
