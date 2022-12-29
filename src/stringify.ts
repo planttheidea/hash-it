@@ -194,7 +194,7 @@ export function stringifyMap(map: Map<any, any>, state: RecursiveState) {
     result[index] = `[${result[index]![0]},${result[index]![1]}]`;
   }
 
-  return result.join();
+  return `[${result.join()}]`;
 }
 
 export function stringifyObject(
@@ -227,7 +227,7 @@ export function stringifySet(set: Set<any>, state: RecursiveState) {
 
   sort(result, sortBySelf);
 
-  return result.join();
+  return `[${result.join()}]`;
 }
 
 export function stringify(
