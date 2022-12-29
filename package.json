@@ -84,5 +84,6 @@
     "test:watch": "npm test -- --watch",
     "typecheck": "tsc --noEmit"
   },
-  "version": "5.0.2"
+  "version": "5.0.2",
+  "dependencies": {}
 }
