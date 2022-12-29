@@ -1,16 +1,16 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
-const hash = require('../dist/hash-it.min');
+import hash from '../dist/esm/index.mjs';
 
-const boolean = (exports.boolean = true);
-const infinite = (exports.infinite = Infinity);
-const notANumber = (exports.notANumber = NaN);
-const nul = (exports.nul = null);
-const number = (exports.number = 12);
-const string = (exports.string = 'foo');
-const undef = (exports.undef = undefined);
+export const boolean = true;
+export const infinite = Infinity;
+export const notANumber = NaN;
+export const nul = null;
+export const number = 123;
+export const string = 'foo';
+export const undef = undefined;
 
-exports.hashBoolean = (cycles) => {
+export const hashBoolean = (cycles) => {
   let index = -1,
     val;
 
@@ -19,7 +19,7 @@ exports.hashBoolean = (cycles) => {
   }
 };
 
-exports.hashInfinity = (cycles) => {
+export const hashInfinity = (cycles) => {
   let index = -1,
     val;
 
@@ -28,7 +28,7 @@ exports.hashInfinity = (cycles) => {
   }
 };
 
-exports.hashNaN = (cycles) => {
+export const hashNaN = (cycles) => {
   let index = -1,
     val;
 
@@ -37,7 +37,7 @@ exports.hashNaN = (cycles) => {
   }
 };
 
-exports.hashNull = (cycles) => {
+export const hashNull = (cycles) => {
   let index = -1,
     val;
 
@@ -46,7 +46,7 @@ exports.hashNull = (cycles) => {
   }
 };
 
-exports.hashNumber = (cycles) => {
+export const hashNumber = (cycles) => {
   let index = -1,
     val;
 
@@ -55,7 +55,7 @@ exports.hashNumber = (cycles) => {
   }
 };
 
-exports.hashString = (cycles) => {
+export const hashString = (cycles) => {
   let index = -1,
     val;
 
@@ -64,7 +64,7 @@ exports.hashString = (cycles) => {
   }
 };
 
-exports.hashUndefined = (cycles) => {
+export const hashUndefined = (cycles) => {
   let index = -1,
     val;
 

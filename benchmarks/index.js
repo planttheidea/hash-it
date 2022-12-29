@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+import * as fs from 'fs';
+import { repeats, test } from './test.js';
 
-const fs = require('fs');
-const { repeats, test } = require('./test');
-
-const {
+import {
   hashBoolean,
   hashInfinity,
   hashNaN,
@@ -11,8 +9,8 @@ const {
   hashNumber,
   hashString,
   hashUndefined,
-} = require('./primitive');
-const {
+} from './primitive.js';
+import {
   hashArray,
   hashCircularObject,
   hashFunction,
@@ -20,7 +18,7 @@ const {
   hashObject,
   hashRegExp,
   hashSet,
-} = require('./complex');
+} from './complex.js';
 
 const header = () =>
   `Benchmark cycles: ${repeats

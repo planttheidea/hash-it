@@ -1,7 +1,7 @@
 const REPEATS = [1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000];
 const TOTAL = REPEATS.reduce((sum, cycles) => sum + cycles, 0);
 
-exports.test = (name, benchmark) => {
+export const test = (name, benchmark) => {
   let totalTime = 0;
   let startTime;
   let testTime;
@@ -29,4 +29,4 @@ exports.test = (name, benchmark) => {
   return displayText;
 };
 
-exports.repeats = REPEATS;
+export const repeats = REPEATS;

@@ -96,7 +96,7 @@ function stringifyRecursiveAsJson(
   state.cache.set(value, ++state.id);
 
   if (classType === '[object Object]') {
-    return `${prefix}:${stringifyObject(value, state)}`;
+    return value[Symbol.iterator] ? getUnsupportedHash(value, prefix) : `${prefix}:${stringifyObject(value, state)}`;
   }
 
   if (ARRAY_LIKE_CLASSES[classType as ArrayLikeClass]) {

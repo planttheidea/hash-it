@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars */
 
-const hash = require('../dist/hash-it.min');
+import hash from '../dist/esm/index.mjs';
 
-const {
+import {
   boolean,
   infinite,
   notANumber,
@@ -10,7 +10,7 @@ const {
   number,
   string,
   undef,
-} = require('./primitive');
+} from './primitive.js';
 
 const array = [boolean, infinite, notANumber, nul, number, string, undef];
 const object = {
@@ -22,8 +22,7 @@ const object = {
   string,
   undef,
 };
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const func = function (foo, bar) {};
+const func = function (_foo, _bar) {};
 const map = new Map([
   ['foo', 'bar'],
   ['bar', 'baz'],
@@ -43,7 +42,7 @@ const recursiveObject = (() => {
   return new Circular();
 })();
 
-exports.hashArray = (cycles) => {
+export const hashArray = (cycles) => {
   let index = -1,
     val;
 
@@ -52,7 +51,7 @@ exports.hashArray = (cycles) => {
   }
 };
 
-exports.hashFunction = (cycles) => {
+export const hashFunction = (cycles) => {
   let index = -1,
     val;
 
@@ -61,7 +60,7 @@ exports.hashFunction = (cycles) => {
   }
 };
 
-exports.hashMap = (cycles) => {
+export const hashMap = (cycles) => {
   let index = -1,
     val;
 
@@ -70,7 +69,7 @@ exports.hashMap = (cycles) => {
   }
 };
 
-exports.hashObject = (cycles) => {
+export const hashObject = (cycles) => {
   let index = -1,
     val;
 
@@ -79,7 +78,7 @@ exports.hashObject = (cycles) => {
   }
 };
 
-exports.hashCircularObject = (cycles) => {
+export const hashCircularObject = (cycles) => {
   let index = -1,
     val;
 
@@ -88,7 +87,7 @@ exports.hashCircularObject = (cycles) => {
   }
 };
 
-exports.hashRegExp = (cycles) => {
+export const hashRegExp = (cycles) => {
   let index = -1,
     val;
 
@@ -97,7 +96,7 @@ exports.hashRegExp = (cycles) => {
   }
 };
 
-exports.hashSet = (cycles) => {
+export const hashSet = (cycles) => {
   let index = -1,
     val;
 
