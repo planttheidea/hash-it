@@ -1,4 +1,7 @@
 import { SEPARATOR } from './constants';
+import { namespaceComplexValue } from './utils';
+
+import type { Class } from './constants';
 
 export const NON_ENUMERABLE_CLASS_CACHE = new WeakMap<
   NonEnumerableObject,
@@ -14,7 +17,7 @@ type NonEnumerableObject =
 let refId = 0;
 export function getUnsupportedHash(
   value: NonEnumerableObject,
-  prefix: string,
+  classType: Class,
 ): string {
   const cached = NON_ENUMERABLE_CLASS_CACHE.get(value);
 
@@ -22,7 +25,10 @@ export function getUnsupportedHash(
     return cached;
   }
 
-  const toCache = prefix + 'NOT_ENUMERABLE' + SEPARATOR + refId++;
+  const toCache = namespaceComplexValue(
+    classType,
+    'NOT_ENUMERABLE' + SEPARATOR + refId++,
+  );
 
   NON_ENUMERABLE_CLASS_CACHE.set(value, toCache);
 

@@ -1,6 +1,5 @@
 import {
   ARRAY_LIKE_CLASSES,
-  CLASSES,
   HASHABLE_TYPES,
   NON_ENUMERABLE_CLASSES,
   PrimitiveWrapperClass,
@@ -20,6 +19,7 @@ import type {
   TypedArrayClass,
 } from './constants';
 import { getUnsupportedHash } from './cache';
+import { namespaceComplexValue } from './utils';
 
 interface RecursiveState {
   cache: WeakMap<any, number>;
@@ -27,10 +27,6 @@ interface RecursiveState {
 }
 
 const toString = Object.prototype.toString;
-
-function getComplexPrefix(classType: Class) {
-  return HASHABLE_TYPES.object + SEPARATOR + CLASSES[classType] + SEPARATOR;
-}
 
 function stringifyComplexType(value: any, state: RecursiveState) {
   const classType = toString.call(value) as unknown as Class;
@@ -40,16 +36,16 @@ function stringifyComplexType(value: any, state: RecursiveState) {
   }
 
   if (classType === '[object Date]') {
-    return getComplexPrefix(classType) + value.getTime();
+    return namespaceComplexValue(classType, value.getTime());
   }
 
   if (classType === '[object RegExp]') {
-    return getComplexPrefix(classType) + value.toString();
+    return namespaceComplexValue(classType, value.toString());
   }
 
   if (classType === '[object Event]') {
-    return (
-      getComplexPrefix(classType) +
+    return namespaceComplexValue(
+      classType,
       [
         value.bubbles,
         value.cancelBubble,
@@ -62,34 +58,36 @@ function stringifyComplexType(value: any, state: RecursiveState) {
         value.returnValue,
         value.target,
         value.type,
-      ].join()
+      ].join(),
     );
   }
 
   if (classType === '[object Error]') {
-    return (
-      getComplexPrefix(classType) + value.message + SEPARATOR + value.stack
+    return namespaceComplexValue(
+      classType,
+      value.message + SEPARATOR + value.stack,
     );
   }
 
   if (classType === '[object DocumentFragment]') {
-    return getComplexPrefix(classType) + stringifyDocumentFragment(value);
+    return namespaceComplexValue(classType, stringifyDocumentFragment(value));
   }
 
   const element = classType.match(XML_ELEMENT_REGEXP);
 
   if (element) {
-    return (
-      getComplexPrefix('ELEMENT') + element[1] + SEPARATOR + value.outerHTML
+    return namespaceComplexValue(
+      'ELEMENT',
+      element[1] + SEPARATOR + value.outerHTML,
     );
   }
 
   if (NON_ENUMERABLE_CLASSES[classType as NonEnumerableClass]) {
-    return getUnsupportedHash(value, getComplexPrefix(classType));
+    return getUnsupportedHash(value, classType);
   }
 
   if (PRIMITIVE_WRAPPER_CLASSES[classType as PrimitiveWrapperClass]) {
-    return getComplexPrefix(classType) + value.toString();
+    return namespaceComplexValue(classType, value.toString());
   }
 
   // This would only be hit with custom `toStringTag` values
@@ -104,7 +102,7 @@ function stringifyRecursiveAsJson(
   const cached = state.cache.get(value);
 
   if (cached) {
-    return getComplexPrefix(classType) + 'RECURSIVE~' + cached;
+    return namespaceComplexValue(classType, 'RECURSIVE~' + cached);
   }
 
   state.cache.set(value, ++state.id);
@@ -112,38 +110,38 @@ function stringifyRecursiveAsJson(
   if (classType === '[object Object]') {
     return value[Symbol.iterator]
       ? getUnsupportedHash(value, classType)
-      : getComplexPrefix(classType) + stringifyObject(value, state);
+      : namespaceComplexValue(classType, stringifyObject(value, state));
   }
 
   if (ARRAY_LIKE_CLASSES[classType as ArrayLikeClass]) {
-    return getComplexPrefix(classType) + stringifyArray(value, state);
+    return namespaceComplexValue(classType, stringifyArray(value, state));
   }
 
   if (classType === '[object Map]') {
-    return getComplexPrefix(classType) + stringifyMap(value, state);
+    return namespaceComplexValue(classType, stringifyMap(value, state));
   }
 
   if (classType === '[object Set]') {
-    return getComplexPrefix(classType) + stringifySet(value, state);
+    return namespaceComplexValue(classType, stringifySet(value, state));
   }
 
   if (TYPED_ARRAY_CLASSES[classType as TypedArrayClass]) {
-    return getComplexPrefix(classType) + value.join();
+    return namespaceComplexValue(classType, value.join());
   }
 
   if (classType === '[object ArrayBuffer]') {
-    return getComplexPrefix(classType) + stringifyArrayBuffer(value);
+    return namespaceComplexValue(classType, stringifyArrayBuffer(value));
   }
 
   if (classType === '[object DataView]') {
-    return getComplexPrefix(classType) + stringifyArrayBuffer(value.buffer);
+    return namespaceComplexValue(classType, stringifyArrayBuffer(value.buffer));
   }
 
   if (NON_ENUMERABLE_CLASSES[classType as NonEnumerableClass]) {
-    return getUnsupportedHash(value, getComplexPrefix(classType));
+    return getUnsupportedHash(value, classType);
   }
 
-  return getComplexPrefix('CUSTOM') + stringifyObject(value, state);
+  return namespaceComplexValue('CUSTOM', stringifyObject(value, state));
 }
 
 export function stringifyArray(value: any[], state: RecursiveState) {
