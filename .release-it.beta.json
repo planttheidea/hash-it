@@ -1,0 +1,18 @@
+{
+  "github": {
+    "release": true,
+    "tagName": "v${version}"
+  },
+  "npm": {
+    "tag": "next"
+  },
+  "preReleaseId": "beta",
+  "hooks": {
+    "before:init": [
+      "npm run lint",
+      "npm run typecheck",
+      "npm run test",
+      "npm run build"
+    ]
+  }
+}
