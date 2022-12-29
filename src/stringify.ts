@@ -26,8 +26,11 @@ interface RecursiveState {
   id: number;
 }
 
-const objectType = HASHABLE_TYPES.object;
 const toString = Object.prototype.toString;
+
+function getComplexPrefix(classType: Class) {
+  return HASHABLE_TYPES.object + SEPARATOR + CLASSES[classType] + SEPARATOR;
+}
 
 function stringifyComplexType(value: any, state: RecursiveState) {
   const classType = toString.call(value) as unknown as Class;
@@ -36,19 +39,17 @@ function stringifyComplexType(value: any, state: RecursiveState) {
     return stringifyRecursiveAsJson(classType as RecursiveClass, value, state);
   }
 
-  const prefix = objectType + SEPARATOR + CLASSES[classType] + SEPARATOR;
-
   if (classType === '[object Date]') {
-    return prefix + value.getTime();
+    return getComplexPrefix(classType) + value.getTime();
   }
 
   if (classType === '[object RegExp]') {
-    return prefix + value.toString();
+    return getComplexPrefix(classType) + value.toString();
   }
 
   if (classType === '[object Event]') {
     return (
-      prefix +
+      getComplexPrefix(classType) +
       [
         value.bubbles,
         value.cancelBubble,
@@ -66,27 +67,29 @@ function stringifyComplexType(value: any, state: RecursiveState) {
   }
 
   if (classType === '[object Error]') {
-    return prefix + value.message + SEPARATOR + value.stack;
+    return (
+      getComplexPrefix(classType) + value.message + SEPARATOR + value.stack
+    );
   }
 
   if (classType === '[object DocumentFragment]') {
-    return prefix + stringifyDocumentFragment(value);
+    return getComplexPrefix(classType) + stringifyDocumentFragment(value);
   }
 
   const element = classType.match(XML_ELEMENT_REGEXP);
 
   if (element) {
     return (
-      CLASSES.ELEMENT + SEPARATOR + element[1] + SEPARATOR + value.outerHTML
+      getComplexPrefix('ELEMENT') + element[1] + SEPARATOR + value.outerHTML
     );
   }
 
   if (NON_ENUMERABLE_CLASSES[classType as NonEnumerableClass]) {
-    return getUnsupportedHash(value, prefix);
+    return getUnsupportedHash(value, getComplexPrefix(classType));
   }
 
   if (PRIMITIVE_WRAPPER_CLASSES[classType as PrimitiveWrapperClass]) {
-    return prefix + value.toString();
+    return getComplexPrefix(classType) + value.toString();
   }
 
   // This would only be hit with custom `toStringTag` values
@@ -98,12 +101,10 @@ function stringifyRecursiveAsJson(
   value: any,
   state: RecursiveState,
 ) {
-  const prefix =
-    HASHABLE_TYPES.object + SEPARATOR + CLASSES[classType] + SEPARATOR;
   const cached = state.cache.get(value);
 
   if (cached) {
-    return prefix + 'RECURSIVE~' + cached;
+    return getComplexPrefix(classType) + 'RECURSIVE~' + cached;
   }
 
   state.cache.set(value, ++state.id);
@@ -111,38 +112,38 @@ function stringifyRecursiveAsJson(
   if (classType === '[object Object]') {
     return value[Symbol.iterator]
       ? getUnsupportedHash(value, classType)
-      : prefix + stringifyObject(value, state);
+      : getComplexPrefix(classType) + stringifyObject(value, state);
   }
 
   if (ARRAY_LIKE_CLASSES[classType as ArrayLikeClass]) {
-    return prefix + stringifyArray(value, state);
+    return getComplexPrefix(classType) + stringifyArray(value, state);
   }
 
   if (classType === '[object Map]') {
-    return prefix + stringifyMap(value, state);
+    return getComplexPrefix(classType) + stringifyMap(value, state);
   }
 
   if (classType === '[object Set]') {
-    return prefix + stringifySet(value, state);
+    return getComplexPrefix(classType) + stringifySet(value, state);
   }
 
   if (TYPED_ARRAY_CLASSES[classType as TypedArrayClass]) {
-    return prefix + value.join();
+    return getComplexPrefix(classType) + value.join();
   }
 
   if (classType === '[object ArrayBuffer]') {
-    return prefix + stringifyArrayBuffer(value);
+    return getComplexPrefix(classType) + stringifyArrayBuffer(value);
   }
 
   if (classType === '[object DataView]') {
-    return prefix + stringifyArrayBuffer(value.buffer);
+    return getComplexPrefix(classType) + stringifyArrayBuffer(value.buffer);
   }
 
   if (NON_ENUMERABLE_CLASSES[classType as NonEnumerableClass]) {
-    return getUnsupportedHash(value, prefix);
+    return getUnsupportedHash(value, getComplexPrefix(classType));
   }
 
-  return CLASSES.CUSTOM + SEPARATOR + stringifyObject(value, state);
+  return getComplexPrefix('CUSTOM') + stringifyObject(value, state);
 }
 
 export function stringifyArray(value: any[], state: RecursiveState) {
@@ -204,7 +205,7 @@ export function stringifyMap(map: Map<any, any>, state: RecursiveState) {
   sort(result, sortByKey);
 
   while (--index >= 0) {
-    result[index] = '[' + (result[index] as [string, string]).join() + ']';
+    result[index] = '[' + result[index]![0] + ',' + result[index]![1] + ']';
   }
 
   return '[' + result.join() + ']';
