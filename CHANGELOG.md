@@ -1,5 +1,12 @@
 # hash-it CHANGELOG
 
+## 6.0.0
+
+**Breaking changes**
+
+- Equality utilities (`is` / `is.any` / `is.all` / `is.not`) are no longer provided
+-
+
 ## 5.0.2
 
 - Reduce code size by 29.29% (19.42% gzipped size)
