@@ -5,7 +5,14 @@
 **Breaking changes**
 
 - Equality utilities (`is` / `is.any` / `is.all` / `is.not`) are no longer provided
--
+- `Error` type hashes now include the message (previously only included stack)
+- Non-enumerable type hashes (`Generator`, `Promise`, `WeakMap`, `WeakSet`) now hash uniquely based on reference
+- `WeakMap` is now required at runtime (used as cache for circular references)
+
+**Enhancements**
+
+- Better support for system-specific loading (ESM vs CJS vs UMD)
+- Added support for primitive wrappers (e.g., `new Number('123')`)
 
 ## 5.0.2
 
