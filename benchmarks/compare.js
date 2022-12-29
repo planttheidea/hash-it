@@ -1,15 +1,13 @@
 import Benchmark from 'benchmark';
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import objectHash from 'object-hash';
-import creeateNodeObjectHash from 'node-object-hash';
+import createNodeObjectHash from 'node-object-hash';
 import hashObject from 'hash-object';
 import hash from '../dist/esm/index.mjs';
 
+const nodeObjectHash = createNodeObjectHash();
 const suite = new Benchmark.Suite();
-
 const dataArray = [];
-
-const nodeObjectHash = creeateNodeObjectHash();
 
 let dataStairs = { end: 'is near' };
 

@@ -96,7 +96,9 @@ function stringifyRecursiveAsJson(
   state.cache.set(value, ++state.id);
 
   if (classType === '[object Object]') {
-    return value[Symbol.iterator] ? getUnsupportedHash(value, prefix) : `${prefix}:${stringifyObject(value, state)}`;
+    return value[Symbol.iterator]
+      ? getUnsupportedHash(value, prefix)
+      : `${prefix}:${stringifyObject(value, state)}`;
   }
 
   if (ARRAY_LIKE_CLASSES[classType as ArrayLikeClass]) {
@@ -199,25 +201,17 @@ export function stringifyObject(
   value: Record<string, any>,
   state: RecursiveState,
 ) {
-  const properties = Object.getOwnPropertyNames(value);
+  const properties = sort(Object.getOwnPropertyNames(value), sortBySelf);
   const length = properties.length;
-  const result: string[] | Array<[string, string]> = new Array(length);
+  const result: string[] = new Array(length);
 
   let index = length;
 
   while (--index >= 0) {
-    result[index] = [
-      properties[index]!,
-      stringify(value[properties[index]!], state),
-    ];
-  }
-
-  sort(result, sortByKey);
-
-  index = length;
-
-  while (--index >= 0) {
-    result[index] = `${result[index]![0]}:${result[index]![1]}`;
+    result[index] = `${properties[index]!}:${stringify(
+      value[properties[index]!],
+      state,
+    )}`;
   }
 
   return `{${result.join()}}`;
