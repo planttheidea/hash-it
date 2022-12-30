@@ -246,7 +246,11 @@ export function stringify(
 ): string {
   const type = typeof value;
 
-  if (type === 'object' && value) {
+  if (value == null || type === 'undefined') {
+    return HASHABLE_TYPES.empty + value;
+  }
+
+  if (type === 'object') {
     return stringifyComplexType(
       value,
       toString.call(value) as unknown as Class,
@@ -254,8 +258,13 @@ export function stringify(
     );
   }
 
-  return (
-    HASHABLE_TYPES[type] +
-    (type === 'function' || type === 'symbol' ? value.toString() : value)
-  );
+  if (type === 'function' || type === 'symbol') {
+    return HASHABLE_TYPES[type] + value.toString();
+  }
+
+  if (type === 'boolean') {
+    return HASHABLE_TYPES.boolean + +value;
+  }
+
+  return HASHABLE_TYPES[type] + value;
 }
