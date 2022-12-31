@@ -33,9 +33,10 @@ export const CLASSES = {
   '[object Uint16Array]': 28,
   '[object Uint32Array]': 29,
   '[object WeakMap]': 30,
-  '[object WeakSet]': 31,
-  ELEMENT: 32,
-  CUSTOM: 33,
+  '[object WeakRef]': 31,
+  '[object WeakSet]': 32,
+  ELEMENT: 33,
+  CUSTOM: 34,
 } as const;
 
 export type Class = keyof typeof CLASSES;
@@ -51,7 +52,8 @@ export const NON_ENUMERABLE_CLASSES = {
   '[object Generator]': 1,
   '[object Promise]': 2,
   '[object WeakMap]': 3,
-  '[object WeakSet]': 4,
+  '[object WeakRef]': 4,
+  '[object WeakSet]': 5,
 } as const;
 
 export type NonEnumerableClass = keyof typeof NON_ENUMERABLE_CLASSES;
