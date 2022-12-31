@@ -1,7 +1,6 @@
-import 'regenerator-runtime/runtime';
-
 import React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
+import hashIt from '../src';
 import hash from '../src';
 
 document.body.style.backgroundColor = '#1d1d1d';
@@ -230,8 +229,16 @@ const visualValidation = () => {
 visualValidation();
 // hashOnlyValidation();
 
+const promise = Promise.resolve(123);
+
+console.log(hash(promise));
+console.log(hash(promise));
+console.log(hash(Promise.resolve(123)));
+
 const div = document.createElement('div');
 
-render(<div>Check the console for more details!</div>, div);
+const root = createRoot(div);
 
 document.body.appendChild(div);
+
+root.render(<div>Check the console for more details!</div>);

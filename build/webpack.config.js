@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-import ESLintWebpackPlugin from "eslint-webpack-plugin";
-import HtmlWebpackPlugin from "html-webpack-plugin";
-import path from "path";
+import ESLintWebpackPlugin from 'eslint-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import path from 'path';
 import { fileURLToPath } from 'url';
 import webpack from 'webpack';
 
@@ -13,46 +13,45 @@ export default {
   cache: true,
 
   devServer: {
-    host: "localhost",
+    host: 'localhost',
     port: PORT,
   },
 
-  devtool: "source-map",
+  devtool: 'source-map',
 
-  entry: [path.resolve(ROOT, "DEV_ONLY", "index.tsx")],
+  entry: [path.resolve(ROOT, 'DEV_ONLY', 'index.tsx')],
 
-  mode: "development",
+  mode: 'development',
 
   module: {
     rules: [
       {
-        include: [path.resolve(ROOT, "src"), path.resolve(ROOT, "DEV_ONLY")],
-        loader: "babel-loader",
+        include: [path.resolve(ROOT, 'src'), path.resolve(ROOT, 'DEV_ONLY')],
+        loader: 'ts-loader',
         options: {
-          cacheDirectory: true,
-          presets: ["@babel/preset-react"],
+          reportFiles: ['src/*.{ts|tsx}'],
         },
-        test: /\.(js|ts|tsx)$/,
+        test: /\.(ts|tsx)$/,
       },
     ],
   },
 
   output: {
-    filename: "moize.js",
-    library: "moize",
-    libraryTarget: "umd",
-    path: path.resolve(ROOT, "dist"),
+    filename: 'hash-it.js',
+    library: 'hashIt',
+    libraryTarget: 'umd',
+    path: path.resolve(ROOT, 'dist'),
     publicPath: `http://localhost:${PORT}/`,
     umdNamedDefine: true,
   },
 
   plugins: [
     new ESLintWebpackPlugin(),
-    new webpack.EnvironmentPlugin(["NODE_ENV"]),
+    new webpack.EnvironmentPlugin(['NODE_ENV']),
     new HtmlWebpackPlugin(),
   ],
 
   resolve: {
-    extensions: [".tsx", ".ts", ".js"],
+    extensions: ['.tsx', '.ts', '.js'],
   },
 };
