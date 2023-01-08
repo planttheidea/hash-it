@@ -46,7 +46,7 @@ Well ... sadly, no, there are a few exceptions.
   - There is no way to obtain the values contained within due to its asynchronous nature
 - `Generator` (the result of calling a `GeneratorFunction`)
   - Like `Promise`, there is no way to obtain the values contained within due to its dynamic iterable nature
-- `WeakMap` / `WeakSet`
+- `WeakMap` / `WeakRef` / `WeakSet`
   - The spec explicitly forbids iteration over them, so the unique values cannot be discovered
 
 For each of these object types, the object will have a unique hash based on the object reference itself:

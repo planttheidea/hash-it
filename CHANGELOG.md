@@ -12,7 +12,15 @@
 **Enhancements**
 
 - Better support for system-specific loading (ESM vs CJS vs UMD)
-- Added support for primitive wrappers (e.g., `new Number('123')`)
+- Added support for primitive wrappers (e.g. `new Number('123')`)
+- Added support for more object classes
+  - `AsyncFunction`
+  - `AsyncGeneratorFunction`
+  - `BigInt64Array`
+  - `BigUint64Array`
+  - `GeneratorFunction`
+  - `SharedArrayBuffer`
+  - `WeakRef` (same limitations as those for `WeakMap` / `WeakSet`)
 
 ## 5.0.2
 
