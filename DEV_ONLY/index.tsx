@@ -1,6 +1,5 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import hashIt from '../src';
 import hash from '../src';
 
 document.body.style.backgroundColor = '#1d1d1d';
