@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 export const INTEGER_ARRAY = [1, 2, 3];
+// @ts-expect-error - BigInt values not supported with lower targets.
+export const BIG_INTEGER_ARRAY = [21n, 31n];
 
 export const ARRAY_BUFFER = new Uint16Array(INTEGER_ARRAY).buffer;
 export const DATE = new Date();
@@ -36,8 +38,18 @@ export const TEST_VALUES = [
   },
   {
     comparator: 'is',
-    key: 'bigint',
+    key: 'bigInt',
     value: BigInt(9007199254740991),
+  },
+  {
+    comparator: 'is',
+    key: 'bigInt64Array',
+    value: new BigInt64Array(BIG_INTEGER_ARRAY),
+  },
+  {
+    comparator: 'is',
+    key: 'bigUint64Array',
+    value: new BigUint64Array(BIG_INTEGER_ARRAY),
   },
   {
     comparator: 'is',
