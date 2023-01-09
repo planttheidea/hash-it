@@ -8,7 +8,7 @@ Fast and consistent hashCode for any object type
   - [Table of contents](#table-of-contents)
   - [Usage](#usage)
   - [Overview](#overview)
-  - [Note](#note)
+  - [Hash consistency](#hash-consistency)
   - [Support](#support)
     - [Browsers](#browsers)
     - [Node](#node)
@@ -67,7 +67,10 @@ Here is the list of object classes that produce consistent, unique hashes based 
 - `Array`
 - `ArrayBuffer`
 - `AsyncFunction` (based on `toString`)
+- `AsyncGeneratorFunction` (based on `toString`)
 - `BigInt`
+- `BigInt64Array`
+- `BigUint64Array`
 - `Boolean`
 - `DataView` (based on its `buffer`)
 - `Date` (based on `getTime`)
@@ -92,6 +95,7 @@ Here is the list of object classes that produce consistent, unique hashes based 
 - `Proxy`
 - `RegExp`
 - `Set` (order-agnostic)
+- `SharedArrayBuffer`
 - `String`
 - `SVGElement` (based on `outerHTML`)
   - Includes all sub-types (e.g., `SVGRectElement`, `SVGPolygonElement`, etc.)
@@ -105,7 +109,7 @@ Here is the list of object classes that produce consistent, unique hashes based 
 
 If there is an object class or data type that is missing, please submit an issue.
 
-## Note
+## Hash consistency
 
 While the hashes will be consistent when calculated within the same environment, there is no guarantee that the resulting hash will be the same across different environments due to environment-specific or browser-specific implementations of features. This is limited to extreme edge cases, such as hashing the `window` object, but should be considered if being used with persistence over different environments.
 
