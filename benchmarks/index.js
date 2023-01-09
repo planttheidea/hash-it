@@ -1,31 +1,59 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-
-const fs = require('fs');
-const { repeats, test } = require('./test');
-
-const {
+import * as fs from 'fs';
+import {
+  hashArray,
   hashBoolean,
+  hashCircularObject,
+  hashDate,
+  hashError,
+  hashEvent,
+  hashFunction,
   hashInfinity,
+  hashMap,
   hashNaN,
   hashNull,
   hashNumber,
-  hashString,
-  hashUndefined,
-} = require('./primitive');
-const {
-  hashArray,
-  hashCircularObject,
-  hashFunction,
-  hashMap,
   hashObject,
   hashRegExp,
   hashSet,
-} = require('./complex');
+  hashString,
+  hashUndefined,
+} from './tests.js';
+
+const REPEATS = [1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000];
+const TOTAL = REPEATS.reduce((sum, cycles) => sum + cycles, 0);
+
+function runTest(name, benchmark) {
+  let totalTime = 0;
+  let startTime;
+  let testTime;
+
+  let displayText = `\n${name}:\n${REPEATS.map((cycles) => {
+    startTime = Date.now();
+
+    benchmark(cycles);
+
+    testTime = Date.now() - startTime;
+
+    if (global && global.gc) {
+      global.gc();
+    }
+
+    totalTime += testTime;
+
+    return `${cycles.toLocaleString()}: ${testTime / 1000} sec`;
+  }).join('\n')}`;
+
+  displayText += `\nAverage: ${Math.round(
+    (TOTAL / totalTime) * 1000,
+  ).toLocaleString()} ops/sec`;
+
+  return displayText;
+}
 
 const header = () =>
-  `Benchmark cycles: ${repeats
-    .map((cycles) => cycles.toLocaleString())
-    .join(' ')}`;
+  `Benchmark cycles: ${REPEATS.map((cycles) => cycles.toLocaleString()).join(
+    ' ',
+  )}`;
 
 let results = [];
 
@@ -46,33 +74,36 @@ console.log('');
 console.log('Standard value objects:');
 
 // primitive tests
-logAndSave(test('Boolean', hashBoolean));
-logAndSave(test('Infinity', hashInfinity));
-logAndSave(test('NaN', hashNaN));
-logAndSave(test('null', hashNull));
-logAndSave(test('Number', hashNumber));
-logAndSave(test('String', hashString));
-logAndSave(test('undefined', hashUndefined));
-logAndSave(test('Function', hashFunction));
-logAndSave(test('RegExp', hashRegExp));
+logAndSave(runTest('Boolean', hashBoolean));
+logAndSave(runTest('Infinity', hashInfinity));
+logAndSave(runTest('NaN', hashNaN));
+logAndSave(runTest('null', hashNull));
+logAndSave(runTest('Number', hashNumber));
+logAndSave(runTest('String', hashString));
+logAndSave(runTest('undefined', hashUndefined));
+logAndSave(runTest('Function', hashFunction));
+logAndSave(runTest('RegExp', hashRegExp));
 
 console.log('');
 console.log('Nested value objects:');
 console.log('');
 
 // complex tests
-logAndSave(test('Array', hashArray));
-logAndSave(test('Map', hashMap));
-logAndSave(test('Object', hashObject));
-logAndSave(test('Object (circular)', hashCircularObject));
-logAndSave(test('Set', hashSet));
+logAndSave(runTest('Array', hashArray));
+logAndSave(runTest('Date', hashDate));
+logAndSave(runTest('Error', hashError));
+logAndSave(runTest('Event', hashEvent));
+logAndSave(runTest('Map', hashMap));
+logAndSave(runTest('Object', hashObject));
+logAndSave(runTest('Object (circular)', hashCircularObject));
+logAndSave(runTest('Set', hashSet));
 
 console.log('');
 
 // write to file
 if (fs && fs.writeFileSync) {
   fs.writeFileSync('results_latest.txt', results.join('\n'), 'utf8');
-  console.log('Benchmarks done! Results saved to results.csv');
+  console.log('Benchmarks done! Results saved to results_latest.txt');
 } else {
   console.log('Benchmarks done!');
 }

@@ -8,12 +8,7 @@ Fast and consistent hashCode for any object type
   - [Table of contents](#table-of-contents)
   - [Usage](#usage)
   - [Overview](#overview)
-  - [Equality methods](#equality-methods)
-    - [hash.is](#hashis)
-    - [hash.is.all](#hashisall)
-    - [hash.is.any](#hashisany)
-    - [hash.is.not](#hashisnot)
-  - [Note](#note)
+  - [Hash consistency](#hash-consistency)
   - [Support](#support)
     - [Browsers](#browsers)
     - [Node](#node)
@@ -51,18 +46,31 @@ Well ... sadly, no, there are a few exceptions.
   - There is no way to obtain the values contained within due to its asynchronous nature
 - `Generator` (the result of calling a `GeneratorFunction`)
   - Like `Promise`, there is no way to obtain the values contained within due to its dynamic iterable nature
-- `WeakMap` / `WeakSet`
+- `WeakMap` / `WeakRef` / `WeakSet`
   - The spec explicitly forbids iteration over them, so the unique values cannot be discovered
 
-In each of these cases, no matter what the values of the object, they will always yield the same hash result, which is unique to each object type. If you have any ideas about how these can be uniquely hashed, they are welcome!
+For each of these object types, the object will have a unique hash based on the object reference itself:
 
-Here is the list of object classes that produce unique hashes:
+```ts
+const promise = Promise.resolve(123);
+
+console.log(hash(promise)); // 16843037491939
+console.log(hash(promise)); // 16843037491939
+console.log(hash(Promise.resolve(123))); // 4622327363876
+```
+
+Notice even if the internal values of the object are the same, the hash is different. This is because the values of the above object types cannot be introspected.
+
+Here is the list of object classes that produce consistent, unique hashes based on their value:
 
 - `Arguments`
 - `Array`
 - `ArrayBuffer`
 - `AsyncFunction` (based on `toString`)
+- `AsyncGeneratorFunction` (based on `toString`)
 - `BigInt`
+- `BigInt64Array`
+- `BigUint64Array`
 - `Boolean`
 - `DataView` (based on its `buffer`)
 - `Date` (based on `getTime`)
@@ -87,6 +95,7 @@ Here is the list of object classes that produce unique hashes:
 - `Proxy`
 - `RegExp`
 - `Set` (order-agnostic)
+- `SharedArrayBuffer`
 - `String`
 - `SVGElement` (based on `outerHTML`)
   - Includes all sub-types (e.g., `SVGRectElement`, `SVGPolygonElement`, etc.)
@@ -100,74 +109,7 @@ Here is the list of object classes that produce unique hashes:
 
 If there is an object class or data type that is missing, please submit an issue.
 
-## Equality methods
-
-### hash.is
-
-`hash.is(value1: any, value2: any): boolean`
-
-Compares the two objects to determine equality.
-
-```javascript
-console.log(hash.is(null, 123)); // false
-console.log(hash.is(null, null)); // true
-```
-
-### hash.is.all
-
-`hash.is.all(value1: any, value2: any[, value3: any[, ...valueN]]): boolean`
-
-Compares the first object to all other objects passed to determine if all are equal based on hashCode
-
-```javascript
-const foo = {
-  foo: 'bar',
-};
-const alsoFoo = {
-  foo: 'bar',
-};
-const stillFoo = {
-  foo: 'bar',
-};
-
-console.log(hash.is.all(foo, alsoFoo)); // true
-console.log(hash.is.all(foo, alsoFoo, stillFoo)); // true
-```
-
-### hash.is.any
-
-`hash.is.any(value1: any, value2: any[, value3: any[, ...valueN]]): boolean`
-
-Compares the first object to all other objects passed to determine if any are equal based on hashCode
-
-```javascript
-const foo = {
-  foo: 'bar',
-};
-const alsoFoo = {
-  foo: 'bar',
-};
-const nopeBar = {
-  bar: 'baz',
-};
-
-console.log(hash.is.any(foo, alsoFoo)); // true
-console.log(hash.is.any(foo, nopeBar)); // false
-console.log(hash.is.any(foo, alsoFoo, nopeBar)); // true
-```
-
-### hash.is.not
-
-`hash.is.not(value1: any, value2: any): boolean`
-
-Compares the two objects to determine non-equality.
-
-```javascript
-console.log(hash.is.not(null, 123)); // true
-console.log(hash.is.not(null, null)); // false
-```
-
-## Note
+## Hash consistency
 
 While the hashes will be consistent when calculated within the same environment, there is no guarantee that the resulting hash will be the same across different environments due to environment-specific or browser-specific implementations of features. This is limited to extreme edge cases, such as hashing the `window` object, but should be considered if being used with persistence over different environments.
 

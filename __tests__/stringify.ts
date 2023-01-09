@@ -1,8 +1,8 @@
 import {
-  getStringifiedArrayBufferFallback,
-  getStringifiedArrayBufferModern,
-  getStringifiedArrayBufferNoSupport,
-} from '../src/arrayBuffer';
+  stringifyArrayBufferFallback,
+  stringifyArrayBufferModern,
+  stringifyArrayBufferNone,
+} from '../src/stringify';
 import { ARRAY_BUFFER, INTEGER_ARRAY } from './__helpers__/values';
 
 describe('ArrayBuffer support', () => {
@@ -20,7 +20,7 @@ describe('ArrayBuffer support', () => {
       return result;
     });
 
-    const result = getStringifiedArrayBufferModern(ARRAY_BUFFER);
+    const result = stringifyArrayBufferModern(ARRAY_BUFFER);
 
     expect(spy).toHaveBeenCalledWith(ARRAY_BUFFER);
 
@@ -34,7 +34,7 @@ describe('ArrayBuffer support', () => {
 
     const spy = jest.spyOn(String, 'fromCharCode').mockReturnValue(stringified);
 
-    const result = getStringifiedArrayBufferFallback(ARRAY_BUFFER);
+    const result = stringifyArrayBufferFallback(ARRAY_BUFFER);
 
     expect(spy).toHaveBeenCalledWith(...INTEGER_ARRAY);
 
@@ -44,8 +44,8 @@ describe('ArrayBuffer support', () => {
   });
 
   it('should handle no support', () => {
-    const result = getStringifiedArrayBufferNoSupport(ARRAY_BUFFER);
+    const result = stringifyArrayBufferNone();
 
-    expect(result).toBe('');
+    expect(result).toBe('UNSUPPORTED');
   });
 });

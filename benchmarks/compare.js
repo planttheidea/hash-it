@@ -1,15 +1,13 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+import Benchmark from 'benchmark';
+import { faker } from '@faker-js/faker';
+import objectHash from 'object-hash';
+import createNodeObjectHash from 'node-object-hash';
+import hashObject from 'hash-object';
+import hash from '../dist/esm/index.mjs';
 
-const Benchmark = require('benchmark');
+const nodeObjectHash = createNodeObjectHash();
 const suite = new Benchmark.Suite();
-const faker = require('faker');
-
 const dataArray = [];
-
-const objectHash = require('object-hash');
-const nodeObjectHash = require('node-object-hash')();
-const hashObject = require('hash-object');
-const hash = require('../dist/hash-it.min');
 
 let dataStairs = { end: 'is near' };
 
