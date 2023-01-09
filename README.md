@@ -36,32 +36,7 @@ console.log(hash(window)); // 3270731309314
 
 _Any object type?_
 
-Yes, any object type. Primitives, ES2015 classes like `Symbol`, DOM elements (yes, you can even hash the `window` object if you want). Any object type.
-
-_With no exceptions?_
-
-Well ... sadly, no, there are a few exceptions.
-
-- `Promise`
-  - There is no way to obtain the values contained within due to its asynchronous nature
-- `Generator` (the result of calling a `GeneratorFunction`)
-  - Like `Promise`, there is no way to obtain the values contained within due to its dynamic iterable nature
-- `WeakMap` / `WeakRef` / `WeakSet`
-  - The spec explicitly forbids iteration over them, so the unique values cannot be discovered
-
-For each of these object types, the object will have a unique hash based on the object reference itself:
-
-```ts
-const promise = Promise.resolve(123);
-
-console.log(hash(promise)); // 16843037491939
-console.log(hash(promise)); // 16843037491939
-console.log(hash(Promise.resolve(123))); // 4622327363876
-```
-
-Notice even if the internal values of the object are the same, the hash is different. This is because the values of the above object types cannot be introspected.
-
-Here is the list of object classes that produce consistent, unique hashes based on their value:
+Yes, any object type. Primitives, ES2015 classes like `Symbol`, DOM elements (yes, you can even hash the `window` object if you want). Any object type. Here is the list of object classes that produce consistent, unique hashes based on their value:
 
 - `Arguments`
 - `Array`
@@ -106,6 +81,25 @@ Here is the list of object classes that produce consistent, unique hashes based 
 - `Uint32Array`
 - `Undefined`
 - `Window`
+
+_Are there any exceptions?_
+
+Sadly, yes, there are a few scenarios where internal values cannot be introspected for the object. In this case, the object is hashed based on its class type and reference.
+
+- `Promise`
+  - There is no way to obtain the values contained within due to its asynchronous nature
+- `Generator` (the result of calling a `GeneratorFunction`)
+  - Like `Promise`, there is no way to obtain the values contained within due to its dynamic iterable nature
+- `WeakMap` / `WeakRef` / `WeakSet`
+  - The spec explicitly forbids iteration over them, so the unique values cannot be discovered
+
+```ts
+const promise = Promise.resolve(123);
+
+console.log(hash(promise)); // 16843037491939
+console.log(hash(promise)); // 16843037491939
+console.log(hash(Promise.resolve(123))); // 4622327363876
+```
 
 If there is an object class or data type that is missing, please submit an issue.
 
