@@ -3,7 +3,7 @@
  * through bitwise operation (based on spinoff of dbj2
  * with enhancements for reduced collisions)
  */
-export function hash(string: string) {
+export function hash(string: string): number {
   let index = string.length;
   let hashA = 5381;
   let hashB = 52711;
