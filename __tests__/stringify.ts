@@ -1,18 +1,21 @@
+// @vitest-environment jsdom
+
 import {
   stringifyArrayBufferFallback,
   stringifyArrayBufferModern,
   stringifyArrayBufferNone,
-} from '../src/stringify';
-import { ARRAY_BUFFER, INTEGER_ARRAY } from './__helpers__/values';
+} from '../src/stringify.js';
+import { ARRAY_BUFFER, INTEGER_ARRAY } from './__helpers__/values.js';
+import { describe, expect, it, vi } from 'vitest';
 
 describe('ArrayBuffer support', () => {
   it('should support modern usage', () => {
     const stringified = 'stringified';
-    const toString = jest.fn(() => stringified);
+    const toString = vi.fn(() => stringified);
 
     const fromBuffer = Buffer.from;
 
-    const spy = jest.spyOn(Buffer, 'from').mockImplementation((buffer) => {
+    const spy = vi.spyOn(Buffer, 'from').mockImplementation((buffer) => {
       const result = fromBuffer(buffer);
 
       result.toString = toString;
@@ -32,7 +35,7 @@ describe('ArrayBuffer support', () => {
   it('should support fallback usage', () => {
     const stringified = 'stringified';
 
-    const spy = jest.spyOn(String, 'fromCharCode').mockReturnValue(stringified);
+    const spy = vi.spyOn(String, 'fromCharCode').mockReturnValue(stringified);
 
     const result = stringifyArrayBufferFallback(ARRAY_BUFFER);
 

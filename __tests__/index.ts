@@ -1,7 +1,13 @@
-import hash from '../src/index';
+// @vitest-environment jsdom
 
-import { TEST_VALUES } from './__helpers__/values';
-import WORDS from './__helpers__/words.json';
+import hash from '../src/index.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { TEST_VALUES } from './__helpers__/values.js';
+import { describe, expect, it } from 'vitest';
+
+const WORDS_PATH = path.resolve('__tests__', '__helpers__', 'words.json');
+const WORDS: string[] = JSON.parse(fs.readFileSync(WORDS_PATH, 'utf8'));
 
 const VALUES = TEST_VALUES.map(({ key, value }) => ({ key, value }));
 const VALUE_HASHES = VALUES.reduce((map, { key, value }) => {
