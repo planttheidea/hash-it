@@ -8,8 +8,8 @@ import {
   SEPARATOR,
   TYPED_ARRAY_CLASSES,
   XML_ELEMENT_REGEXP,
-} from './constants';
-import { sort, sortByKey, sortBySelf } from './sort';
+} from './constants.js';
+import { sort, sortByKey, sortBySelf } from './sort.js';
 
 import type {
   ArrayLikeClass,
@@ -17,9 +17,9 @@ import type {
   NonEnumerableClass,
   RecursiveClass,
   TypedArrayClass,
-} from './constants';
-import { getUnsupportedHash } from './cache';
-import { namespaceComplexValue } from './utils';
+} from './constants.js';
+import { getUnsupportedHash } from './cache.js';
+import { namespaceComplexValue } from './utils.js';
 
 interface RecursiveState {
   cache: WeakMap<any, number>;
@@ -191,8 +191,8 @@ const stringifyArrayBuffer =
   typeof Buffer !== 'undefined' && typeof Buffer.from === 'function'
     ? stringifyArrayBufferModern
     : typeof Uint16Array === 'function'
-    ? stringifyArrayBufferFallback
-    : stringifyArrayBufferNone;
+      ? stringifyArrayBufferFallback
+      : stringifyArrayBufferNone;
 
 export function stringifyMap(map: Map<any, any>, state: RecursiveState) {
   const result: string[] | Array<[string, string]> = new Array(map.size);

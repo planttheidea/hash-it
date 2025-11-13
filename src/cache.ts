@@ -1,7 +1,7 @@
-import { SEPARATOR } from './constants';
-import { namespaceComplexValue } from './utils';
+import { SEPARATOR } from './constants.js';
+import { namespaceComplexValue } from './utils.js';
 
-import type { Class } from './constants';
+import type { Class } from './constants.js';
 
 export const NON_ENUMERABLE_CLASS_CACHE = new WeakMap<
   NonEnumerableObject,
