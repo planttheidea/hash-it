@@ -1,5 +1,9 @@
 # hash-it CHANGELOG
 
+## 6.0.1
+
+- Fix CJS types masquerading as ESM when `Node16` module is used in TypeScript
+
 ## 6.0.0
 
 **Breaking changes**
