@@ -1,1 +1,1 @@
-export default function hashIt<Value>(value: Value): number;
+export function hash<Value>(value: Value): number;

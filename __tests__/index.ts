@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import hash from '../src/index.js';
+import { hash } from '../src/index.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { TEST_VALUES } from './__helpers__/values.js';

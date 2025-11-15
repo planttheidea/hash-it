@@ -1,5 +1,11 @@
 # hash-it CHANGELOG
 
+## 7.0.0
+
+**Breaking changes**
+
+- Change default export to named `hash` import (necessary to allow cross-compatible types for `.d.cts` files)
+
 ## 6.0.1
 
 - Fix CJS types masquerading as ESM when `Node16` module is used in TypeScript
