@@ -1,3 +1,11 @@
+import { getUnsupportedHash } from './cache.js';
+import type {
+  ArrayLikeClass,
+  Class,
+  NonEnumerableClass,
+  RecursiveClass,
+  TypedArrayClass,
+} from './constants.js';
 import {
   ARRAY_LIKE_CLASSES,
   HASHABLE_TYPES,
@@ -10,15 +18,6 @@ import {
   XML_ELEMENT_REGEXP,
 } from './constants.js';
 import { sort, sortByKey, sortBySelf } from './sort.js';
-
-import type {
-  ArrayLikeClass,
-  Class,
-  NonEnumerableClass,
-  RecursiveClass,
-  TypedArrayClass,
-} from './constants.js';
-import { getUnsupportedHash } from './cache.js';
 import { namespaceComplexValue } from './utils.js';
 
 interface RecursiveState {
@@ -26,6 +25,7 @@ interface RecursiveState {
   id: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
 const toString = Object.prototype.toString;
 
 function stringifyComplexType(
@@ -191,8 +191,8 @@ const stringifyArrayBuffer =
   typeof Buffer !== 'undefined' && typeof Buffer.from === 'function'
     ? stringifyArrayBufferModern
     : typeof Uint16Array === 'function'
-      ? stringifyArrayBufferFallback
-      : stringifyArrayBufferNone;
+    ? stringifyArrayBufferFallback
+    : stringifyArrayBufferNone;
 
 export function stringifyMap(map: Map<any, any>, state: RecursiveState) {
   const result: string[] | Array<[string, string]> = new Array(map.size);

@@ -55,9 +55,10 @@ const object = {
   event: (() => {
     try {
       return new Event('custom');
-    } catch (error) {
+    } catch {
       const event = document.createEvent('Event');
 
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       event.initEvent('custom', true, true);
 
       return event;
@@ -66,10 +67,10 @@ const object = {
   float32Array: new Float32Array([1, 2, 3]),
   float64Array: new Float64Array([1, 2, 3]),
   fragment,
-  func() {
+  func(this: void) {
     alert('y');
   },
-  *generator(): Generator<any, any, any> {
+  *generator(this: void): Generator<any> {
     const value = yield 1;
 
     yield value + 2;
