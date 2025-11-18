@@ -1,16 +1,9 @@
 import { getUnsupportedHash } from './cache.js';
-import type {
-  ArrayLikeClass,
-  Class,
-  NonEnumerableClass,
-  RecursiveClass,
-  TypedArrayClass,
-} from './constants.js';
+import type { Class, RecursiveClass } from './constants.js';
 import {
   ARRAY_LIKE_CLASSES,
   HASHABLE_TYPES,
   NON_ENUMERABLE_CLASSES,
-  PrimitiveWrapperClass,
   PRIMITIVE_WRAPPER_CLASSES,
   RECURSIVE_CLASSES,
   SEPARATOR,
@@ -28,13 +21,9 @@ interface RecursiveState {
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const toString = Object.prototype.toString;
 
-function stringifyComplexType(
-  value: any,
-  classType: Class,
-  state: RecursiveState,
-) {
-  if (RECURSIVE_CLASSES[classType as RecursiveClass]) {
-    return stringifyRecursiveAsJson(classType as RecursiveClass, value, state);
+function stringifyComplexType(value: any, classType: Class, state: RecursiveState) {
+  if (RECURSIVE_CLASSES[classType]) {
+    return stringifyRecursiveAsJson(classType, value, state);
   }
 
   if (classType === '[object Date]') {
@@ -65,10 +54,7 @@ function stringifyComplexType(
   }
 
   if (classType === '[object Error]') {
-    return namespaceComplexValue(
-      classType,
-      value.message + SEPARATOR + value.stack,
-    );
+    return namespaceComplexValue(classType, value.message + SEPARATOR + value.stack);
   }
 
   if (classType === '[object DocumentFragment]') {
@@ -78,17 +64,14 @@ function stringifyComplexType(
   const element = classType.match(XML_ELEMENT_REGEXP);
 
   if (element) {
-    return namespaceComplexValue(
-      'ELEMENT',
-      element[1] + SEPARATOR + value.outerHTML,
-    );
+    return namespaceComplexValue('ELEMENT', element[1] + SEPARATOR + value.outerHTML);
   }
 
-  if (NON_ENUMERABLE_CLASSES[classType as NonEnumerableClass]) {
+  if (NON_ENUMERABLE_CLASSES[classType]) {
     return getUnsupportedHash(value, classType);
   }
 
-  if (PRIMITIVE_WRAPPER_CLASSES[classType as PrimitiveWrapperClass]) {
+  if (PRIMITIVE_WRAPPER_CLASSES[classType]) {
     return namespaceComplexValue(classType, value.toString());
   }
 
@@ -96,11 +79,7 @@ function stringifyComplexType(
   return stringifyRecursiveAsJson('CUSTOM', value, state);
 }
 
-function stringifyRecursiveAsJson(
-  classType: RecursiveClass,
-  value: any,
-  state: RecursiveState,
-) {
+function stringifyRecursiveAsJson(classType: RecursiveClass, value: any, state: RecursiveState) {
   const cached = state.cache.get(value);
 
   if (cached) {
@@ -115,7 +94,7 @@ function stringifyRecursiveAsJson(
       : namespaceComplexValue(classType, stringifyObject(value, state));
   }
 
-  if (ARRAY_LIKE_CLASSES[classType as ArrayLikeClass]) {
+  if (ARRAY_LIKE_CLASSES[classType]) {
     return namespaceComplexValue(classType, stringifyArray(value, state));
   }
 
@@ -127,7 +106,7 @@ function stringifyRecursiveAsJson(
     return namespaceComplexValue(classType, stringifySet(value, state));
   }
 
-  if (TYPED_ARRAY_CLASSES[classType as TypedArrayClass]) {
+  if (TYPED_ARRAY_CLASSES[classType]) {
     return namespaceComplexValue(classType, value.join());
   }
 
@@ -139,7 +118,7 @@ function stringifyRecursiveAsJson(
     return namespaceComplexValue(classType, stringifyArrayBuffer(value.buffer));
   }
 
-  if (NON_ENUMERABLE_CLASSES[classType as NonEnumerableClass]) {
+  if (NON_ENUMERABLE_CLASSES[classType]) {
     return getUnsupportedHash(value, classType);
   }
 
@@ -163,10 +142,7 @@ export function stringifyArrayBufferModern(buffer: ArrayBufferLike): string {
 }
 
 export function stringifyArrayBufferFallback(buffer: ArrayBufferLike): string {
-  return String.fromCharCode.apply(
-    null,
-    new Uint16Array(buffer) as unknown as number[],
-  );
+  return String.fromCharCode.apply(null, new Uint16Array(buffer) as unknown as number[]);
 }
 
 export function stringifyArrayBufferNone(): string {
@@ -191,8 +167,8 @@ const stringifyArrayBuffer =
   typeof Buffer !== 'undefined' && typeof Buffer.from === 'function'
     ? stringifyArrayBufferModern
     : typeof Uint16Array === 'function'
-    ? stringifyArrayBufferFallback
-    : stringifyArrayBufferNone;
+      ? stringifyArrayBufferFallback
+      : stringifyArrayBufferNone;
 
 export function stringifyMap(map: Map<any, any>, state: RecursiveState) {
   const result: string[] | Array<[string, string]> = new Array(map.size);
@@ -211,10 +187,7 @@ export function stringifyMap(map: Map<any, any>, state: RecursiveState) {
   return '[' + result.join() + ']';
 }
 
-export function stringifyObject(
-  value: Record<string, any>,
-  state: RecursiveState,
-) {
+export function stringifyObject(value: Record<string, any>, state: RecursiveState) {
   const properties = sort(Object.getOwnPropertyNames(value), sortBySelf);
   const length = properties.length;
   const result: string[] = new Array(length);
@@ -222,8 +195,7 @@ export function stringifyObject(
   let index = length;
 
   while (--index >= 0) {
-    result[index] =
-      properties[index]! + ':' + stringify(value[properties[index]!], state);
+    result[index] = properties[index]! + ':' + stringify(value[properties[index]!], state);
   }
 
   return '{' + result.join() + '}';
@@ -240,10 +212,7 @@ export function stringifySet(set: Set<any>, state: RecursiveState) {
   return '[' + sort(result, sortBySelf).join() + ']';
 }
 
-export function stringify(
-  value: any,
-  state: RecursiveState | undefined,
-): string {
+export function stringify(value: any, state: RecursiveState | undefined): string {
   const type = typeof value;
 
   if (value == null || type === 'undefined') {
@@ -254,6 +223,7 @@ export function stringify(
     return stringifyComplexType(
       value,
       toString.call(value) as unknown as Class,
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       state || { cache: new WeakMap(), id: 1 },
     );
   }
@@ -263,7 +233,7 @@ export function stringify(
   }
 
   if (type === 'boolean') {
-    return HASHABLE_TYPES.boolean + +value;
+    return HASHABLE_TYPES.boolean! + +value;
   }
 
   return HASHABLE_TYPES[type] + value;

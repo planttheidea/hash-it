@@ -60,8 +60,7 @@
 
 ## 4.0.5
 
-- Fix issues related to string encoding and collisions
-  [#23](https://github.com/planttheidea/hash-it/issues/23)
+- Fix issues related to string encoding and collisions [#23](https://github.com/planttheidea/hash-it/issues/23)
 
 ## 4.0.4
 
@@ -74,9 +73,8 @@
 
 ## 4.0.2
 
-- Fix [#18](https://github.com/planttheidea/hash-it/pull/18) - IE11 not allowing global `toString`
-  to be used, instead using `Object.prototype.toString` (thanks
-  [@JorgenEvens](https://github.com/JorgenEvens))
+- Fix [#18](https://github.com/planttheidea/hash-it/pull/18) - IE11 not allowing global `toString` to be used, instead
+  using `Object.prototype.toString` (thanks [@JorgenEvens](https://github.com/JorgenEvens))
 
 ## 4.0.1
 
@@ -84,18 +82,16 @@
 
 ## 4.0.0
 
-Rewrite! Lots of changes under-the-hood for a much more consistent hash, and circular object
-handling out of the box.
+Rewrite! Lots of changes under-the-hood for a much more consistent hash, and circular object handling out of the box.
 
 #### BREAKING CHANGES
 
-- `isEmpty`, `isEqual`,`isNull`, and `isUndefined` have been removed (all can be reproduced with new
-  `is` and `is.all` functions)
+- `isEmpty`, `isEqual`,`isNull`, and `isUndefined` have been removed (all can be reproduced with new `is` and `is.all`
+  functions)
   - `hash.isNull` => `hash.is(null)`
   - `hash.isUndefined` => `hash.is(undefined)`
   - `hash.isEqual` => `hash.is.all`
-  - `hash.isEmpty` =>
-    `(object) => hash.is.any(object, undefined, null, '', 0, [], {}, new Map(), new Set())`
+  - `hash.isEmpty` => `(object) => hash.is.any(object, undefined, null, '', 0, [], {}, new Map(), new Set())`
 - `Error` hashes now based on `error.stack` instead of `error.message`
 
 #### ENHANCEMENTS
@@ -105,10 +101,9 @@ handling out of the box.
 - Collision rates are near-zero (previously used traditional DJB2, which has small collision rates)
 - Better `ArrayBuffer` support with the use of `Buffer.from` when supported
 - SVG elements, DocumentFragments, and Events are now supported
-- `is` partial-application function allows for easy creation of any type of `isEqual` comparison
-  method
-- `is.any` performs the same multiple-object check that `is.all` does, but only checks if one of the
-  other objects is equal
+- `is` partial-application function allows for easy creation of any type of `isEqual` comparison method
+- `is.any` performs the same multiple-object check that `is.all` does, but only checks if one of the other objects is
+  equal
 - `is.not` performs the same comparison that `is` does, but checks for non-equality
 
 #### FIXES
@@ -139,12 +134,11 @@ handling out of the box.
 
 #### BREAKING CHANGES
 
-- If using CommonJS, you need to specify `require('hash-it').default` instead of just
-  `require('hash-it')`
+- If using CommonJS, you need to specify `require('hash-it').default` instead of just `require('hash-it')`
 - Hashes themselves may have changed (especially for circular objects)
 - Removed `isRecursive` method on `hashIt` object (which was wrongly named to begin with)
-  - To specifically handle _circular_ objects (which is what it really did), pass `true` as the
-    second parameter to `hashIt`
+  - To specifically handle _circular_ objects (which is what it really did), pass `true` as the second parameter to
+    `hashIt`
 
 ## 2.1.2
 
@@ -165,8 +159,8 @@ handling out of the box.
 ## 2.0.0
 
 - Use JSON.stringify with replacer as default, without try/catch
-- Move use of try/catch with fallback to prune to new `hashIt.withRecursion` method (only necessary
-  for deeply-recursive objects like `window`)
+- Move use of try/catch with fallback to prune to new `hashIt.withRecursion` method (only necessary for deeply-recursive
+  objects like `window`)
 - Reorder switch statement for commonality of use cases
 - Leverage typeof in switch statements when possible for performance
 
@@ -177,8 +171,8 @@ handling out of the box.
 ## 1.3.0
 
 - Add hashIt.isUndefined, hashIt.isNull, and hashIt.isEmpty methods
-- Reorder switch statements in replacer and getValueForStringification to reflect most likely to
-  least likely (improves performance a touch)
+- Reorder switch statements in replacer and getValueForStringification to reflect most likely to least likely (improves
+  performance a touch)
 - Remove "Number" from number stringification
 - Leverage prependTypeToString whereever possible
 - Include Arguments object class
@@ -191,8 +185,7 @@ handling out of the box.
 ## 1.2.0
 
 - Add hashIt.isEqual method to test for equality
-- Prepend all values not string or number with object class name to help avoid collision with
-  equivalent string values
+- Prepend all values not string or number with object class name to help avoid collision with equivalent string values
 
 ## 1.1.0
 

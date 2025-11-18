@@ -1,6 +1,6 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
+import { Component } from 'react';
 import { hash } from '../src/index.js';
+// import { hash } from '../dist/es/index.mjs';
 
 document.body.style.backgroundColor = '#1d1d1d';
 document.body.style.color = '#d5d5d5';
@@ -13,8 +13,8 @@ fragment.appendChild(document.createElement('div'));
 fragment.appendChild(document.createElement('ul'));
 fragment.appendChild(document.createElement('span'));
 
-class StatefulComponent extends React.Component {
-  render() {
+class StatefulComponent extends Component {
+  override render() {
     return <div>test</div>;
   }
 }
@@ -32,6 +32,7 @@ const b = {
 a.b = b;
 
 function getArguments() {
+  // eslint-disable-next-line prefer-rest-params
   return arguments;
 }
 
@@ -67,10 +68,10 @@ const object = {
   float32Array: new Float32Array([1, 2, 3]),
   float64Array: new Float64Array([1, 2, 3]),
   fragment,
-  func(this: void) {
+  func() {
     alert('y');
   },
-  *generator(this: void): Generator<any> {
+  *generator(): Generator<any> {
     const value = yield 1;
 
     yield value + 2;
@@ -135,6 +136,7 @@ const visualValidation = () => {
   console.log(object.num, hash(object.num));
   console.log(object.bigint, hash(object.bigint));
   console.log(object.bool, hash(object.bool));
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   console.log(object.func, hash(object.func));
   console.log(object.undef, hash(object.undef));
   console.log(object.nil, hash(object.nil));
@@ -158,6 +160,7 @@ const visualValidation = () => {
   console.log(object.arrayBuffer, hash(object.arrayBuffer));
   console.log(object.float32Array, hash(object.float32Array));
   console.log(object.float64Array, hash(object.float64Array));
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   console.log(object.generator, hash(object.generator));
   console.log(object.int8Array, hash(object.int8Array));
   console.log(object.int16Array, hash(object.int16Array));
@@ -237,8 +240,6 @@ console.log(hash(Promise.resolve(123)));
 
 const div = document.createElement('div');
 
-const root = createRoot(div);
+div.textContent = 'Check the console for details.';
 
 document.body.appendChild(div);
-
-root.render(<div>Check the console for more details!</div>);

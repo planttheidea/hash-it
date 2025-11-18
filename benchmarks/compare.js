@@ -22,12 +22,7 @@ for (let i = 0; i < 50; i++) {
       streetAddress: faker.address.streetAddress(),
       country: faker.address.country(),
     },
-    email: [
-      faker.internet.email(),
-      faker.internet.email(),
-      faker.internet.email(),
-      faker.internet.email(),
-    ],
+    email: [faker.internet.email(), faker.internet.email(), faker.internet.email(), faker.internet.email()],
     randoms: [
       faker.datatype.number(),
       faker.random.alphaNumeric(),

@@ -32,11 +32,15 @@ console.log(hash(window)); // 3270731309314
 
 ## Overview
 
-`hash-it` has a simple goal: provide a fast, consistent, unique hashCode for any object type that is uniquely based on its values. This has a number of uses such as duplication prevention, equality comparisons, blockchain construction, etc.
+`hash-it` has a simple goal: provide a fast, consistent, unique hashCode for any object type that is uniquely based on
+its values. This has a number of uses such as duplication prevention, equality comparisons, blockchain construction,
+etc.
 
 _Any object type?_
 
-Yes, any object type. Primitives, ES2015 classes like `Symbol`, DOM elements (yes, you can even hash the `window` object if you want). Any object type. Here is the list of object classes that produce consistent, unique hashes based on their value:
+Yes, any object type. Primitives, ES2015 classes like `Symbol`, DOM elements (yes, you can even hash the `window` object
+if you want). Any object type. Here is the list of object classes that produce consistent, unique hashes based on their
+value:
 
 - `Arguments`
 - `Array`
@@ -84,7 +88,8 @@ Yes, any object type. Primitives, ES2015 classes like `Symbol`, DOM elements (ye
 
 _Are there any exceptions?_
 
-Sadly, yes, there are a few scenarios where internal values cannot be introspected for the object. In this case, the object is hashed based on its class type and reference.
+Sadly, yes, there are a few scenarios where internal values cannot be introspected for the object. In this case, the
+object is hashed based on its class type and reference.
 
 - `Promise`
   - There is no way to obtain the values contained within due to its asynchronous nature
@@ -105,7 +110,10 @@ If there is an object class or data type that is missing, please submit an issue
 
 ## Hash consistency
 
-While the hashes will be consistent when calculated within the same environment, there is no guarantee that the resulting hash will be the same across different environments due to environment-specific or browser-specific implementations of features. This is limited to extreme edge cases, such as hashing the `window` object, but should be considered if being used with persistence over different environments.
+While the hashes will be consistent when calculated within the same environment, there is no guarantee that the
+resulting hash will be the same across different environments due to environment-specific or browser-specific
+implementations of features. This is limited to extreme edge cases, such as hashing the `window` object, but should be
+considered if being used with persistence over different environments.
 
 ## Support
 

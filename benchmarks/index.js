@@ -43,17 +43,12 @@ function runTest(name, benchmark) {
     return `${cycles.toLocaleString()}: ${testTime / 1000} sec`;
   }).join('\n')}`;
 
-  displayText += `\nAverage: ${Math.round(
-    (TOTAL / totalTime) * 1000,
-  ).toLocaleString()} ops/sec`;
+  displayText += `\nAverage: ${Math.round((TOTAL / totalTime) * 1000).toLocaleString()} ops/sec`;
 
   return displayText;
 }
 
-const header = () =>
-  `Benchmark cycles: ${REPEATS.map((cycles) => cycles.toLocaleString()).join(
-    ' ',
-  )}`;
+const header = () => `Benchmark cycles: ${REPEATS.map((cycles) => cycles.toLocaleString()).join(' ')}`;
 
 let results = [];
 
