@@ -92,7 +92,7 @@
     "decompress-response": "^8.0.0"
   },
   "scripts": {
-    "benchmark": "npm run build:esm && node benchmarks/index.js",
+    "benchmark": "npm run clean:es && npm run build:es && node benchmarks/index.js",
     "benchmark:compare": "npm run build:esm && node benchmarks/compare.js",
     "build": "npm run clean && npm run build:es && npm run build:es:types && npm run build:cjs && npm run build:cjs:types && npm run build:umd && npm run build:umd:types",
     "build:cjs": "NODE_ENV=production rollup -c config/rollup/cjs.config.js",
