@@ -112,5 +112,5 @@
   },
   "type": "module",
   "types": "./index.d.ts",
-  "version": "7.0.0"
+  "version": "7.0.1"
 }
