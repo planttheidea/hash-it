@@ -18,10 +18,10 @@ Fast and consistent hashCode for any object type
 
 ```javascript
 // ES2015
-import hash from 'hash-it';
+import { hash } from 'hash-it';
 
 // CommonJS
-const hash = require('hash-it');
+const { hash } = require('hash-it');
 
 // hash any standard object
 console.log(hash({ foo: 'bar' })); // 13729774857125
@@ -138,14 +138,23 @@ Clone the repo and dependencies via `yarn`. The npm scripts available:
 
 - `benchmark` => run benchmark of various data types
 - `benchmark:compare` => run benchmark of some data types comparing against other hashing modules
-- `build` => run rollup to build ESM, CJS, and UMD files
+- `build` => run `build:es`, `build:cjs`, and `build:umd` scripts
+- `build:cjs` => run rollup to build `cjs` files
+- `build:es` => run rollup to build `es` files
+- `build:umd` => run rollup to build `umd` files
 - `clean` => remove files produced from `build` script
-- `dev` => run webpack dev server to run example app / playground
+- `clean:cjs` => remove files produced from `build:cjs` script
+- `clean:es` => remove files produced from `build:es` script
+- `clean:umd` => remove files produced from `build:umd` script
+- `dev` => run dev server to run example app / playground
+- `format` => run `prettier` to format repo
+- `format:check` => run `prettier` to validate formatting in repo
 - `lint` => run ESLint against all files in the `src` folder
 - `lint:fix` => run `lint` script, automatically applying fixable changes
-- `prepublishOnly` => run `typecheck`, `lint`, `test`, and `build`
+- `release:alpha` => release a new `alpha` version under the `next` tag
+- `release:beta` => release a new `beta` version under the `next` tag
+- `release:rc` => release a new `rc` version under the `next` tag
+- `release:stable` => release a new stable version under the `latest` tag
 - `start` => alias for `dev` script
 - `test` => run jest test functions with `NODE_ENV=test`
-- `test:coverage` => run `test` with coverage checker
-- `test:watch` => run `test` with persistent watcher
 - `typecheck` => run `tsc` to validate internal typings

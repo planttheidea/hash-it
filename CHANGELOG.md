@@ -1,5 +1,9 @@
 # hash-it CHANGELOG
 
+## 7.0.1
+
+- Fix README not referencing the new named import
+
 ## 7.0.0
 
 **Breaking changes**
