@@ -1,20 +1,21 @@
 // @vitest-environment jsdom
 
-import hash from '../src/index.js';
 import fs from 'node:fs';
 import path from 'node:path';
-import { TEST_VALUES } from './__helpers__/values.js';
 import { describe, expect, it } from 'vitest';
+import { hash } from '../src/index.js';
+import { TEST_VALUES } from './__helpers__/values.js';
 
 const WORDS_PATH = path.resolve('__tests__', '__helpers__', 'words.json');
-const WORDS: string[] = JSON.parse(fs.readFileSync(WORDS_PATH, 'utf8'));
+const WORDS = JSON.parse(fs.readFileSync(WORDS_PATH, 'utf8')) as string[];
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
 const VALUES = TEST_VALUES.map(({ key, value }) => ({ key, value }));
-const VALUE_HASHES = VALUES.reduce((map, { key, value }) => {
+const VALUE_HASHES = VALUES.reduce<Record<string, any>>((map, { key, value }) => {
   map[key] = hash(value);
 
   return map;
-}, {} as Record<string, any>);
+}, {});
 
 const CONSISTENCY_ITERATIONS = 10000;
 
@@ -29,16 +30,14 @@ describe('hash', () => {
     VALUES.forEach(({ key, value }) => {
       VALUES.forEach(({ key: otherKey, value: otherValue }) => {
         if (value !== otherValue) {
-          expect(
-            hash(value),
-            `{ key: ${key}, otherKey: ${otherKey} }`,
-          ).not.toBe(hash(otherValue));
+          expect(hash(value), `{ key: ${key}, otherKey: ${otherKey} }`).not.toBe(hash(otherValue));
         }
       });
     });
   });
 
   it('should have a consistent hash', () => {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     TEST_VALUES.forEach(({ key, value }) => {
       for (let index = 0; index < CONSISTENCY_ITERATIONS; ++index) {
         expect(hash(value)).toBe(VALUE_HASHES[key]);
@@ -46,7 +45,7 @@ describe('hash', () => {
     });
   });
 
-  it(`should not have collisions with ${WORDS.length} integers`, () => {
+  it(`should not have collisions with ${WORDS.length.toString()} integers`, () => {
     const collision: Record<string, string> = {};
 
     let count = 0;
@@ -64,7 +63,7 @@ describe('hash', () => {
     expect(count).toBe(0);
   });
 
-  it(`should not have collisions with ${WORDS.length} strings`, () => {
+  it(`should not have collisions with ${WORDS.length.toString()} strings`, () => {
     const collision: Record<string, string> = {};
 
     let count = 0;
@@ -123,38 +122,52 @@ describe('hash', () => {
   it('should support primitive wrappers', () => {
     [
       [
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        async function () {},
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        async function () {},
         async function () {
-          await console.log('foo');
+          await Promise.resolve();
+        },
+        async function () {
+          await Promise.resolve();
+        },
+        async function () {
+          await Promise.resolve();
+          console.log('foo');
         },
       ],
       [
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        async function* () {},
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        async function* () {},
         async function* () {
-          await console.log('foo');
+          await Promise.resolve();
+          yield;
+        },
+        async function* () {
+          await Promise.resolve();
+          yield;
+        },
+        async function* () {
+          await Promise.resolve();
+          yield;
+          console.log('foo');
         },
       ],
       [
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        function () {},
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        function () {},
+        function () {
+          return;
+        },
+        function () {
+          return;
+        },
         function () {
           console.log('foo');
         },
       ],
       [
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        function* () {},
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        function* () {},
         function* () {
+          yield;
+        },
+        function* () {
+          yield;
+        },
+        function* () {
+          yield;
           console.log('foo');
         },
       ],

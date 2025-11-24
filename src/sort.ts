@@ -1,7 +1,4 @@
-export function sortByKey(
-  first: [string, string],
-  second: [string, string],
-): boolean {
+export function sortByKey(first: [string, string], second: [string, string]): boolean {
   return first[0] > second[0];
 }
 
@@ -9,21 +6,14 @@ export function sortBySelf(first: string, second: string) {
   return first > second;
 }
 
-export function sort(
-  array: any[],
-  fn: (item: any, comparisonItem: any) => boolean,
-) {
+export function sort<Value extends unknown[]>(array: Value, fn: (item: any, comparisonItem: any) => boolean): Value {
   let subIndex;
   let value;
 
   for (let index = 0; index < array.length; ++index) {
     value = array[index];
 
-    for (
-      subIndex = index - 1;
-      ~subIndex && fn(array[subIndex], value);
-      --subIndex
-    ) {
+    for (subIndex = index - 1; ~subIndex && fn(array[subIndex], value); --subIndex) {
       array[subIndex + 1] = array[subIndex];
     }
 

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 export const INTEGER_ARRAY = [1, 2, 3];
 // @ts-expect-error - BigInt values not supported with lower targets.
 export const BIG_INTEGER_ARRAY = [21n, 31n];
@@ -28,6 +26,7 @@ export const TEST_VALUES = [
     comparator: 'deepEqual',
     key: 'arguments',
     value: (function (_a: string, _b: string) {
+      // eslint-disable-next-line prefer-rest-params
       return arguments;
     })('foo', 'bar'),
   },
@@ -126,8 +125,7 @@ export const TEST_VALUES = [
   {
     comparator: 'deepEqual',
     key: 'svgElement',
-    value: (() =>
-      document.createElementNS('http://www.w3.org/2000/svg', 'svg'))(),
+    value: (() => document.createElementNS('http://www.w3.org/2000/svg', 'svg'))(),
   },
   {
     comparator: 'deepEqual',

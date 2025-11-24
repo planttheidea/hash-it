@@ -1,4 +1,4 @@
-import hash from '../dist/esm/index.mjs';
+import { hash } from '../dist/es/index.mjs';
 
 function createHashTest(data) {
   return function hashTest(cycles) {

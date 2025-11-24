@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
-import { hash } from '../src/hash.js';
 import { describe, expect, it } from 'vitest';
+import { hash } from '../src/hash.js';
 
 describe('hash', () => {
   it('should return the correct value', () => {

@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import objectHash from 'object-hash';
 import createNodeObjectHash from 'node-object-hash';
 import hashObject from 'hash-object';
-import hash from '../dist/esm/index.mjs';
+import hash from '../dist/es/index.mjs';
 
 const nodeObjectHash = createNodeObjectHash();
 const suite = new Benchmark.Suite();
@@ -22,12 +22,7 @@ for (let i = 0; i < 50; i++) {
       streetAddress: faker.address.streetAddress(),
       country: faker.address.country(),
     },
-    email: [
-      faker.internet.email(),
-      faker.internet.email(),
-      faker.internet.email(),
-      faker.internet.email(),
-    ],
+    email: [faker.internet.email(), faker.internet.email(), faker.internet.email(), faker.internet.email()],
     randoms: [
       faker.datatype.number(),
       faker.random.alphaNumeric(),

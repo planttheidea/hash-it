@@ -1,7 +1,7 @@
 export const SEPARATOR = '|';
 export const XML_ELEMENT_REGEXP = /\[object ([HTML|SVG](.*)Element)\]/;
 
-export const CLASSES = {
+export const CLASSES: Record<string, number> = {
   '[object Arguments]': 0,
   '[object Array]': 1,
   '[object ArrayBuffer]': 2,
@@ -40,28 +40,28 @@ export const CLASSES = {
   '[object WeakSet]': 35,
   CUSTOM: 36,
   ELEMENT: 37,
-} as const;
+};
 
 export type Class = keyof typeof CLASSES;
 
-export const ARRAY_LIKE_CLASSES = {
+export const ARRAY_LIKE_CLASSES: Record<string, number> = {
   '[object Arguments]': 1,
   '[object Array]': 2,
-} as const;
+};
 
 export type ArrayLikeClass = keyof typeof ARRAY_LIKE_CLASSES;
 
-export const NON_ENUMERABLE_CLASSES = {
+export const NON_ENUMERABLE_CLASSES: Record<string, number> = {
   '[object Generator]': 1,
   '[object Promise]': 2,
   '[object WeakMap]': 3,
   '[object WeakRef]': 4,
   '[object WeakSet]': 5,
-} as const;
+};
 
 export type NonEnumerableClass = keyof typeof NON_ENUMERABLE_CLASSES;
 
-export const PRIMITIVE_WRAPPER_CLASSES = {
+export const PRIMITIVE_WRAPPER_CLASSES: Record<string, number> = {
   '[object AsyncFunction]': 1,
   '[object AsyncGeneratorFunction]': 2,
   '[object Boolean]': 3,
@@ -69,11 +69,11 @@ export const PRIMITIVE_WRAPPER_CLASSES = {
   '[object GeneratorFunction]': 5,
   '[object Number]': 6,
   '[object String]': 7,
-} as const;
+};
 
 export type PrimitiveWrapperClass = keyof typeof PRIMITIVE_WRAPPER_CLASSES;
 
-export const TYPED_ARRAY_CLASSES = {
+export const TYPED_ARRAY_CLASSES: Record<string, number> = {
   '[object BigInt64Array]': 1,
   '[object BigUint64Array]': 2,
   '[object Float32Array]': 3,
@@ -84,11 +84,11 @@ export const TYPED_ARRAY_CLASSES = {
   '[object Uint8ClampedArray]': 8,
   '[object Uint16Array]': 9,
   '[object Uint32Array]': 10,
-} as const;
+};
 
 export type TypedArrayClass = keyof typeof TYPED_ARRAY_CLASSES;
 
-export const RECURSIVE_CLASSES = {
+export const RECURSIVE_CLASSES: Record<string, number> = {
   '[object Arguments]': 1,
   '[object Array]': 2,
   '[object ArrayBuffer]': 3,
@@ -108,11 +108,11 @@ export const RECURSIVE_CLASSES = {
   '[object Uint16Array]': 17,
   '[object Uint32Array]': 18,
   CUSTOM: 19,
-} as const;
+};
 
 export type RecursiveClass = keyof typeof RECURSIVE_CLASSES;
 
-export const HASHABLE_TYPES = {
+export const HASHABLE_TYPES: Record<string, string> = {
   bigint: 'i',
   boolean: 'b',
   empty: 'e',
@@ -121,6 +121,6 @@ export const HASHABLE_TYPES = {
   object: 'o',
   string: 's',
   symbol: 's',
-} as const;
+};
 
 export type HashableType = keyof typeof HASHABLE_TYPES;
