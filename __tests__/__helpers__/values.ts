@@ -52,6 +52,11 @@ export const TEST_VALUES = [
   },
   {
     comparator: 'is',
+    key: 'blob',
+    value: new Blob(['foo']),
+  },
+  {
+    comparator: 'is',
     key: 'boolean',
     value: true,
   },

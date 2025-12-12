@@ -92,7 +92,9 @@ Sadly, yes, there are a few scenarios where internal values cannot be introspect
 object is hashed based on its class type and reference.
 
 - `Promise`
-  - There is no way to obtain the values contained within due to its asynchronous nature
+  - There is no way to synchronously obtain the values contained within due to its asynchronous nature
+- `Blob`
+  - Like `Promise`, there is no way to synchronously obtain the values contained within
 - `Generator` (the result of calling a `GeneratorFunction`)
   - Like `Promise`, there is no way to obtain the values contained within due to its dynamic iterable nature
 - `WeakMap` / `WeakRef` / `WeakSet`
