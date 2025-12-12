@@ -1,5 +1,10 @@
 # hash-it CHANGELOG
 
+## 7.0.2
+
+- [#79](https://github.com/planttheidea/hash-it/pull/79) - Explicit support for `Blob` (fixes
+  [#78](https://github.com/planttheidea/hash-it/issues/78))
+
 ## 7.0.1
 
 - Fix README not referencing the new named import
