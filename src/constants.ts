@@ -52,11 +52,12 @@ export const ARRAY_LIKE_CLASSES: Record<string, number> = {
 export type ArrayLikeClass = keyof typeof ARRAY_LIKE_CLASSES;
 
 export const NON_ENUMERABLE_CLASSES: Record<string, number> = {
-  '[object Generator]': 1,
-  '[object Promise]': 2,
-  '[object WeakMap]': 3,
-  '[object WeakRef]': 4,
-  '[object WeakSet]': 5,
+  '[object Blob]': 1,
+  '[object Generator]': 2,
+  '[object Promise]': 3,
+  '[object WeakMap]': 4,
+  '[object WeakRef]': 5,
+  '[object WeakSet]': 6,
 };
 
 export type NonEnumerableClass = keyof typeof NON_ENUMERABLE_CLASSES;
