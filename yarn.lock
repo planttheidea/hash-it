@@ -1495,7 +1495,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:8.49.0, @typescript-eslint/eslint-plugin@npm:^8.47.0":
+"@typescript-eslint/eslint-plugin@npm:8.49.0":
   version: 8.49.0
   resolution: "@typescript-eslint/eslint-plugin@npm:8.49.0"
   dependencies:
@@ -1515,7 +1515,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:8.49.0, @typescript-eslint/parser@npm:^8.47.0":
+"@typescript-eslint/parser@npm:8.49.0":
   version: 8.49.0
   resolution: "@typescript-eslint/parser@npm:8.49.0"
   dependencies:
@@ -3675,24 +3675,21 @@ __metadata:
     "@types/jsdom": "npm:^27.0.0"
     "@types/react": "npm:^19.2.7"
     "@types/react-dom": "npm:^19.2.3"
-    "@typescript-eslint/eslint-plugin": "npm:^8.47.0"
-    "@typescript-eslint/parser": "npm:^8.47.0"
     "@vitest/coverage-v8": "npm:^4.0.15"
     benchmark: "npm:^2.1.4"
     eslint: "npm:^9.39.1"
     hash-object: "npm:^5.0.1"
-    jsdom: "npm:^27.2.0"
+    jsdom: "npm:^27.3.0"
     node-object-hash: "npm:^3.1.1"
     object-hash: "npm:^3.0.0"
     ora: "npm:^9.0.0"
     prettier: "npm:^3.7.4"
     prop-types: "npm:^15.8.1"
-    react: "npm:^19.2.1"
-    react-dom: "npm:^19.2.1"
-    release-it: "npm:^19.0.6"
+    react: "npm:^19.2.3"
+    react-dom: "npm:^19.2.3"
+    release-it: "npm:^19.1.0"
     rollup: "npm:^4.53.3"
     typescript: "npm:^5.9.3"
-    typescript-eslint: "npm:^8.47.0"
     vite: "npm:^7.2.7"
     vitest: "npm:^4.0.15"
   languageName: unknown
@@ -4344,7 +4341,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsdom@npm:^27.2.0":
+"jsdom@npm:^27.3.0":
   version: 27.3.0
   resolution: "jsdom@npm:27.3.0"
   dependencies:
@@ -5493,7 +5490,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^19.2.1":
+"react-dom@npm:^19.2.1, react-dom@npm:^19.2.3":
   version: 19.2.3
   resolution: "react-dom@npm:19.2.3"
   dependencies:
@@ -5511,7 +5508,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^19.2.1":
+"react@npm:^19.2.1, react@npm:^19.2.3":
   version: 19.2.3
   resolution: "react@npm:19.2.3"
   checksum: 10c0/094220b3ba3a76c1b668f972ace1dd15509b157aead1b40391d1c8e657e720c201d9719537375eff08f5e0514748c0319063392a6f000e31303aafc4471f1436
@@ -5555,7 +5552,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"release-it@npm:^19.0.6":
+"release-it@npm:^19.0.6, release-it@npm:^19.1.0":
   version: 19.1.0
   resolution: "release-it@npm:19.1.0"
   dependencies:
@@ -6544,7 +6541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript-eslint@npm:^8.47.0, typescript-eslint@npm:^8.48.1":
+"typescript-eslint@npm:^8.48.1":
   version: 8.49.0
   resolution: "typescript-eslint@npm:8.49.0"
   dependencies:

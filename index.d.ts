@@ -1,1 +1,3 @@
-export function hash<Value>(value: Value): number;
+declare function hash<Value>(value: Value): number;
+
+export { hash };
