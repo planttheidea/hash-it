@@ -15,30 +15,27 @@
   "description": "Hash any object based on its value",
   "devDependencies": {
     "@faker-js/faker": "^10.1.0",
-    "@planttheidea/build-tools": "^1.0.6",
+    "@planttheidea/build-tools": "^1.2.3",
     "@types/jsdom": "^27.0.0",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "@typescript-eslint/eslint-plugin": "^8.47.0",
-    "@typescript-eslint/parser": "^8.47.0",
-    "@vitest/coverage-v8": "^4.0.13",
+    "@vitest/coverage-v8": "^4.0.15",
     "benchmark": "^2.1.4",
     "eslint": "^9.39.1",
     "hash-object": "^5.0.1",
-    "jsdom": "^27.2.0",
+    "jsdom": "^27.3.0",
     "node-object-hash": "^3.1.1",
     "object-hash": "^3.0.0",
     "ora": "^9.0.0",
-    "prettier": "^3.6.2",
+    "prettier": "^3.7.4",
     "prop-types": "^15.8.1",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "release-it": "^19.0.6",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "release-it": "^19.1.0",
     "rollup": "^4.53.3",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.47.0",
-    "vite": "^7.2.4",
-    "vitest": "^4.0.13"
+    "vite": "^7.2.7",
+    "vitest": "^4.0.15"
   },
   "exports": {
     ".": {
@@ -59,10 +56,10 @@
   "files": [
     "dist",
     "CHANGELOG.md",
-    "index.d.ts",
     "LICENSE",
-    "package.json",
-    "README.md"
+    "README.md",
+    "index.d.ts",
+    "package.json"
   ],
   "homepage": "https://github.com/planttheidea/hash-it#readme",
   "keywords": [
@@ -85,13 +82,9 @@
   "scripts": {
     "benchmark": "npm run clean:es && npm run build:es && node benchmarks/index.js",
     "benchmark:compare": "npm run build:esm && node benchmarks/compare.js",
-    "build": "npm run clean && npm run build:es && npm run build:es:types && npm run build:cjs && npm run build:cjs:types && npm run build:umd && npm run build:umd:types",
-    "build:cjs": "NODE_ENV=production rollup -c config/rollup/cjs.config.js",
-    "build:cjs:types": "tsc -p config/types/cjs.declaration.json && pti fix-types -t cjs",
-    "build:es": "NODE_ENV=production rollup -c config/rollup/es.config.js",
-    "build:es:types": "tsc -p config/types/es.declaration.json && pti fix-types -t es",
-    "build:umd": "NODE_ENV=production rollup -c config/rollup/umd.config.js",
-    "build:umd:types": "tsc -p config/types/umd.declaration.json",
+    "build": "npm run clean && npm run build:dist && npm run build:types",
+    "build:dist": "NODE_ENV=production rollup -c config/rollup.config.js",
+    "build:types": "pti fix-types -l dist",
     "clean": "rm -rf dist",
     "clean:cjs": "rm -rf dist/cjs",
     "clean:es": "rm -rf dist/es",
@@ -100,7 +93,6 @@
     "format": "prettier . --log-level=warn --write",
     "format:check": "prettier . --log-level=warn --check",
     "lint": "eslint --max-warnings=0",
-    "lint:fix": "npm run lint -- --fix",
     "release:alpha": "release-it --config=config/release-it/alpha.json",
     "release:beta": "release-it --config=config/release-it/beta.json",
     "release:rc": "release-it --config=config/release-it/rc.json",
@@ -110,6 +102,7 @@
     "test": "vitest run --config=config/vitest.config.ts",
     "typecheck": "tsc --noEmit"
   },
+  "sideEffects": false,
   "type": "module",
   "types": "./index.d.ts",
   "version": "7.0.1"

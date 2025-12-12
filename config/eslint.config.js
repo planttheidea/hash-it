@@ -16,6 +16,6 @@ export default createEslintConfig({
     },
   ],
   development: 'dev',
-  react: false,
+  react: true,
   source: 'src',
 });
