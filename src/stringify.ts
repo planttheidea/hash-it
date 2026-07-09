@@ -129,8 +129,23 @@ export function stringifyArrayBufferModern(buffer: ArrayBufferLike): string {
   return Buffer.from(buffer).toString('latin1');
 }
 
+const FROM_CHAR_CODE_CHUNK_SIZE = 0x8000;
+
 export function stringifyArrayBufferFallback(buffer: ArrayBufferLike): string {
-  return String.fromCharCode.apply(null, new Uint16Array(buffer) as unknown as number[]);
+  const bytes = new Uint8Array(buffer);
+
+  const chunks: string[] = new Array(Math.ceil(bytes.length / FROM_CHAR_CODE_CHUNK_SIZE));
+
+  let chunkIndex = 0;
+
+  for (let index = 0; index < bytes.length; index += FROM_CHAR_CODE_CHUNK_SIZE) {
+    chunks[chunkIndex++] = String.fromCharCode.apply(
+      null,
+      bytes.subarray(index, index + FROM_CHAR_CODE_CHUNK_SIZE) as unknown as number[],
+    );
+  }
+
+  return chunks.join('');
 }
 
 export function stringifyArrayBufferNone(): string {

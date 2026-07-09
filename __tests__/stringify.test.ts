@@ -7,7 +7,7 @@ import {
   stringifyArrayBufferModern,
   stringifyArrayBufferNone,
 } from '../src/stringify.js';
-import { ARRAY_BUFFER, INTEGER_ARRAY } from './__helpers__/values.js';
+import { ARRAY_BUFFER } from './__helpers__/values.js';
 
 describe('ArrayBuffer support', () => {
   it('should support modern usage', () => {
@@ -30,11 +30,23 @@ describe('ArrayBuffer support', () => {
 
     const result = stringifyArrayBufferFallback(ARRAY_BUFFER);
 
-    expect(spy).toHaveBeenCalledWith(...INTEGER_ARRAY);
+    expect(spy).toHaveBeenCalledWith(...new Uint8Array(ARRAY_BUFFER));
 
     spy.mockRestore();
 
     expect(result).toBe(stringified);
+  });
+
+  it('should handle odd-length buffers in fallback usage without throwing', () => {
+    const buffer = new Uint8Array([1, 2, 3]).buffer;
+
+    expect(() => stringifyArrayBufferFallback(buffer)).not.toThrow();
+  });
+
+  it('should handle buffers larger than the max call stack argument limit in fallback usage without throwing', () => {
+    const buffer = new Uint8Array(200000).buffer;
+
+    expect(() => stringifyArrayBufferFallback(buffer)).not.toThrow();
   });
 
   it('should handle no support', () => {
