@@ -1,5 +1,16 @@
 # hash-it CHANGELOG
 
+## 7.0.3
+
+- [#102](https://github.com/planttheidea/hash-it/pull/102) - Fix `DataView` hash giving false positives with different
+  byte ranges
+- [#102](https://github.com/planttheidea/hash-it/pull/102) - Fix modern `ArrayBuffer` hashes giving false positives on
+  invalid byte sequences
+- [#102](https://github.com/planttheidea/hash-it/pull/102) - Fix fallback `ArrayBuffer` hashes throwing on large buffers
+- [#102](https://github.com/planttheidea/hash-it/pull/102) - Fix RegExp matcher for DOM elements
+- [#102](https://github.com/planttheidea/hash-it/pull/102) - Improve sort performance by using native `.sort()` instead
+  of custom `sort` method
+
 ## 7.0.2
 
 - [#79](https://github.com/planttheidea/hash-it/pull/79) - Explicit support for `Blob` (fixes
