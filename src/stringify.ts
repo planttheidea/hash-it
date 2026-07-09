@@ -100,7 +100,10 @@ function stringifyRecursiveAsJson(classType: RecursiveClass, value: any, state: 
   }
 
   if (classType === '[object DataView]') {
-    return namespaceComplexValue(classType, stringifyArrayBuffer(value.buffer));
+    return namespaceComplexValue(
+      classType,
+      stringifyArrayBuffer(value.buffer.slice(value.byteOffset, value.byteOffset + value.byteLength)),
+    );
   }
 
   if (NON_ENUMERABLE_CLASSES[classType]) {
