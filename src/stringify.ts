@@ -126,7 +126,7 @@ export function stringifyArray(value: any[], state: RecursiveState) {
 }
 
 export function stringifyArrayBufferModern(buffer: ArrayBufferLike): string {
-  return Buffer.from(buffer).toString('utf8');
+  return Buffer.from(buffer).toString('latin1');
 }
 
 export function stringifyArrayBufferFallback(buffer: ArrayBufferLike): string {

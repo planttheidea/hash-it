@@ -13,7 +13,14 @@ describe('ArrayBuffer support', () => {
   it('should support modern usage', () => {
     const result = stringifyArrayBufferModern(ARRAY_BUFFER);
 
-    expect(result).toBe(Buffer.from(ARRAY_BUFFER).toString());
+    expect(result).toBe(Buffer.from(ARRAY_BUFFER).toString('latin1'));
+  });
+
+  it('should not collide on different invalid utf8 byte sequences', () => {
+    const bufferA = new Uint8Array([0xff]).buffer;
+    const bufferB = new Uint8Array([0xfe]).buffer;
+
+    expect(stringifyArrayBufferModern(bufferA)).not.toBe(stringifyArrayBufferModern(bufferB));
   });
 
   it('should support fallback usage', () => {
