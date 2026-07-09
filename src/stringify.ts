@@ -222,7 +222,7 @@ export function stringify(value: any, state: RecursiveState | undefined): string
   if (type === 'object') {
     return stringifyComplexType(
       value,
-      toString.call(value) as unknown as Class,
+      toString.call(value),
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       state || { cache: new WeakMap(), id: 1 },
     );

@@ -1,6 +1,10 @@
 {
-  "author": "planttheidea",
-  "browser": "dist/umd/index.js",
+  "author": {
+    "email": "tony.quetano@planttheidea.com",
+    "name": "Tony Quetano",
+    "url": "https://www.planttheidea.com/"
+  },
+  "browser": "./dist/umd/index.js",
   "browserslist": [
     "defaults",
     "Explorer >= 9",
@@ -55,7 +59,6 @@
   },
   "files": [
     "dist",
-    "CHANGELOG.md",
     "LICENSE",
     "README.md",
     "index.d.ts",
@@ -69,9 +72,12 @@
     "unique"
   ],
   "license": "MIT",
-  "main": "dist/cjs/index.cjs",
-  "module": "dist/es/index.mjs",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/es/index.mjs",
   "name": "hash-it",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/planttheidea/hash-it.git"
@@ -82,7 +88,7 @@
   "scripts": {
     "benchmark": "npm run clean:es && npm run build:es && node benchmarks/index.js",
     "benchmark:compare": "npm run build:esm && node benchmarks/compare.js",
-    "build": "npm run clean && npm run build:dist && npm run build:types",
+    "build": "npm run clean && npm run build:dist",
     "build:dist": "NODE_ENV=production rollup -c config/rollup.config.js",
     "build:types": "pti fix-types -l dist",
     "clean": "rm -rf dist",
