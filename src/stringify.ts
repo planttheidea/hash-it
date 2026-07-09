@@ -35,22 +35,7 @@ function stringifyComplexType(value: any, classType: Class, state: RecursiveStat
   }
 
   if (classType === '[object Event]') {
-    return namespaceComplexValue(
-      classType,
-      [
-        value.bubbles,
-        value.cancelBubble,
-        value.cancelable,
-        value.composed,
-        value.currentTarget,
-        value.defaultPrevented,
-        value.eventPhase,
-        value.isTrusted,
-        value.returnValue,
-        value.target,
-        value.type,
-      ].join(),
-    );
+    return namespaceComplexValue(classType, stringifyEvent(value));
   }
 
   if (classType === '[object Error]') {
@@ -170,6 +155,25 @@ const stringifyArrayBuffer =
       ? stringifyArrayBufferFallback
       : stringifyArrayBufferNone;
 
+export function stringifyEvent(value: Event) {
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string
+  return [
+    value.bubbles,
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    value.cancelBubble,
+    value.cancelable,
+    value.composed,
+    value.currentTarget,
+    value.defaultPrevented,
+    value.eventPhase,
+    value.isTrusted,
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    value.returnValue,
+    value.target,
+    value.type,
+  ].join();
+}
+
 export function stringifyMap(map: Map<any, any>, state: RecursiveState) {
   const result: string[] | Array<[string, string]> = new Array(map.size);
 
@@ -222,7 +226,7 @@ export function stringify(value: any, state: RecursiveState | undefined): string
   if (type === 'object') {
     return stringifyComplexType(
       value,
-      toString.call(value) as unknown as Class,
+      toString.call(value),
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       state || { cache: new WeakMap(), id: 1 },
     );
