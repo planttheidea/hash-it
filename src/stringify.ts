@@ -10,7 +10,7 @@ import {
   TYPED_ARRAY_CLASSES,
   XML_ELEMENT_REGEXP,
 } from './constants.js';
-import { sort, sortByKey, sortBySelf } from './sort.js';
+import { sortByKey, sortBySelf } from './sort.js';
 import { namespaceComplexValue } from './utils.js';
 
 interface RecursiveState {
@@ -100,7 +100,10 @@ function stringifyRecursiveAsJson(classType: RecursiveClass, value: any, state: 
   }
 
   if (classType === '[object DataView]') {
-    return namespaceComplexValue(classType, stringifyArrayBuffer(value.buffer));
+    return namespaceComplexValue(
+      classType,
+      stringifyArrayBuffer(value.buffer.slice(value.byteOffset, value.byteOffset + value.byteLength)),
+    );
   }
 
   if (NON_ENUMERABLE_CLASSES[classType]) {
@@ -123,11 +126,26 @@ export function stringifyArray(value: any[], state: RecursiveState) {
 }
 
 export function stringifyArrayBufferModern(buffer: ArrayBufferLike): string {
-  return Buffer.from(buffer).toString('utf8');
+  return Buffer.from(buffer).toString('latin1');
 }
 
+const FROM_CHAR_CODE_CHUNK_SIZE = 0x8000;
+
 export function stringifyArrayBufferFallback(buffer: ArrayBufferLike): string {
-  return String.fromCharCode.apply(null, new Uint16Array(buffer) as unknown as number[]);
+  const bytes = new Uint8Array(buffer);
+
+  const chunks: string[] = new Array(Math.ceil(bytes.length / FROM_CHAR_CODE_CHUNK_SIZE));
+
+  let chunkIndex = 0;
+
+  for (let index = 0; index < bytes.length; index += FROM_CHAR_CODE_CHUNK_SIZE) {
+    chunks[chunkIndex++] = String.fromCharCode.apply(
+      null,
+      bytes.subarray(index, index + FROM_CHAR_CODE_CHUNK_SIZE) as unknown as number[],
+    );
+  }
+
+  return chunks.join('');
 }
 
 export function stringifyArrayBufferNone(): string {
@@ -182,7 +200,8 @@ export function stringifyMap(map: Map<any, any>, state: RecursiveState) {
     result[index++] = [stringify(key, state), stringify(value, state)];
   });
 
-  sort(result, sortByKey);
+  // sorted while still tuples; cast is accurate since the string-conversion pass hasn't run yet
+  (result as Array<[string, string]>).sort(sortByKey);
 
   while (--index >= 0) {
     result[index] = '[' + result[index]![0] + ',' + result[index]![1] + ']';
@@ -192,7 +211,7 @@ export function stringifyMap(map: Map<any, any>, state: RecursiveState) {
 }
 
 export function stringifyObject(value: Record<string, any>, state: RecursiveState) {
-  const properties = sort(Object.getOwnPropertyNames(value), sortBySelf);
+  const properties = Object.getOwnPropertyNames(value).sort(sortBySelf);
   const length = properties.length;
   const result: string[] = new Array(length);
 
@@ -213,7 +232,7 @@ export function stringifySet(set: Set<any>, state: RecursiveState) {
     result[index++] = stringify(value, state);
   });
 
-  return '[' + sort(result, sortBySelf).join() + ']';
+  return '[' + result.sort(sortBySelf).join() + ']';
 }
 
 export function stringify(value: any, state: RecursiveState | undefined): string {

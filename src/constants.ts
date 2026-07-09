@@ -1,5 +1,5 @@
 export const SEPARATOR = '|';
-export const XML_ELEMENT_REGEXP = /\[object ([HTML|SVG](.*)Element)\]/;
+export const XML_ELEMENT_REGEXP = /\[object ((?:HTML|MathML|SVG)(.*)Element)\]/;
 
 export const CLASSES: Record<string, number> = {
   '[object Arguments]': 0,

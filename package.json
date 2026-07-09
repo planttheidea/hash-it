@@ -86,7 +86,7 @@
     "decompress-response": "^8.0.0"
   },
   "scripts": {
-    "benchmark": "npm run clean:es && npm run build:es && node benchmarks/index.js",
+    "benchmark": "npm run build && node benchmarks/index.js",
     "benchmark:compare": "npm run build:esm && node benchmarks/compare.js",
     "build": "npm run clean && npm run build:dist",
     "build:dist": "NODE_ENV=production rollup -c config/rollup.config.js",
