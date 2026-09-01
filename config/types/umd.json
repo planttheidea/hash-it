@@ -24,7 +24,8 @@
     "inlineSources": true,
     "declarationDir": "../../dist/umd/types",
     "jsx": "react-jsx",
-    "outDir": "../../dist/umd"
+    "outDir": "../../dist/umd",
+    "rootDir": "../../src"
   },
   "exclude": ["**/node_modules/**", "**/__tests__/**"],
   "include": ["../../src/**/*.ts", "../../src/**/*.tsx"]

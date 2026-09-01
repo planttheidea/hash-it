@@ -24,7 +24,8 @@
     "inlineSources": true,
     "declarationDir": "../../dist/es/types",
     "jsx": "react-jsx",
-    "outDir": "../../dist/es"
+    "outDir": "../../dist/es",
+    "rootDir": "../../src"
   },
   "exclude": ["**/node_modules/**", "**/__tests__/**"],
   "include": ["../../src/**/*.ts", "../../src/**/*.tsx"]
