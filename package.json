@@ -19,7 +19,7 @@
   "description": "Hash any object based on its value",
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
-    "@planttheidea/build-tools": "^2.0.2",
+    "@planttheidea/build-tools": "^2.0.6",
     "@types/jsdom": "^30.0.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
@@ -37,7 +37,7 @@
     "react-dom": "^19.2.8",
     "release-it": "^21.0.2",
     "rollup": "^4.63.1",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "vite": "^8.2.2",
     "vitest": "^4.1.11"
   },
