@@ -1,4 +1,3 @@
-export const SEPARATOR = '|';
 export const XML_ELEMENT_REGEXP = /\[object ((?:HTML|MathML|SVG)(.*)Element)\]/;
 
 export const CLASSES: Record<string, number> = {
@@ -53,8 +52,6 @@ export const ARRAY_LIKE_CLASSES: Record<string, number> = {
   '[object Array]': 2,
 };
 
-export type ArrayLikeClass = keyof typeof ARRAY_LIKE_CLASSES;
-
 export const NON_ENUMERABLE_CLASSES: Record<string, number> = {
   '[object Blob]': 1,
   '[object Generator]': 2,
@@ -64,12 +61,10 @@ export const NON_ENUMERABLE_CLASSES: Record<string, number> = {
   '[object WeakSet]': 6,
 };
 
-export type NonEnumerableClass = keyof typeof NON_ENUMERABLE_CLASSES;
-
 /**
  * Classes that box a primitive, and therefore can be stringified based on the
  * primitive they wrap. Function classes are intentionally absent; they are
- * handled by the `typeof` check in `stringify` before class resolution occurs.
+ * handled by the `typeof` check in `foldValue` before class resolution occurs.
  */
 export const PRIMITIVE_WRAPPER_CLASSES: Record<string, number> = {
   '[object BigInt]': 1,
@@ -78,8 +73,6 @@ export const PRIMITIVE_WRAPPER_CLASSES: Record<string, number> = {
   '[object String]': 4,
   '[object Symbol]': 5,
 };
-
-export type PrimitiveWrapperClass = keyof typeof PRIMITIVE_WRAPPER_CLASSES;
 
 export const TYPED_ARRAY_CLASSES: Record<string, number> = {
   '[object BigInt64Array]': 1,
@@ -95,8 +88,6 @@ export const TYPED_ARRAY_CLASSES: Record<string, number> = {
   '[object Uint16Array]': 11,
   '[object Uint32Array]': 12,
 };
-
-export type TypedArrayClass = keyof typeof TYPED_ARRAY_CLASSES;
 
 export const RECURSIVE_CLASSES: Record<string, number> = {
   '[object Arguments]': 1,
@@ -123,44 +114,3 @@ export const RECURSIVE_CLASSES: Record<string, number> = {
 };
 
 export type RecursiveClass = keyof typeof RECURSIVE_CLASSES;
-
-export const HASHABLE_TYPES: Record<string, string> = {
-  bigint: 'i',
-  boolean: 'b',
-  empty: 'e',
-  function: 'g',
-  number: 'n',
-  object: 'o',
-  string: 's',
-  symbol: 'y',
-};
-
-export type HashableType = keyof typeof HASHABLE_TYPES;
-
-/**
- * Prefixes are precomputed so that delimiting a value of typical length is a
- * single concatenation, rather than an integer-to-string conversion followed by
- * two more. Lengths beyond the table build their prefix inline, which is rare
- * enough not to matter.
- */
-export const TABLED_LENGTHS = 256;
-
-export const LENGTH_PREFIXES: string[] = Array.from(
-  { length: TABLED_LENGTHS },
-  (_ignored, length) => length + SEPARATOR,
-);
-
-export const STRING_PREFIXES: string[] = Array.from(
-  { length: TABLED_LENGTHS },
-  (_ignored, length) => HASHABLE_TYPES.string! + length + SEPARATOR,
-);
-
-/** The full `o|<class>|` namespace prefix for each class, built once. */
-export const CLASS_PREFIXES: Record<string, string> = Object.keys(CLASSES).reduce<Record<string, string>>(
-  (prefixes, classType) => {
-    prefixes[classType] = HASHABLE_TYPES.object! + SEPARATOR + CLASSES[classType] + SEPARATOR;
-
-    return prefixes;
-  },
-  {},
-);

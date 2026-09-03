@@ -1,5 +1,65 @@
 # hash-it CHANGELOG
 
+## 7.1.1
+
+### Enhancements
+
+- Reworked `hash` to fold values directly into numeric accumulators instead of serializing the tree first, substantially
+  reducing allocations and memory usage.
+- Eliminated intermediate allocations for strings, numbers, and binary values.
+- Peak heap usage is now 39–57% lower on object-heavy values.
+- Improved hashing performance across nearly all value types, with speedups of up to ~59x (median of five interleaved
+  runs):
+
+| class                       |    speedup |
+| --------------------------- | ---------: |
+| `Uint8Array` (100k)         | **58.87x** |
+| `Int32Array` (10k)          | **12.18x** |
+| `Float64Array` (10k)        | **11.92x** |
+| `BigInt64Array` (10k)       | **10.14x** |
+| `Array` (10k numbers)       |  **4.00x** |
+| `DataView` (100k)           |  **3.86x** |
+| `ArrayBuffer` (100k)        |  **3.74x** |
+| `SharedArrayBuffer` (100k)  |  **3.66x** |
+| `Date`                      |  **3.49x** |
+| `Object` (deep, 500 levels) |  **3.26x** |
+| `Array` (10k strings)       |  **3.11x** |
+| `Array` (10k objects)       |  **2.80x** |
+| `Object` (small)            |  **2.42x** |
+| `Object` (circular)         |  **2.38x** |
+| `Number`                    |  **2.31x** |
+| `Arguments`                 |  **2.21x** |
+| `Map` (5k)                  |  **2.14x** |
+| `Symbol`                    |  **2.02x** |
+| `Object` (1k keys)          |  **1.84x** |
+| `Event`                     |  **1.83x** |
+| `String` (short)            |  **1.59x** |
+| `Function`                  |  **1.58x** |
+| `BigInt`                    |  **1.51x** |
+| `RegExp`                    |  **1.48x** |
+| `Promise` (by reference)    |  **1.36x** |
+| `Boolean`                   |  **1.34x** |
+| `null` / `undefined`        |  **1.28x** |
+| `DocumentFragment`          |  **1.23x** |
+| `Error`                     |  **1.18x** |
+| `HTMLElement`               |  **1.16x** |
+| `String` (1k)               |  **1.05x** |
+| `Set` (5k)                  |  **0.99x** |
+
+- `Set` hashing is effectively unchanged because order-independent sorting remains the dominant cost.
+- Added ~510 bytes minified and gzipped.
+
+### Fixes
+
+- Fixed four output bits carrying no information; all 53 output bits now respond uniformly to input changes, flipping
+  49.5–50.4% of the time.
+
+### Documentation
+
+- `DataView` is hashed by the bytes within its view window, not by its entire underlying buffer.
+- `Error` is hashed by its `message` as well as its `stack`.
+- `Event` excludes `Event.srcElement` alongside `Event.timeStamp`.
+
 ## 7.1.0
 
 ### Enhancements
