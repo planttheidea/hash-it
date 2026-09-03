@@ -405,3 +405,54 @@ describe('array own properties', () => {
     expect(hash(withProperty)).not.toBe(hash([1, 2, 'bar']));
   });
 });
+
+describe('non-enumerable own properties', () => {
+  function withHidden<Value extends object>(value: Value, hidden: unknown): Value {
+    Object.defineProperty(value, 'hidden', { configurable: true, enumerable: false, value: hidden });
+
+    return value;
+  }
+
+  it('should include a non-enumerable own property on an array', () => {
+    expect(hash(withHidden([1, 2], 'bar'))).not.toBe(hash(withHidden([1, 2], 'baz')));
+    expect(hash(withHidden([1, 2], 'bar'))).not.toBe(hash([1, 2]));
+    expect(hash(withHidden([1, 2], 'bar'))).toBe(hash(withHidden([1, 2], 'bar')));
+  });
+
+  it('should include a non-enumerable own property on a plain object', () => {
+    expect(hash(withHidden({ a: 1 }, 'bar'))).not.toBe(hash(withHidden({ a: 1 }, 'baz')));
+    expect(hash(withHidden({ a: 1 }, 'bar'))).not.toBe(hash({ a: 1 }));
+  });
+
+  it('should not let an unrelated enumerable property decide whether a non-enumerable one counts', () => {
+    const build = (hidden: string) => {
+      const array: any = withHidden([1, 2], hidden);
+      array.visible = 'x';
+
+      return array;
+    };
+
+    // the non-enumerable property must matter identically with or without a
+    // sibling enumerable one
+    expect(hash(build('bar'))).not.toBe(hash(build('baz')));
+    expect(hash(withHidden([1, 2], 'bar'))).not.toBe(hash(withHidden([1, 2], 'baz')));
+  });
+
+  it('should treat arrays and objects consistently for non-enumerable properties', () => {
+    const arrayCounts = hash(withHidden([1, 2], 'bar')) !== hash(withHidden([1, 2], 'baz'));
+    const objectCounts = hash(withHidden({ a: 1 }, 'bar')) !== hash(withHidden({ a: 1 }, 'baz'));
+
+    expect(arrayCounts).toBe(objectCounts);
+  });
+
+  it('should still not throw on the intrinsic callee of an arguments object', () => {
+    const build = function (..._args: string[]) {
+      // eslint-disable-next-line prefer-rest-params
+      return arguments;
+    };
+
+    expect(() => hash(build('foo', 'bar'))).not.toThrow();
+    expect(hash(build('foo', 'bar'))).toBe(hash(build('foo', 'bar')));
+    expect(hash(build('foo', 'bar'))).not.toBe(hash(build('foo', 'baz')));
+  });
+});

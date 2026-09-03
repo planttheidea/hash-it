@@ -117,8 +117,8 @@ makes the hash usable for memoization and equality checks. A few specifics are w
 
 - `0` and `-0` produce the same hash, as do two `NaN` values.
 - A hole in a sparse array is treated as `undefined`, so `[, ,]` and `[undefined, undefined]` produce the same hash.
-- Own properties added to an array are included in its hash, but only enumerable ones - unlike a plain object, where
-  non-enumerable own properties count as well.
+- Own properties added to an array beyond its indices are included in its hash, on the same terms as a plain object -
+  every own property counts, whether or not it is enumerable.
 
 ### Hash consistency
 

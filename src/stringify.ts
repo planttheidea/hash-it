@@ -30,6 +30,7 @@ interface RecursiveState {
   depth: number;
 }
 
+const { getOwnPropertyNames } = Object;
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const toString = Object.prototype.toString;
 
@@ -163,68 +164,61 @@ export function stringifyArray(value: any[], state: RecursiveState, classType?: 
     result[index] = stringify(value[index], state);
   }
 
-  // Own keys are ordered indices-first, so a named property can only ever be
-  // last. If the count matches and the final key is the canonical last index,
-  // the array is dense with nothing the indexed pass above missed. This is only
-  // a filter - anything else falls through to the exact check below.
-  const keys = Object.keys(value);
+  const properties = Object.getOwnPropertyNames(value);
 
-  if (keys.length === length && (length === 0 || keys[length - 1] === '' + (length - 1))) {
+  let cursor = properties.length - 1;
+
+  // Own keys are ordered indices first, then `length` - which is created with
+  // the array itself - and, for an `arguments` object, an intrinsic `callee`
+  // directly after it. So anything past those is an own property the indexed
+  // pass did not reach, enumerable or not, and the check is a single lookup.
+  if (classType === '[object Arguments]' && properties[cursor] === 'callee') {
+    --cursor;
+  }
+
+  if (properties[cursor] === 'length') {
     return result.join();
   }
 
-  return result.join() + stringifyArrayProperties(value, length, state, classType);
+  return result.join() + stringifyArrayProperties(properties, value, state, classType);
 }
 
 /**
  * Stringify the own properties of an array-like that the indexed pass does not
- * reach. Returns an empty string when there are none, so that a sparse array
- * hashes the same as the equivalent dense one.
+ * reach, reusing the key list already gathered rather than enumerating again.
  */
 function stringifyArrayProperties(
+  properties: string[],
   value: Record<string, any>,
-  length: number,
   state: RecursiveState,
   classType?: Class,
 ) {
-  const properties = Object.getOwnPropertyNames(value);
-  const extra: string[] = [];
+  // Every index sorts before `length`, so the extras are exactly the tail that
+  // follows it. Walking back from the end costs only as much as there are
+  // extras, rather than a pass over every index.
+  let start = properties.length;
 
-  for (let index = 0, total = properties.length; index < total; ++index) {
-    const property = properties[index]!;
-
-    // `length` is intrinsic to both classes, and an `arguments` object also
-    // carries an intrinsic `callee` that is a poisoned accessor under strict
-    // mode. Neither is part of the value being hashed.
-    if (property === 'length' || (classType === '[object Arguments]' && property === 'callee')) {
-      continue;
-    }
-
-    const asIndex = +property;
-
-    // Canonical indices were covered by the indexed pass. Comparing against the
-    // round-tripped number rejects near-index names such as `'01'` or `'1e2'`.
-    if (asIndex >= 0 && asIndex < length && '' + asIndex === property) {
-      continue;
-    }
-
-    extra.push(property);
+  while (--start >= 0 && properties[start] !== 'length') {
+    // seek back to the intrinsic boundary
   }
 
-  if (!extra.length) {
-    return '';
+  ++start;
+
+  if (classType === '[object Arguments]' && properties[start] === 'callee') {
+    ++start;
   }
 
   // Sorted so the hash does not depend on assignment order, matching how
   // ordinary object keys are handled.
-  extra.sort();
-
+  const extra = properties.slice(start).sort();
   const result: string[] = new Array(extra.length);
 
   let index = extra.length;
 
   while (--index >= 0) {
-    result[index] = delimit(extra[index]!) + stringify(value[extra[index]!], state);
+    const property = extra[index]!;
+
+    result[index] = delimit(property) + stringify(value[property], state);
   }
 
   return '{' + result.join() + '}';
@@ -308,7 +302,7 @@ export function stringifyMap(map: Map<any, any>, state: RecursiveState) {
 }
 
 export function stringifyObject(value: Record<string, any>, state: RecursiveState) {
-  const properties = Object.getOwnPropertyNames(value).sort();
+  const properties = getOwnPropertyNames(value).sort();
   const result: string[] = new Array(properties.length);
 
   let index = properties.length;
