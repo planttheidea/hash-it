@@ -632,9 +632,11 @@ function foldObject(value: Record<string, any>, state: FoldState, tag: number): 
   state.b = avalanche(hashB);
 }
 
+const HAS_FLOAT64_ARRAY = typeof Float64Array === 'function';
+
 /**
  * Members are ordered by the 53-bit combination of their folded pair, the same
- * combination `fold` itself ends with. Collapsing each member to one number
+ * combination `hash` itself ends with. Collapsing each member to one number
  * lets the sort run over a typed array without a comparator, where the string
  * encoding pays for the same ordering guarantee in string comparisons - and
  * costs nothing in practice, since 53 bits per member feed a 53-bit result.
@@ -644,12 +646,16 @@ function combine(hashA: number, hashB: number): number {
 }
 
 /**
- * A `Float64Array` rather than an array of numbers so the ordering stays
- * monomorphic and its sort runs without a comparator. Typed arrays are part of
- * the ES2015 floor the package already requires.
+ * A `Float64Array` where one exists, so the ordering sorts without a
+ * comparator, falling back to an ordinary array so that no environment is
+ * excluded by the ordering alone.
  */
-function foldOrdering(ordering: Float64Array, size: number, tag: number, state: FoldState): void {
-  ordering.sort();
+const Order = HAS_FLOAT64_ARRAY ? Float64Array : Array<number>;
+
+const ascending = HAS_FLOAT64_ARRAY ? undefined : (first: number, second: number) => first - second;
+
+function foldOrdering(ordering: Float64Array | number[], size: number, tag: number, state: FoldState): void {
+  ordering.sort(ascending);
 
   let hashA = imul(SEED_A ^ tag, MULTIPLIER_A);
   let hashB = imul(SEED_B ^ tag, MULTIPLIER_B);
@@ -678,7 +684,7 @@ function foldOrdering(ordering: Float64Array, size: number, tag: number, state: 
 
 function foldMap(map: Map<any, any>, state: FoldState, tag: number): void {
   const size = map.size;
-  const ordering = new Float64Array(size);
+  const ordering = new Order(size);
 
   let index = 0;
 
@@ -702,7 +708,7 @@ function foldMap(map: Map<any, any>, state: FoldState, tag: number): void {
 
 function foldSet(set: Set<any>, state: FoldState, tag: number): void {
   const size = set.size;
-  const ordering = new Float64Array(size);
+  const ordering = new Order(size);
 
   let index = 0;
 
