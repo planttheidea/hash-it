@@ -1,10 +1,10 @@
-export const INTEGER_ARRAY = [1, 2, 3];
+const INTEGER_ARRAY = [1, 2, 3];
 // @ts-expect-error - BigInt values not supported with lower targets.
-export const BIG_INTEGER_ARRAY = [21n, 31n];
+const BIG_INTEGER_ARRAY = [21n, 31n];
 
-export const ARRAY_BUFFER = new Uint16Array(INTEGER_ARRAY).buffer;
-export const DATE = new Date();
-export const ERROR = new Error('boom');
+const ARRAY_BUFFER = new Uint16Array(INTEGER_ARRAY).buffer;
+const DATE = new Date();
+const ERROR = new Error('boom');
 
 const DOCUMENT_FRAGMENT = document.createDocumentFragment();
 DOCUMENT_FRAGMENT.appendChild(document.createElement('div'));
