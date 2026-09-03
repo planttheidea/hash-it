@@ -1,7 +1,14 @@
+const multiply32Bit = Math.imul;
+
 /**
- * based on string passed, get the integer hash value
- * through bitwise operation (based on spinoff of dbj2
- * with enhancements for reduced collisions)
+ * Based on the string passed, get the integer hash value.
+ *
+ * Two independent 32-bit accumulators are mixed with `Math.imul`, which is a
+ * true 32-bit multiply; `*` would route through a float and discard the high
+ * bits on every step. The accumulators use different multipliers so that they
+ * do not evolve in lockstep - sharing one multiplier made `hashB` almost a
+ * function of `hashA`, which capped the pair at roughly 32 bits of entropy no
+ * matter how the two were combined.
  */
 export function hash(string: string): number {
   let index = string.length;
@@ -12,9 +19,12 @@ export function hash(string: string): number {
   while (index--) {
     charCode = string.charCodeAt(index);
 
-    hashA = (hashA * 33) ^ charCode;
-    hashB = (hashB * 33) ^ charCode;
+    hashA = multiply32Bit(hashA ^ charCode, 2654435761);
+    hashB = multiply32Bit(hashB ^ charCode, 1597334677);
   }
 
-  return (hashA >>> 0) * 4096 + (hashB >>> 0);
+  // Scaling by 2 ** 21 lifts `hashA` clear of the 21 bits contributed by
+  // `hashB`, so the two never overlap. The result fills 53 bits and its maximum
+  // is exactly `Number.MAX_SAFE_INTEGER`.
+  return (hashA >>> 0) * 2097152 + (hashB >>> 11);
 }
