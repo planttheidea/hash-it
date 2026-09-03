@@ -13,6 +13,8 @@
 
 - Fixed plain objects with `Symbol.iterator` being hashed by reference instead of by value.
 - Fixed own array properties beyond indexed elements being omitted from hashes.
+- Fixed arrays and objects using different definitions of which own properties make up a value; both now use enumerable
+  own properties, so a non-enumerable property no longer contributes to an object's hash.
 - Fixed shared references being hashed by position rather than by value.
 - Fixed missing `Int32Array` class registration.
 - Fixed `SharedArrayBuffer` hashes ignoring contents and byte length.

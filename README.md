@@ -117,8 +117,8 @@ makes the hash usable for memoization and equality checks. A few specifics are w
 
 - `0` and `-0` produce the same hash, as do two `NaN` values.
 - A hole in a sparse array is treated as `undefined`, so `[, ,]` and `[undefined, undefined]` produce the same hash.
-- Own properties added to an array beyond its indices are included in its hash, on the same terms as a plain object -
-  every own property counts, whether or not it is enumerable.
+- Own properties added to an array beyond its indices are included in its hash, on the same terms as a plain object.
+  Enumerable own properties are what counts as the value, matching `JSON.stringify` and object spread.
 
 ### Hash consistency
 
