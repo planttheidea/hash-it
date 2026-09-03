@@ -1,5 +1,28 @@
 # hash-it CHANGELOG
 
+## 7.1.0
+
+### Enhancements
+
+- Added explicit `Float16Array` support.
+- Substantially improved `Map` and `Set` hashing performance.
+- Shared subtrees are now hashed once and reused rather than re-walked.
+- Added `Math.imul` support with an equivalent fallback, preserving existing runtime requirements.
+
+### Fixes
+
+- Fixed plain objects with `Symbol.iterator` being hashed by reference instead of by value.
+- Fixed own array properties beyond indexed elements being omitted from hashes.
+- Fixed shared references being hashed by position rather than by value.
+- Fixed missing `Int32Array` class registration.
+- Fixed `SharedArrayBuffer` hashes ignoring contents and byte length.
+- Fixed `Symbol` hashes colliding with strings.
+- Fixed string content forging structural boundaries; content-bearing values are now length-delimited.
+- Fixed `Map` and `Set` hashes depending on insertion order when entries share object references.
+- Fixed boxed `BigInt` and `Symbol` values collapsing to the same hash.
+- Fixed hash entropy being limited to ~32 bits; combined hashes now use the full 53-bit range.
+- Fixed `ArrayBuffer` fallback detection checking `Uint16Array` instead of `Uint8Array`.
+
 ## 7.0.3
 
 - [#102](https://github.com/planttheidea/hash-it/pull/102) - Fix `DataView` hash giving false positives with different
@@ -22,7 +45,7 @@
 
 ## 7.0.0
 
-**Breaking changes**
+### Breaking changes
 
 - Change default export to named `hash` import (necessary to allow cross-compatible types for `.d.cts` files)
 
@@ -32,14 +55,14 @@
 
 ## 6.0.0
 
-**Breaking changes**
+### Breaking changes
 
 - Equality utilities (`is` / `is.any` / `is.all` / `is.not`) are no longer provided
 - `Error` type hashes now include the message (previously only included stack)
 - Non-enumerable type hashes (`Generator`, `Promise`, `WeakMap`, `WeakSet`) now hash uniquely based on reference
 - `WeakMap` is now required at runtime (used as cache for circular references)
 
-**Enhancements**
+### Enhancements
 
 - Better support for system-specific loading (ESM vs CJS vs UMD)
 - Added support for primitive wrappers (e.g. `new Number('123')`)
@@ -104,7 +127,7 @@
 
 Rewrite! Lots of changes under-the-hood for a much more consistent hash, and circular object handling out of the box.
 
-#### BREAKING CHANGES
+### Breaking changes
 
 - `isEmpty`, `isEqual`,`isNull`, and `isUndefined` have been removed (all can be reproduced with new `is` and `is.all`
   functions)
@@ -114,7 +137,7 @@ Rewrite! Lots of changes under-the-hood for a much more consistent hash, and cir
   - `hash.isEmpty` => `(object) => hash.is.any(object, undefined, null, '', 0, [], {}, new Map(), new Set())`
 - `Error` hashes now based on `error.stack` instead of `error.message`
 
-#### ENHANCEMENTS
+### Enhancements
 
 - Circular objects are now handled out of the box, thanks to
   [`fast-stringify`](https://github.com/planttheidea/fast-stringify)
@@ -152,7 +175,7 @@ Rewrite! Lots of changes under-the-hood for a much more consistent hash, and cir
 - Fix issue where stack remained in memory after hash was built
 - Add ES transpilation for module-ready build tools
 
-#### BREAKING CHANGES
+### Breaking changes
 
 - If using CommonJS, you need to specify `require('hash-it').default` instead of just `require('hash-it')`
 - Hashes themselves may have changed (especially for circular objects)

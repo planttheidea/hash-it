@@ -8,10 +8,10 @@ Fast and consistent hashCode for any object type
   - [Table of contents](#table-of-contents)
   - [Usage](#usage)
   - [Overview](#overview)
-  - [Hash consistency](#hash-consistency)
+  - [Guarantees](#guarantees)
+    - [Consistency](#consistency)
+    - [Equality](#equality)
   - [Support](#support)
-    - [Browsers](#browsers)
-    - [Node](#node)
   - [Development](#development)
 
 ## Usage
@@ -58,6 +58,7 @@ value:
   - Includes all sub-types (e.g., `TypeError`, `ReferenceError`, etc.)
 - `Event` (based on all properties other than `Event.timeStamp`)
   - Includes all sub-types (e.g., `MouseEvent`, `KeyboardEvent`, etc.)
+- `Float16Array`
 - `Float32Array`
 - `Float64Array`
 - `Function` (based on `toString`)
@@ -110,29 +111,32 @@ console.log(hash(Promise.resolve(123))); // 4622327363876
 
 If there is an object class or data type that is missing, please submit an issue.
 
-## Hash consistency
+## Guarantees
+
+### Consistency
 
 While the hashes will be consistent when calculated within the same environment, there is no guarantee that the
 resulting hash will be the same across different environments due to environment-specific or browser-specific
 implementations of features. This is limited to extreme edge cases, such as hashing the `window` object, but should be
 considered if being used with persistence over different environments.
 
+The same applies across versions of `hash-it` itself: the value produced for a given input may change between releases
+as the algorithm is refined. Hashes are intended for comparison within a single running program, not for persistence.
+
+### Equality
+
+A few specifics are worth calling out:
+
+- `0` and `-0` produce the same hash, as do two `NaN` values, using
+  [`SameValueZero`](https://tc39.es/ecma262/#sec-samevaluezero) comparison.
+- A hole in a sparse array is treated as `undefined`, so `[, ,]` and `[undefined, undefined]` produce the same hash.
+- Enumerable own properties added to an array beyond its indices are included in its hash, on the same terms as a plain
+  object.
+
 ## Support
 
-### Browsers
-
-- Chrome (all versions)
-- Firefox (all versions)
-- Edge (all versions)
-- Opera 15+
-- IE 9+
-- Safari 6+
-- iOS 8+
-- Android 4+
-
-### Node
-
-- 4+
+An ES2015 environment is required; the published bundles are emitted as ES2015 syntax and use ES2015 built-ins such as
+`WeakMap`.
 
 ## Development
 

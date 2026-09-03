@@ -7,17 +7,30 @@ import {
   PRIMITIVE_WRAPPER_CLASSES,
   RECURSIVE_CLASSES,
   SEPARATOR,
+  STRING_PREFIXES,
+  TABLED_LENGTHS,
   TYPED_ARRAY_CLASSES,
   XML_ELEMENT_REGEXP,
 } from './constants.js';
-import { sortByKey, sortBySelf } from './sort.js';
-import { namespaceComplexValue } from './utils.js';
+import { delimit, namespaceComplexValue } from './utils.js';
 
 interface RecursiveState {
-  cache: WeakMap<any, number>;
-  id: number;
+  /**
+   * Doubles as the ancestor registry and the memoization table. A `number`
+   * entry is the depth of a value currently being stringified higher up the
+   * path, while a `string` entry is the completed result for a value that has
+   * already been fully stringified.
+   */
+  cache: WeakMap<any, number | string>;
+  /**
+   * Incremented whenever an ancestor back-reference is emitted, used to decide
+   * whether a result is position-independent and therefore safe to memoize.
+   */
+  cycles: number;
+  depth: number;
 }
 
+const { keys } = Object;
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const toString = Object.prototype.toString;
 
@@ -35,11 +48,11 @@ function stringifyComplexType(value: any, classType: Class, state: RecursiveStat
   }
 
   if (classType === '[object Event]') {
-    return namespaceComplexValue(classType, stringifyEvent(value));
+    return namespaceComplexValue(classType, stringifyEvent(value, state));
   }
 
   if (classType === '[object Error]') {
-    return namespaceComplexValue(classType, value.message + SEPARATOR + value.stack);
+    return namespaceComplexValue(classType, delimit('' + value.message) + delimit('' + value.stack));
   }
 
   if (classType === '[object DocumentFragment]') {
@@ -49,7 +62,7 @@ function stringifyComplexType(value: any, classType: Class, state: RecursiveStat
   const element = classType.match(XML_ELEMENT_REGEXP);
 
   if (element) {
-    return namespaceComplexValue('ELEMENT', element[1] + SEPARATOR + value.outerHTML);
+    return namespaceComplexValue('ELEMENT', delimit(element[1]!) + delimit(value.outerHTML));
   }
 
   if (NON_ENUMERABLE_CLASSES[classType]) {
@@ -67,16 +80,44 @@ function stringifyComplexType(value: any, classType: Class, state: RecursiveStat
 function stringifyRecursiveAsJson(classType: RecursiveClass, value: any, state: RecursiveState) {
   const cached = state.cache.get(value);
 
-  if (cached) {
-    return namespaceComplexValue(classType, 'RECURSIVE~' + cached);
+  if (cached != null) {
+    if (typeof cached === 'number') {
+      // A cycle. The ancestor is identified by its depth rather than by visit
+      // order, so the same structure encodes identically regardless of which
+      // sibling happened to be traversed first.
+      ++state.cycles;
+
+      return namespaceComplexValue(classType, 'RECURSIVE~' + cached);
+    }
+
+    // Already stringified elsewhere in this pass. Reusing the result keeps
+    // shared references from depending on traversal order, and keeps a value
+    // referenced many times from being walked many times.
+    return cached;
   }
 
-  state.cache.set(value, ++state.id);
+  const cycles = state.cycles;
 
+  state.cache.set(value, state.depth++);
+
+  const result = stringifyRecursiveValue(classType, value, state);
+
+  --state.depth;
+
+  if (state.cycles === cycles) {
+    state.cache.set(value, result);
+  } else {
+    // The result embeds an ancestor depth, so it is only valid at the position
+    // it was produced and must not be reused.
+    state.cache.delete(value);
+  }
+
+  return result;
+}
+
+function stringifyRecursiveValue(classType: RecursiveClass, value: any, state: RecursiveState) {
   if (classType === '[object Object]') {
-    return value[Symbol.iterator]
-      ? getUnsupportedHash(value, classType)
-      : namespaceComplexValue(classType, stringifyObject(value, state));
+    return namespaceComplexValue(classType, stringifyObject(value, state));
   }
 
   if (ARRAY_LIKE_CLASSES[classType]) {
@@ -95,7 +136,7 @@ function stringifyRecursiveAsJson(classType: RecursiveClass, value: any, state: 
     return namespaceComplexValue(classType, value.join());
   }
 
-  if (classType === '[object ArrayBuffer]') {
+  if (classType === '[object ArrayBuffer]' || classType === '[object SharedArrayBuffer]') {
     return namespaceComplexValue(classType, stringifyArrayBuffer(value));
   }
 
@@ -114,15 +155,53 @@ function stringifyRecursiveAsJson(classType: RecursiveClass, value: any, state: 
 }
 
 export function stringifyArray(value: any[], state: RecursiveState) {
-  let index = value.length;
+  const length = value.length;
+  const result: string[] = new Array(length);
 
-  const result: string[] = new Array(index);
+  let index = length;
 
   while (--index >= 0) {
     result[index] = stringify(value[index], state);
   }
 
-  return result.join();
+  // Named keys are always enumerated after indices, so walking back from the
+  // end stops at the first index and costs only as much as there are extras.
+  const properties = keys(value);
+
+  let start = properties.length;
+
+  while (--start >= 0) {
+    const key = properties[start]!;
+    const asIndex = +key;
+
+    // Comparing against the round-tripped number rejects near-index names such
+    // as `'01'` or `'1e2'`, which are ordinary properties rather than indices.
+    if (asIndex >= 0 && asIndex < length && '' + asIndex === key) {
+      break;
+    }
+  }
+
+  return ++start === properties.length
+    ? result.join()
+    : result.join() + stringifyArrayProperties(properties.slice(start).sort(), value, state);
+}
+
+/**
+ * Stringify the own properties of an array-like that the indexed pass does not
+ * reach, reusing the key list already gathered rather than enumerating again.
+ */
+function stringifyArrayProperties(properties: string[], value: Record<string, any>, state: RecursiveState) {
+  const result: string[] = new Array(properties.length);
+
+  let index = properties.length;
+
+  while (--index >= 0) {
+    const property = properties[index]!;
+
+    result[index] = delimit(property) + stringify(value[property], state);
+  }
+
+  return '{' + result.join() + '}';
 }
 
 export function stringifyArrayBufferModern(buffer: ArrayBufferLike): string {
@@ -160,65 +239,58 @@ export function stringifyDocumentFragment(fragment: DocumentFragment): string {
   const innerHTML: string[] = new Array(index);
 
   while (--index >= 0) {
-    innerHTML[index] = children[index]!.outerHTML;
+    innerHTML[index] = delimit(children[index]!.outerHTML);
   }
 
-  return innerHTML.join();
+  return innerHTML.join('');
 }
 
 const stringifyArrayBuffer =
   typeof Buffer !== 'undefined' && typeof Buffer.from === 'function'
     ? stringifyArrayBufferModern
-    : typeof Uint16Array === 'function'
+    : typeof Uint8Array === 'function'
       ? stringifyArrayBufferFallback
       : stringifyArrayBufferNone;
 
-export function stringifyEvent(value: Event) {
-  // eslint-disable-next-line @typescript-eslint/no-base-to-string
+export function stringifyEvent(value: Event, state: RecursiveState) {
   return [
     value.bubbles,
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     value.cancelBubble,
     value.cancelable,
     value.composed,
-    value.currentTarget,
+    stringify(value.currentTarget, state),
     value.defaultPrevented,
     value.eventPhase,
     value.isTrusted,
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     value.returnValue,
-    value.target,
+    stringify(value.target, state),
     value.type,
-  ].join();
+  ].join(SEPARATOR);
 }
 
 export function stringifyMap(map: Map<any, any>, state: RecursiveState) {
-  const result: string[] | Array<[string, string]> = new Array(map.size);
+  const result: string[] = new Array(map.size);
 
   let index = 0;
   map.forEach((value, key) => {
-    result[index++] = [stringify(key, state), stringify(value, state)];
+    result[index++] = '[' + stringify(key, state) + ',' + stringify(value, state) + ']';
   });
 
-  // sorted while still tuples; cast is accurate since the string-conversion pass hasn't run yet
-  (result as Array<[string, string]>).sort(sortByKey);
-
-  while (--index >= 0) {
-    result[index] = '[' + result[index]![0] + ',' + result[index]![1] + ']';
-  }
-
-  return '[' + result.join() + ']';
+  return '[' + result.sort().join() + ']';
 }
 
 export function stringifyObject(value: Record<string, any>, state: RecursiveState) {
-  const properties = Object.getOwnPropertyNames(value).sort(sortBySelf);
-  const length = properties.length;
-  const result: string[] = new Array(length);
+  const properties = keys(value).sort();
+  const result: string[] = new Array(properties.length);
 
-  let index = length;
+  let index = properties.length;
 
   while (--index >= 0) {
-    result[index] = properties[index]! + ':' + stringify(value[properties[index]!], state);
+    const property = properties[index]!;
+
+    result[index] = delimit(property) + stringify(value[property], state);
   }
 
   return '{' + result.join() + '}';
@@ -232,13 +304,13 @@ export function stringifySet(set: Set<any>, state: RecursiveState) {
     result[index++] = stringify(value, state);
   });
 
-  return '[' + result.sort(sortBySelf).join() + ']';
+  return '[' + result.sort().join() + ']';
 }
 
 export function stringify(value: any, state: RecursiveState | undefined): string {
   const type = typeof value;
 
-  if (value == null || type === 'undefined') {
+  if (value == null) {
     return HASHABLE_TYPES.empty + value;
   }
 
@@ -247,12 +319,21 @@ export function stringify(value: any, state: RecursiveState | undefined): string
       value,
       toString.call(value),
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-      state || { cache: new WeakMap(), id: 1 },
+      state || { cache: new WeakMap(), cycles: 0, depth: 0 },
     );
   }
 
+  if (type === 'string') {
+    const length = value.length;
+
+    // Inlined rather than delegated so the hottest leaf avoids a call.
+    return length < TABLED_LENGTHS
+      ? STRING_PREFIXES[length]! + value
+      : HASHABLE_TYPES.string! + length + SEPARATOR + value;
+  }
+
   if (type === 'function' || type === 'symbol') {
-    return HASHABLE_TYPES[type] + value.toString();
+    return HASHABLE_TYPES[type] + delimit(value.toString());
   }
 
   if (type === 'boolean') {
