@@ -8,8 +8,9 @@ Fast and consistent hashCode for any object type
   - [Table of contents](#table-of-contents)
   - [Usage](#usage)
   - [Overview](#overview)
-  - [Equality semantics](#equality-semantics)
-    - [Hash consistency](#hash-consistency)
+  - [Guarantees](#guarantees)
+    - [Consistency](#consistency)
+    - [Equality](#equality)
   - [Support](#support)
   - [Development](#development)
 
@@ -110,17 +111,9 @@ console.log(hash(Promise.resolve(123))); // 4622327363876
 
 If there is an object class or data type that is missing, please submit an issue.
 
-## Equality semantics
+## Guarantees
 
-Values are compared the way [`SameValueZero`](https://tc39.es/ecma262/#sec-samevaluezero) compares them, which is what
-makes the hash usable for memoization and equality checks. A few specifics are worth calling out:
-
-- `0` and `-0` produce the same hash, as do two `NaN` values.
-- A hole in a sparse array is treated as `undefined`, so `[, ,]` and `[undefined, undefined]` produce the same hash.
-- Own properties added to an array beyond its indices are included in its hash, on the same terms as a plain object.
-  Enumerable own properties are what counts as the value, matching `JSON.stringify` and object spread.
-
-### Hash consistency
+### Consistency
 
 While the hashes will be consistent when calculated within the same environment, there is no guarantee that the
 resulting hash will be the same across different environments due to environment-specific or browser-specific
@@ -129,6 +122,15 @@ considered if being used with persistence over different environments.
 
 The same applies across versions of `hash-it` itself: the value produced for a given input may change between releases
 as the algorithm is refined. Hashes are intended for comparison within a single running program, not for persistence.
+
+### Equality
+
+A few specifics are worth calling out:
+
+- `0` and `-0` produce the same hash, as do two `NaN` values, using [`SameValueZero`](https://tc39.es/ecma262/#sec-samevaluezero) comparison.
+- A hole in a sparse array is treated as `undefined`, so `[, ,]` and `[undefined, undefined]` produce the same hash.
+- Enumerable own properties added to an array beyond its indices are included in its hash, on the same terms as a plain
+  object.
 
 ## Support
 
