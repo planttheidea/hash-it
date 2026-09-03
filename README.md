@@ -24,10 +24,10 @@ import { hash } from 'hash-it';
 const { hash } = require('hash-it');
 
 // hash any standard object
-console.log(hash({ foo: 'bar' })); // 13729774857125
+console.log(hash({ foo: 'bar' })); // 1663244226405536
 
 // or a circular object
-console.log(hash(window)); // 3270731309314
+console.log(hash(window)); // 3557759737121602
 ```
 
 ## Overview
@@ -51,12 +51,12 @@ value:
 - `BigInt64Array`
 - `BigUint64Array`
 - `Boolean`
-- `DataView` (based on its `buffer`)
+- `DataView` (based on the bytes within its view window)
 - `Date` (based on `getTime`)
 - `DocumentFragment` (based on `outerHTML` of all `children`)
-- `Error` (based on `stack`)
+- `Error` (based on `message` and `stack`)
   - Includes all sub-types (e.g., `TypeError`, `ReferenceError`, etc.)
-- `Event` (based on all properties other than `Event.timeStamp`)
+- `Event` (based on all properties other than `Event.timeStamp` and `Event.srcElement`)
   - Includes all sub-types (e.g., `MouseEvent`, `KeyboardEvent`, etc.)
 - `Float16Array`
 - `Float32Array`
@@ -104,9 +104,9 @@ object is hashed based on its class type and reference.
 ```ts
 const promise = Promise.resolve(123);
 
-console.log(hash(promise)); // 16843037491939
-console.log(hash(promise)); // 16843037491939
-console.log(hash(Promise.resolve(123))); // 4622327363876
+console.log(hash(promise)); // 8959449433830577
+console.log(hash(promise)); // 8959449433830577
+console.log(hash(Promise.resolve(123))); // 2215269628940933
 ```
 
 If there is an object class or data type that is missing, please submit an issue.
