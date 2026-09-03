@@ -8,7 +8,8 @@ Fast and consistent hashCode for any object type
   - [Table of contents](#table-of-contents)
   - [Usage](#usage)
   - [Overview](#overview)
-  - [Hash consistency](#hash-consistency)
+  - [Equality semantics](#equality-semantics)
+    - [Hash consistency](#hash-consistency)
   - [Support](#support)
     - [Browsers](#browsers)
     - [Node](#node)
@@ -58,6 +59,7 @@ value:
   - Includes all sub-types (e.g., `TypeError`, `ReferenceError`, etc.)
 - `Event` (based on all properties other than `Event.timeStamp`)
   - Includes all sub-types (e.g., `MouseEvent`, `KeyboardEvent`, etc.)
+- `Float16Array`
 - `Float32Array`
 - `Float64Array`
 - `Function` (based on `toString`)
@@ -110,25 +112,62 @@ console.log(hash(Promise.resolve(123))); // 4622327363876
 
 If there is an object class or data type that is missing, please submit an issue.
 
-## Hash consistency
+## Equality semantics
+
+Values are compared the way `SameValueZero` compares them, which is what makes the hash usable for memoization and
+equality checks. Two consequences are worth calling out:
+
+- `0` and `-0` produce the same hash, as do two `NaN` values.
+- A hole in a sparse array is treated as `undefined`, so `[, ,]` and `[undefined, undefined]` produce the same hash.
+
+Objects and arrays are hashed by value rather than by reference, so a value referenced twice hashes the same as two
+equal values:
+
+```js
+const shared = { id: 1 };
+
+hash({ a: shared, b: shared }) === hash({ a: { id: 1 }, b: { id: 1 } }); // true
+```
+
+Own properties assigned to an array beyond its indices are included:
+
+```js
+const array = [1, 2];
+array.meta = 'extra';
+
+hash(array) === hash([1, 2]); // false
+```
+
+Only enumerable own properties are detected for this purpose. A non-enumerable property defined on an array with
+`Object.defineProperty` is not included, which is a deliberate trade to keep array hashing fast.
+
+### Hash consistency
 
 While the hashes will be consistent when calculated within the same environment, there is no guarantee that the
 resulting hash will be the same across different environments due to environment-specific or browser-specific
 implementations of features. This is limited to extreme edge cases, such as hashing the `window` object, but should be
 considered if being used with persistence over different environments.
 
+The same applies across versions of `hash-it` itself: the value produced for a given input may change between releases
+as the algorithm is refined. Hashes are intended for comparison within a single running program, not for persistence.
+
 ## Support
 
 ### Browsers
 
-- Chrome (all versions)
-- Firefox (all versions)
+`WeakMap` is required at runtime, and the published bundles are emitted as ES2015. Both have been true since 6.0.0; this
+release adds no new requirement, as `Math.imul` is used only when available and falls back to an equivalent
+implementation otherwise.
+
+- Chrome 49+
+- Firefox 45+
 - Edge (all versions)
-- Opera 15+
-- IE 9+
-- Safari 6+
-- iOS 8+
-- Android 4+
+- Opera 36+
+- Safari 10+
+- iOS 10+
+- Android 5+
+
+Internet Explorer is not supported.
 
 ### Node
 

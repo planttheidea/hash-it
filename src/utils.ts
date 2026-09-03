@@ -1,5 +1,5 @@
 import type { Class } from './constants.js';
-import { CLASSES, HASHABLE_TYPES, SEPARATOR } from './constants.js';
+import { CLASS_PREFIXES, LENGTH_PREFIXES, SEPARATOR, TABLED_LENGTHS } from './constants.js';
 
 /**
  * Prefix `value` with its own length, making the chunk self-delimiting.
@@ -10,15 +10,11 @@ import { CLASSES, HASHABLE_TYPES, SEPARATOR } from './constants.js';
  * and `['a', 'b']` would both flatten to `sa,sb`.
  */
 export function delimit(value: string): string {
-  return value.length + SEPARATOR + value;
+  const length = value.length;
+
+  return length < TABLED_LENGTHS ? LENGTH_PREFIXES[length]! + value : length + SEPARATOR + value;
 }
 
 export function namespaceComplexValue(classType: Class, value: string | number | boolean) {
-  return (
-    HASHABLE_TYPES.object
-    + SEPARATOR
-    + CLASSES[classType]
-    + SEPARATOR
-    + delimit(typeof value === 'string' ? value : '' + value)
-  );
+  return CLASS_PREFIXES[classType]! + delimit(typeof value === 'string' ? value : '' + value);
 }

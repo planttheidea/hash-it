@@ -136,3 +136,31 @@ export const HASHABLE_TYPES: Record<string, string> = {
 };
 
 export type HashableType = keyof typeof HASHABLE_TYPES;
+
+/**
+ * Prefixes are precomputed so that delimiting a value of typical length is a
+ * single concatenation, rather than an integer-to-string conversion followed by
+ * two more. Lengths beyond the table build their prefix inline, which is rare
+ * enough not to matter.
+ */
+export const TABLED_LENGTHS = 256;
+
+export const LENGTH_PREFIXES: string[] = Array.from(
+  { length: TABLED_LENGTHS },
+  (_ignored, length) => length + SEPARATOR,
+);
+
+export const STRING_PREFIXES: string[] = Array.from(
+  { length: TABLED_LENGTHS },
+  (_ignored, length) => HASHABLE_TYPES.string! + length + SEPARATOR,
+);
+
+/** The full `o|<class>|` namespace prefix for each class, built once. */
+export const CLASS_PREFIXES: Record<string, string> = Object.keys(CLASSES).reduce<Record<string, string>>(
+  (prefixes, classType) => {
+    prefixes[classType] = HASHABLE_TYPES.object! + SEPARATOR + CLASSES[classType] + SEPARATOR;
+
+    return prefixes;
+  },
+  {},
+);

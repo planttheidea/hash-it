@@ -7,6 +7,8 @@ import {
   PRIMITIVE_WRAPPER_CLASSES,
   RECURSIVE_CLASSES,
   SEPARATOR,
+  STRING_PREFIXES,
+  TABLED_LENGTHS,
   TYPED_ARRAY_CLASSES,
   XML_ELEMENT_REGEXP,
 } from './constants.js';
@@ -161,25 +163,13 @@ export function stringifyArray(value: any[], state: RecursiveState, classType?: 
     result[index] = stringify(value[index], state);
   }
 
-  // Indices are enumerated first and in ascending order, so the first key that
-  // is not the next index in the sequence means the array carries holes or
-  // named properties that the indexed pass above did not capture. This is only
-  // a filter: a positive result falls through to an exact check below.
-  let expected = 0;
-  let unusual = false;
+  // Own keys are ordered indices-first, so a named property can only ever be
+  // last. If the count matches and the final key is the canonical last index,
+  // the array is dense with nothing the indexed pass above missed. This is only
+  // a filter - anything else falls through to the exact check below.
+  const keys = Object.keys(value);
 
-  // Skipping holes and surfacing extra enumerable keys is precisely what is
-  // being detected here, so the usual objections to for-in over an array are
-  // the reason it is the right tool.
-  // eslint-disable-next-line @typescript-eslint/no-for-in-array
-  for (const key in value) {
-    if (+key !== expected++) {
-      unusual = true;
-      break;
-    }
-  }
-
-  if (!unusual && expected === length) {
+  if (keys.length === length && (length === 0 || keys[length - 1] === '' + (length - 1))) {
     return result.join();
   }
 
@@ -234,7 +224,7 @@ function stringifyArrayProperties(
   let index = extra.length;
 
   while (--index >= 0) {
-    result[index] = delimit(extra[index]!) + ':' + stringify(value[extra[index]!], state);
+    result[index] = delimit(extra[index]!) + stringify(value[extra[index]!], state);
   }
 
   return '{' + result.join() + '}';
@@ -324,7 +314,9 @@ export function stringifyObject(value: Record<string, any>, state: RecursiveStat
   let index = properties.length;
 
   while (--index >= 0) {
-    result[index] = delimit(properties[index]!) + ':' + stringify(value[properties[index]!], state);
+    const property = properties[index]!;
+
+    result[index] = delimit(property) + stringify(value[property], state);
   }
 
   return '{' + result.join() + '}';
@@ -358,7 +350,12 @@ export function stringify(value: any, state: RecursiveState | undefined): string
   }
 
   if (type === 'string') {
-    return HASHABLE_TYPES.string + delimit(value);
+    const length = value.length;
+
+    // Inlined rather than delegated so the hottest leaf avoids a call.
+    return length < TABLED_LENGTHS
+      ? STRING_PREFIXES[length]! + value
+      : HASHABLE_TYPES.string! + length + SEPARATOR + value;
   }
 
   if (type === 'function' || type === 'symbol') {
