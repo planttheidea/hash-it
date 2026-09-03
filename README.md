@@ -11,8 +11,6 @@ Fast and consistent hashCode for any object type
   - [Equality semantics](#equality-semantics)
     - [Hash consistency](#hash-consistency)
   - [Support](#support)
-    - [Browsers](#browsers)
-    - [Node](#node)
   - [Development](#development)
 
 ## Usage
@@ -114,32 +112,13 @@ If there is an object class or data type that is missing, please submit an issue
 
 ## Equality semantics
 
-Values are compared the way `SameValueZero` compares them, which is what makes the hash usable for memoization and
-equality checks. Two consequences are worth calling out:
+Values are compared the way [`SameValueZero`](https://tc39.es/ecma262/#sec-samevaluezero) compares them, which is what
+makes the hash usable for memoization and equality checks. A few specifics are worth calling out:
 
 - `0` and `-0` produce the same hash, as do two `NaN` values.
 - A hole in a sparse array is treated as `undefined`, so `[, ,]` and `[undefined, undefined]` produce the same hash.
-
-Objects and arrays are hashed by value rather than by reference, so a value referenced twice hashes the same as two
-equal values:
-
-```js
-const shared = { id: 1 };
-
-hash({ a: shared, b: shared }) === hash({ a: { id: 1 }, b: { id: 1 } }); // true
-```
-
-Own properties assigned to an array beyond its indices are included:
-
-```js
-const array = [1, 2];
-array.meta = 'extra';
-
-hash(array) === hash([1, 2]); // false
-```
-
-Only enumerable own properties are detected for this purpose. A non-enumerable property defined on an array with
-`Object.defineProperty` is not included, which is a deliberate trade to keep array hashing fast.
+- Own properties added to an array are included in its hash, but only enumerable ones - unlike a plain object, where
+  non-enumerable own properties count as well.
 
 ### Hash consistency
 
@@ -153,25 +132,8 @@ as the algorithm is refined. Hashes are intended for comparison within a single 
 
 ## Support
 
-### Browsers
-
-`WeakMap` is required at runtime, and the published bundles are emitted as ES2015. Both have been true since 6.0.0; this
-release adds no new requirement, as `Math.imul` is used only when available and falls back to an equivalent
-implementation otherwise.
-
-- Chrome 49+
-- Firefox 45+
-- Edge (all versions)
-- Opera 36+
-- Safari 10+
-- iOS 10+
-- Android 5+
-
-Internet Explorer is not supported.
-
-### Node
-
-- 4+
+An ES2015 environment is required; the published bundles are emitted as ES2015 syntax and use ES2015 built-ins such as
+`WeakMap`.
 
 ## Development
 
