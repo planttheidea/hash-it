@@ -4,24 +4,35 @@
 
 ### Enhancements
 
-- Added explicit `Float16Array` support.
-- Substantially improved `Map` and `Set` hashing performance.
-- Shared subtrees are now hashed once and reused rather than re-walked.
-- Added `Math.imul` support with an equivalent fallback, preserving existing runtime requirements.
+- [#106](https://github.com/planttheidea/hash-it/pull/106) - Added explicit `Float16Array` support.
+- [#106](https://github.com/planttheidea/hash-it/pull/106) - Substantially improved `Map` and `Set` hashing performance.
+- [#106](https://github.com/planttheidea/hash-it/pull/106) - Shared subtrees are now hashed once and reused rather than
+  re-walked.
+- [#106](https://github.com/planttheidea/hash-it/pull/106) - Added `Math.imul` support with an equivalent fallback,
+  preserving existing runtime requirements.
 
 ### Fixes
 
-- Fixed plain objects with `Symbol.iterator` being hashed by reference instead of by value.
-- Fixed own array properties beyond indexed elements being omitted from hashes.
-- Fixed shared references being hashed by position rather than by value.
-- Fixed missing `Int32Array` class registration.
-- Fixed `SharedArrayBuffer` hashes ignoring contents and byte length.
-- Fixed `Symbol` hashes colliding with strings.
-- Fixed string content forging structural boundaries; content-bearing values are now length-delimited.
-- Fixed `Map` and `Set` hashes depending on insertion order when entries share object references.
-- Fixed boxed `BigInt` and `Symbol` values collapsing to the same hash.
-- Fixed hash entropy being limited to ~32 bits; combined hashes now use the full 53-bit range.
-- Fixed `ArrayBuffer` fallback detection checking `Uint16Array` instead of `Uint8Array`.
+- [#106](https://github.com/planttheidea/hash-it/pull/106) - Fixed plain objects with `Symbol.iterator` being hashed by
+  reference instead of by value.
+- [#106](https://github.com/planttheidea/hash-it/pull/106) - Fixed own array properties beyond indexed elements being
+  omitted from hashes.
+- [#106](https://github.com/planttheidea/hash-it/pull/106) - Fixed shared references being hashed by position rather
+  than by value.
+- [#106](https://github.com/planttheidea/hash-it/pull/106) - Fixed missing `Int32Array` class registration.
+- [#106](https://github.com/planttheidea/hash-it/pull/106) - Fixed `SharedArrayBuffer` hashes ignoring contents and byte
+  length.
+- [#106](https://github.com/planttheidea/hash-it/pull/106) - Fixed `Symbol` hashes colliding with strings.
+- [#106](https://github.com/planttheidea/hash-it/pull/106) - Fixed string content forging structural boundaries;
+  content-bearing values are now length-delimited.
+- [#106](https://github.com/planttheidea/hash-it/pull/106) - Fixed `Map` and `Set` hashes depending on insertion order
+  when entries share object references.
+- [#106](https://github.com/planttheidea/hash-it/pull/106) - Fixed boxed `BigInt` and `Symbol` values collapsing to the
+  same hash.
+- [#106](https://github.com/planttheidea/hash-it/pull/106) - Fixed hash entropy being limited to ~32 bits; combined
+  hashes now use the full 53-bit range.
+- [#106](https://github.com/planttheidea/hash-it/pull/106) - Fixed `ArrayBuffer` fallback detection checking
+  `Uint16Array` instead of `Uint8Array`.
 
 ## 7.0.3
 
