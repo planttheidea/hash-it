@@ -164,7 +164,7 @@ export function stringifyArray(value: any[], state: RecursiveState, classType?: 
     result[index] = stringify(value[index], state);
   }
 
-  const properties = Object.getOwnPropertyNames(value);
+  const properties = getOwnPropertyNames(value);
 
   let cursor = properties.length - 1;
 
