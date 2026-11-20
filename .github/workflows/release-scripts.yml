@@ -1,0 +1,66 @@
+name: Release scripts
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  YARN_VERSION: 4.18.1
+
+jobs:
+  release-scripts:
+    name: Release scripts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v7.1.0
+        with:
+          node-version: lts/*
+          package-manager-cache: false
+
+      - name: Setup Yarn
+        run: |
+          npm install --global corepack@latest
+          corepack enable
+          corepack prepare "yarn@${YARN_VERSION}" --activate
+          yarn --version
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v6.1.0
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ env.YARN_VERSION }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            yarn-${{ runner.os }}-${{ env.YARN_VERSION }}-
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Check formatting
+        run: yarn format:check
+
+      - name: Typecheck
+        run: yarn typecheck
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Test
+        run: yarn test
+
+      - name: Build
+        run: yarn build
