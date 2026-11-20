@@ -14,9 +14,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  YARN_VERSION: 4.18.1
-
 jobs:
   release-scripts:
     name: Release scripts
@@ -36,16 +33,15 @@ jobs:
         run: |
           npm install --global corepack@latest
           corepack enable
-          corepack prepare "yarn@${YARN_VERSION}" --activate
           yarn --version
 
       - name: Cache Yarn dependencies
         uses: actions/cache@v6
         with:
           path: .yarn/cache
-          key: yarn-${{ runner.os }}-${{ env.YARN_VERSION }}-${{ hashFiles('yarn.lock') }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
           restore-keys: |
-            yarn-${{ runner.os }}-${{ env.YARN_VERSION }}-
+            yarn-${{ runner.os }}-
 
       - name: Install dependencies
         run: yarn install --immutable
